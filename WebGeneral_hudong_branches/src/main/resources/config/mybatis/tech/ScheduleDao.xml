@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.tech.dao.ScheduleDao">
+    <!--添加作息策略-->
+    <insert id="saveSchedule"  parameterType="java.lang.String" useGeneratedKeys="true">
+         insert into tech_schedule(name,isEnable) VALUES (#{name},0);
+    </insert>
+
+    <!--根据策略id更改策略状态-->
+    <update id="updateScheduleStatusByScheduleId">
+        update tech_schedule set isEnable=#{isEnable} where schedule_id=#{scheduleId}
+    </update>
+
+    <!--根据策略id更改策略名称-->
+    <update id="updateScheduleNameByScheduleId">
+        update tech_schedule set name=#{name} where schedule_id=#{scheduleId}
+    </update>
+
+    <!--根据策略id删除策略-->
+    <delete id="deleteSchedule" parameterType="java.lang.Integer">
+        delete from tech_schedule where schedule_id=#{scheduleId};
+    </delete>
+
+    <select id="scheduleListByPage" resultType="java.util.Map">
+        SELECT DISTINCT ploy.schedule_id,ploy.name,ploy.isEnable,
+        ployc.morning,ployc.am,ployc.pm,ployc.night
+        FROM tech_schedule AS ploy
+        LEFT JOIN cur_criteria AS ployc ON ploy.schedule_id = ployc.schedule_id
+        WHERE 1=1
+        <if test="name!=null and name.length>0">
+            AND ploy.name like CONCAT('%', #{name}, '%')
+        </if>
+        <if test="pageBool">
+            limit #{firstResult},#{pageSize}
+        </if>
+    </select>
+
+    <!--根据策略id查询策略信息-->
+    <select id="getScheduleByScheduleId" parameterType="java.lang.Integer" resultType="java.util.Map">
+         select sc.schedule_id as scheduleId,sc.name,sc.isEnable,cr.user_id as userId,
+        cr.criteria_id as criteriaId,cr.morning,cr.am,cr.pm,cr.night,cr.start_time as startTime,cr.end_time as endTime
+        from tech_schedule sc left JOIN cur_criteria cr on sc.schedule_id=cr.schedule_id where sc.schedule_id=#{scheduleId};
+    </select>
+
+    <!--根据策略名称查询策略信息-->
+    <select id="selectScheduleByName"  parameterType="java.lang.String" resultType="java.util.Map">
+        select schedule_id as scheduleId,name,isEnable from tech_schedule where name=#{name};
+    </select>
+
+    <!--获取正在使用作息策略id added by xinqinggang 2018/02/02-->
+    <select id="getScheduleId"  resultType="java.lang.Integer">
+        select s.schedule_id from tech_schedule s where s.isEnable=1;
+    </select>
+
+
+    <!--获取正在使用作息所有策略iadded by xinqinggang 2018/02/02-->
+    <select id="getScheduleByStatus"  parameterType="java.lang.Integer" resultType="java.util.Map">
+        select s.schedule_id as scheduleId,s.name as name,cr.start_time as startTime,cr.end_time as endTime,cr.am,cr.pm
+         from tech_schedule s LEFT JOIN cur_criteria cr on cr.schedule_id=s.schedule_id where s.isEnable=#{status};
+    </select>
+
+    <!--查询所有策略信息-->
+    <select id="getScheduleAll"  resultType="Map">
+        select sc.schedule_id as scheduleId,sc.name,sc.isEnable,
+        cr.criteria_id,cr.am,cr.pm,cr.start_time,cr.end_time
+        from tech_schedule sc left JOIN cur_criteria cr on sc.schedule_id=cr.schedule_id ORDER BY sc.schedule_id;
+    </select>
+</mapper>

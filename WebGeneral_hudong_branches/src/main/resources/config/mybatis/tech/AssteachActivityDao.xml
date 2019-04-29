@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.tech.dao.AssteachActivityDao">
+    <resultMap id="AssteachInfoMap" type="com.honghe.tech.form.AssteachActivityForm">
+        <id column="assteach_r_activity_id" property="id" javaType="Integer"/>
+        <result column="assist_teacher_id" property="assistTeacherId" javaType="Integer"/>
+        <result column="assist_teacher_name" property="assistTeacherName" javaType="String"/>
+        <result column="accept_room_id" property="acceptRoomId" javaType="Integer"/>
+        <result column="accept_room_name" property="acceptRoomName" javaType="String"/>
+        <result column="accept_room_addr" property="acceptRoomAddr" javaType="String"/>
+        <result column="city" property="acceptCityName" javaType="String"/>
+        <result column="county" property="acceptCountyName" javaType="String"/>
+        <result column="school" property="acceptSchoolName" javaType="String"/>
+        <result column="uuid" property="uuid" javaType="String"/>
+        <result column="accept_class_id" property="acceptClassId" javaType="String"/>
+        <result column="accept_class_name" property="acceptClassName" javaType="String"/>
+        <result column="room_students" property="roomStudents" javaType="Integer"/>
+    </resultMap>
+    <!--保存接收教室，辅助教师表-->
+    <insert id="saveAssteachActivity" parameterType="com.honghe.tech.entity.AssteachActivity"  useGeneratedKeys="true" keyProperty="id">
+        insert into tech_assteach_r_activity (
+        assist_teacher_id, assist_teacher_name, accept_room_id, accept_room_name, accept_class_id,
+        accept_class_name, accept_room_addr, area_id, room_students, uuid
+        )VALUES (
+        #{assistTeacherId}, #{assistTeacherName}, #{acceptRoomId}, #{acceptRoomName}, #{acceptClassId},
+        #{acceptClassName}, #{acceptRoomAddr}, #{areaId}, #{roomStudents}, #{uuid}
+        );
+    </insert>
+    <!--根据uuid获取接收教室和辅助教师ids-->
+    <select id="selectAssteachActivityByUuid" parameterType="String" resultType="com.honghe.tech.entity.AssteachActivity">
+        select assteach_r_activity_id AS id, assist_teacher_id AS assistTeacherId, assist_teacher_name AS assistTeacherName,
+        accept_room_id AS acceptRoomId, accept_room_name AS acceptRoomName,
+        accept_class_id AS acceptClassId,  uuid AS uuid FROM tech_assteach_r_activity WHERE uuid =#{uuid}
+    </select>
+
+    <!--根据uuid获取接收教室和辅助教师ids-->
+    <select id="selectAssteachActivityByUuid2" parameterType="String" resultType="com.honghe.tech.entity.AssteachActivity">
+        select ass.assteach_r_activity_id AS id, ass.assist_teacher_id AS assistTeacherId, ass.assist_teacher_name AS assistTeacherName,
+        ass.accept_room_id AS acceptRoomId, ass.accept_room_name AS acceptRoomName,ass.accept_room_addr as acceptRoomAddr,ass.room_students as roomStudents,
+        ass.accept_class_id AS acceptClassId, ass. uuid AS uuid ,a.province as provinceName,a.city as cityName,a.county as countyName,a.school as schoolName
+        FROM tech_assteach_r_activity ass
+        LEFT join tech_area a ON ass.area_id=a.area_id
+        WHERE ass.uuid =#{uuid}
+    </select>
+
+    <!--根据uuids获取接收教室和辅助教师ids-->
+    <select id="selectAssteachActivityByUuids" parameterType="java.util.List" resultMap="AssteachInfoMap">
+        select ass.assteach_r_activity_id , ass.assist_teacher_id,ass.assist_teacher_name , ass.accept_room_id ,ass.accept_room_name ,ass.accept_room_addr,ar.city,ar.county,
+        ar.school,ass.uuid,ass.room_students FROM tech_assteach_r_Activity ass LEFT JOIN tech_area ar on ass.area_id=ar.area_id WHERE ass.uuid in
+        <foreach collection="list" index="" separator="," open="(" close=")" item="uuid" >
+            #{uuid, javaType=String}
+        </foreach>
+        order by ass.uuid,ass.accept_room_id,ass.assist_teacher_id;
+    </select>
+
+    <!--根据uuid删除对应的接收教室和辅助老师-->
+    <delete id="deleteAssteachActivityByUuid"  parameterType="String"  flushCache="true">
+        delete from tech_assteach_r_activity where uuid=#{uuid};
+    </delete>
+
+    <!-- 根据uuid查询接收教室及辅助教师id串-->
+    <select id="selectAssRoomTeacherIdsByUuid" parameterType="java.lang.String" resultType="java.util.Map">
+        select group_concat(temp.accept_room_id) as roomIds,group_concat(temp.assist_teacher_id) as teacherIds from (select ass.accept_room_id,ass.assist_teacher_id from tech_assteach_r_activity ass where ass.uuid=#{uuid}  order by ass.accept_room_id) temp;
+    </select>
+
+    <!--周课表-->
+    <!--根据接收教室id查询课程信息-->
+    <select id="selectActivityByAssRoomAddr" parameterType="java.util.Map" resultType="com.honghe.tech.form.ActivityInfoForm">
+        SELECT DISTINCT ac.activity_id as id,ac.spare_a as sectionId,ac.name,ac.start_time as startTime,ac.end_time as endTime from tech_assteach_r_activity ass LEFT join tech_activity ac on ass.uuid=ac.uuid where ac.is_del=0
+        <if test="roomId!=null">and ass.accept_room_id=#{roomId}</if>
+        and ac.start_time BETWEEN #{startTime} AND #{endTime}
+        AND ass.accept_room_addr LIKE #{roomAddr};
+    </select>
+
+    <!--根据辅助教师id查询课程信息-->
+    <select id="selectActivityByAssTeacherId" parameterType="java.util.Map" resultType="com.honghe.tech.form.ActivityInfoForm">
+        SELECT DISTINCT ac.activity_id as id,ac.spare_a as sectionId,ac.name,ac.start_time as startTime,ac.end_time as endTime from tech_assteach_r_activity ass LEFT join tech_activity ac on ass.uuid=ac.uuid where
+        ac.start_time BETWEEN #{startTime} AND #{endTime}
+        AND ass.assist_teacher_id =#{teacherId} and ac.is_del=0;
+    </select>
+
+    <!--首页部分-->
+    <!-- 根据地点id串查询接收教室课程数量-->
+    <select id="getTotalAcceptCourseCase" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(*) as acceptCourseNum from tech_assteach_r_Activity ass LEFT join tech_activity ac on ass.uuid=ac.uuid
+        WHERE ass.accept_room_addr LIKE #{roomAddr} and ac.is_del=0;
+    </select>
+
+</mapper>

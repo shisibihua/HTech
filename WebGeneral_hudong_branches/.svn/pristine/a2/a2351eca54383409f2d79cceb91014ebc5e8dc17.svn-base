@@ -1,0 +1,783 @@
+package com.honghe.tech.httpservice.impl;
+
+import com.honghe.service.proxy.Result;
+import com.honghe.tech.httpservice.DeviceHttpService;
+import com.honghe.tech.util.*;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author xinqinggang
+ * @date 2018/1/29
+ */
+@Service
+public class DeviceHttpServiceImpl implements DeviceHttpService {
+    private Logger logger = Logger.getLogger(DeviceHttpServiceImpl.class);
+    /**
+     * 南京旭顶接口url
+     */
+    private final static String NJXD_URL="/Api/v2/IndexAction.php";
+    /**
+     * 南京旭顶接口port--初始化
+     */
+    private static final String NJXD_PORT = "8088";
+    private static final String NJXD_FLAG = "NJXD";
+    private static final String MODEL = "MODEL_C";
+    private static final String ISMUTE = "0";
+    private static final String ISNOTMUTE = "1";
+    private static final String STATUS = "0";
+    private static final String NETTYPE = "1";
+    private static final String BANDWIDTH = "2048000";
+    private static final String AREAID = "430621";
+
+    @Override
+    public Object callClient(String url, String name, String rate, String audio, String masterIp) {
+        Object reValue = null;
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            params.put("url", url);
+            params.put("name", name);
+            params.put("rate", rate);
+            params.put("audio", audio);
+            params.put("masterIp", masterIp);
+            Result result = HttpServerUtil.teachingService("callClient", params);
+            if (result.getCode() == 0 && result.getValue() != null) {
+                reValue = result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("呼叫终端异常，params=" + params, e);
+        }
+        return reValue;
+    }
+
+    @Override
+    public Object disconClient(String url, String name, String masterIp) {
+        Object reValue = null;
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            params.put("url", url);
+            params.put("name", name);
+            params.put("masterIp", masterIp);
+            Result result = HttpServerUtil.teachingService("hungupClient", params);
+            if (result.getCode() == 0 && result.getValue() != null) {
+                reValue = result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("挂断终端异常,params=" + params, e);
+        }
+        return reValue;
+    }
+
+    @Override
+    public Object disconAllClient(String url, String masterIp) {
+        Object reValue = null;
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            params.put("url", url);
+            params.put("masterIp", masterIp);
+            Result result = HttpServerUtil.teachingService("hungupAllClient", params);
+            if (result.getCode() == 0 && result.getValue() != null) {
+                reValue = result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("挂断全部终端异常,params=" + params, e);
+        }
+        return reValue;
+    }
+
+    @Override
+    public Object callRecord(String url, String masterIp) {
+        Object reValue = null;
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            params.put("url", url);
+            params.put("masterIp", masterIp);
+            Result result = HttpServerUtil.teachingService("callRecord", params);
+            if (result.getCode() == 0 && result.getValue() != null) {
+                reValue = result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("请求呼叫记录异常,params=" + params, e);
+        }
+        return reValue;
+    }
+
+    @Override
+    public Object muteClient(String url, String muteAudio, String name, String masterIp, String acceptIp) {
+        Object reValue = null;
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            params.put("url", url);
+            params.put("mute_audio", muteAudio);
+            params.put("name", name);
+            params.put("masterIp", masterIp);
+            params.put("auditorIp", acceptIp);
+            Result result = HttpServerUtil.teachingService("muteClient", params);
+            if (result.getCode() == 0 && result.getValue() != null) {
+                reValue = result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("终端静音异常,params=" + params, e);
+        }
+        return reValue;
+    }
+
+    @Override
+    public Object interactionConference(String url, String name, String interact, String masterIp, String acceptIp) {
+        Object reValue = null;
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            params.put("url", url);
+            params.put("name", name);
+            params.put("interact", interact);
+            params.put("masterIp", masterIp);
+            params.put("auditorIp", acceptIp);
+            Result result = HttpServerUtil.teachingService("interact", params);
+            if (result.getCode() == 0 && result.getValue() != null) {
+                reValue = result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("开启互动异常,params=" + params, e);
+        }
+        return reValue;
+    }
+
+    @Override
+    public Object searchTerminalStatus(String url, String name, String masterIp) {
+        Object reValue = null;
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            params.put("url", url);
+            params.put("name", name);
+            params.put("masterIp", masterIp);
+            Result result = HttpServerUtil.teachingService("searchTerminalStatus", params);
+            if (result.getCode() == 0 && result.getValue() != null) {
+                reValue = result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("查询终端在会状态异常,params=" + params, e);
+        }
+        return reValue;
+    }
+
+    @Override
+    public Object searchQueryInteract(String masterIp) {
+        Object reValue = null;
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            params.put("masterIp", masterIp);
+            Result result = HttpServerUtil.teachingService("queryInteract", params);
+            if (result.getCode() == 0 && result.getValue() != null) {
+                reValue = result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("查询终端互动状态异常,params=" + params, e);
+        }
+        return reValue;
+    }
+
+    @Override
+    public JSONObject addActivity(String meetingName, String startTime, String endTime, JSONArray roomJsonArray, String mcuIp) {
+        Map<String,String> host=getTermianlMap(roomJsonArray);
+        JSONObject re_value=new JSONObject();
+        if(host!=null && !host.isEmpty()){
+            String terminals=host.get("terminals");
+            String masterId=host.get("masterId");
+            if (masterId != null && !"".equals(masterId)) {
+                synchronized (this) {
+                    JSONObject paramsJson = new JSONObject();
+                    paramsJson.put("model", MODEL);
+                    paramsJson.put("starttime", getTime(startTime));
+                    paramsJson.put("endtime", getTime(endTime));
+                    paramsJson.put("master", masterId);
+                    paramsJson.put("terminals", terminals);
+                    paramsJson.put("name", meetingName);
+                    String key = MD5.getMD5(meetingName + paramsJson.get("starttime") + paramsJson.get("endtime") + NJXD_FLAG);
+                    paramsJson.put("key", key);
+                    String path=getNjxdServerPath(mcuIp);
+                    if(!"".equals(path)) {
+                        String url = path + "?act=AddMeeting";
+                        String result = null;
+                        try {
+                            result = HttpRequestUtil.load(url, paramsJson.toString());
+                        } catch (IOException e) {
+                            result = "";
+                        }
+                        Map<String, String> map = getBackMap(result);
+                        if (map != null && !map.isEmpty() && STATUS.equals(map.get("status"))) {
+                            re_value.put("confID", map.get("confID"));
+                        } else {
+                            re_value.put("confID", "");
+                        }
+                    }
+                }
+            }
+        }
+        return re_value;
+    }
+    /**
+     * 解析南京旭顶mcu返回值
+     * @param result  返回值
+     * @return
+     */
+    private Map<String,String> getBackMap(String result){
+        Map<String,String> backMap=new HashMap<>();
+        if(result!=null && !"".equals(result)){
+            try {
+                JSONObject backJson = JSONObject.fromObject(result);
+                if (backJson != null && backJson.containsKey("status") &&
+                        STATUS.equals(backJson.get("status").toString())) {
+                    backMap.put("status",STATUS);
+                    JSONObject params = JSONObject.fromObject(backJson.get("params"));
+                    if (params != null) {
+                        //会议id
+                        if(params.containsKey("meeting_id")) {
+                            backMap.put("confID", params.get("meeting_id").toString());
+                        }else{
+                            backMap.put("confID","");
+                        }
+                        //会议名称
+                        if(params.containsKey("meeting_name")) {
+                            backMap.put("confName", params.get("meeting_name").toString());
+                        }else{
+                            backMap.put("confName","");
+                        }
+                        //终端id列表,如[123401,123402,123403]
+                        if(params.containsKey("terminals")) {
+                            backMap.put("terminals", params.get("terminals").toString());
+                        }else{
+                            backMap.put("terminals","");
+                        }
+                        //终端编码
+                        if(params.containsKey("e164")) {
+                            backMap.put("partyID", params.get("e164").toString());
+                        }else{
+                            backMap.put("partyID","");
+                        }
+                        //终端名称
+                        if(params.containsKey("name")) {
+                            backMap.put("partyName", params.get("name").toString());
+                        }else{
+                            backMap.put("partyName","");
+                        }
+                        //终端是否在线
+                        if(params.containsKey("oncall")) {
+                            if("1".equals(params.get("oncall").toString())) {
+                                //终端在线
+                                backMap.put("connState", "0");
+                            }else{
+                                //终端离线
+                                backMap.put("connState", "1");
+                            }
+                        }else{
+                            backMap.put("connState","");
+                        }
+                        //静音
+                        if(params.containsKey("disable_in_mute")) {
+                            if("1".equals(params.get("disable_in_mute").toString())) {
+                                //关闭麦克风，静音
+                                backMap.put("micMuteState","0");
+                            }else{
+                                //开启麦克风，不静音
+                                backMap.put("micMuteState","1");
+                            }
+                        }else{
+                            backMap.put("micMuteState","");
+                        }
+                        //互动终端编码
+                        if(params.containsKey("interactive")) {
+                            backMap.put("interactive", params.get("interactive").toString());
+                        }else{
+                            backMap.put("interactive","");
+                        }
+                    }
+                }else{
+                    getErrorMap(backMap);
+                }
+            }catch (JSONException e){
+                logger.error("字符串转json异常",e);
+                getErrorMap(backMap);
+            }
+        }else{
+            getErrorMap(backMap);
+        }
+        return backMap;
+    }
+
+    /**
+     * 封装错误信息
+     * @param errorMap
+     * @return
+     */
+    private Map<String,String> getErrorMap(Map<String,String> errorMap){
+        errorMap.put("status","-1");
+        errorMap.put("confID","");
+        errorMap.put("confName","");
+        errorMap.put("terminals","");
+        errorMap.put("partyID","");
+        errorMap.put("partyName","");
+        errorMap.put("connState","");
+        errorMap.put("micMuteState","");
+        errorMap.put("interactive","");
+        return errorMap;
+    }
+    /**
+     * 返回终端数据
+     * @param partyJsonArray
+     * @return
+     */
+   private Map<String,String> getTermianlMap(JSONArray partyJsonArray){
+       String terminals="";
+       String masterId="";
+       if(partyJsonArray!=null){
+           JSONObject partyJson=JSONObject.fromObject(partyJsonArray.get(0));
+           if(partyJson.containsKey("partyID")) {
+               //获取主讲终端id(如：1234021)
+               masterId =partyJson.get("partyID").toString();
+               //获取教学活动终端id串
+               for (Object party : partyJsonArray) {
+                   JSONObject host = JSONObject.fromObject(party);
+                   terminals += host.get("partyID") + ",";
+               }
+           }
+       }
+       if(terminals.endsWith(",")) {
+           terminals = "[" + terminals.substring(0, terminals.lastIndexOf(",")) + "]";
+       }
+       Map<String,String> map=new HashMap<>();
+       map.put("terminals",terminals);
+       map.put("masterId",masterId);
+       return map;
+   }
+    /**
+     * 获取MCU列表
+     *
+     * @return
+     */
+    @Override
+    public JSONObject getMCUList() {
+        JSONObject resultJson = new JSONObject();
+        try {
+            Map<String, String> requestMap = new HashMap<String, String>();
+            Result result = HttpServerUtil.deviceService("getMcuInfo", requestMap);
+            if (result.getCode() == 0 && result.getValue() != null && !"".equals(result.getValue())) {
+                try {
+                    JSONArray mcuJsonArr = JSONArray.fromObject(result.getValue());
+                    if(mcuJsonArr!=null && mcuJsonArr.size()>0){
+                        resultJson=JSONObject.fromObject(mcuJsonArr.get(0));
+                    }
+                }catch (JSONException e){
+                    logger.error("获取mcu列表转换成json异常。",e);
+                    return null;
+                }
+            } else {
+                return resultJson;
+            }
+        } catch (Exception e) {
+            logger.error("获取MCU列表异常", e);
+        }
+        return resultJson;
+    }
+
+    @Override
+    public JSONObject getTerminalStatusForNjxd(String terminalId) {
+        JSONObject re_value=new JSONObject();
+        if(terminalId!=null && !"".equals(terminalId)){
+            //默认字段，add for 1.0
+            re_value.put("partyType","0");
+            synchronized (this){
+                Map<String,String> terminalStatusMap=getTerminalStatus(terminalId);
+                re_value.putAll(terminalStatusMap);
+                String confId=terminalStatusMap.get("confID");
+                if(terminalStatusMap!=null && !terminalStatusMap.isEmpty() && STATUS.equals(terminalStatusMap.get("code"))){
+                    if(!"".equals(confId)) {
+                        //获取终端互动状态
+                        JSONObject interactJson = getInteractPartyForNjxd(confId);
+                        String partyId=terminalStatusMap.get("partyID");
+                        //返回终端编码
+                        if (interactJson != null && interactJson.containsKey("id") && partyId.equals(interactJson.get("id"))){
+                            //正在互动
+                            re_value.put("screenLayoutState","0");
+                        }else{
+                            //未互动
+                            re_value.put("screenLayoutState","1");
+                        }
+                    }else{
+                        re_value.put("screenLayoutState","1");
+                    }
+                }else{
+                    re_value.put("code","-1");
+                    //终端没有互动
+                    re_value.put("screenLayoutState","1");
+                }
+            }
+        }
+        return re_value;
+    }
+
+    /**
+     * 查询终端在线、静音状态
+     * @param terminalId
+     * @return
+     */
+    private Map<String,String> getTerminalStatus(String terminalId){
+        JSONObject paramsJson = new JSONObject();
+        paramsJson.put("e164", terminalId);
+        String key = MD5.getMD5(terminalId + NJXD_FLAG);
+        paramsJson.put("key", key);
+        String path=getNjxdServerPath(null);
+        Map<String, String> terminalStatusMap = new HashMap<>();
+        if(!"".equals(path)) {
+            String url = path + "?act=GetTerminal";
+            String result = null;
+            try {
+                result = HttpRequestUtil.load(url, paramsJson.toString());
+            } catch (IOException e) {
+                result = "";
+            }
+            Map<String, String> map = getBackMap(result);
+            if (map != null && !map.isEmpty() && STATUS.equals(map.get("status"))) {
+                terminalStatusMap.put("code", STATUS);
+                //会议id
+                terminalStatusMap.put("confID", map.get("confID"));
+                //会议名称
+                terminalStatusMap.put("confName", map.get("confName"));
+                //终端编码id
+                terminalStatusMap.put("partyID", map.get("partyID"));
+                terminalStatusMap.put("partyName", map.get("partyName"));
+                terminalStatusMap.put("connState", map.get("connState"));
+                terminalStatusMap.put("micMuteState", map.get("micMuteState"));
+            } else {
+                terminalStatusMap.put("code", "-1");
+                terminalStatusMap.put("confID", "");
+                terminalStatusMap.put("confName", "");
+                terminalStatusMap.put("partyID", "");
+                terminalStatusMap.put("partyName", "");
+                terminalStatusMap.put("connState", "");
+                terminalStatusMap.put("micMuteState", "");
+            }
+        }
+        return terminalStatusMap;
+    }
+    @Override
+    public JSONObject micMuteForNjxd(String conferenceId, String terminalId,String isMute) {
+        JSONObject re_value=new JSONObject();
+        String type="";
+        synchronized (this){
+            if(ISMUTE.equals(isMute)){
+                //打开麦克风
+                type="TurnOffMic";
+            }else if(ISNOTMUTE.equals(isMute)){
+                //关闭麦克风
+                type="TurnOnMic";
+            }
+            JSONObject paramsJson = new JSONObject();
+            paramsJson.put("meeting_id", conferenceId);
+            paramsJson.put("e164 ", terminalId);
+            String key = MD5.getMD5(conferenceId + terminalId + NJXD_FLAG);
+            paramsJson.put("key", key);
+            String path=getNjxdServerPath(null);
+            if(!"".equals(path)) {
+                String url = path + "?act=AddMeeting & type=" + type;
+                String result = null;
+                try {
+                    result = HttpRequestUtil.load(url, paramsJson.toString());
+                } catch (IOException e) {
+                    result = "";
+                }
+                Map<String, String> map = getBackMap(result);
+                re_value.put("code", map.get("status"));
+            }
+        }
+        return re_value;
+    }
+
+    @Override
+    public JSONObject layoutForNjxd(String conferenceId, String splitMode, String terminalList) {
+        JSONObject re_value=new JSONObject();
+        if(conferenceId!=null && !"".equals(conferenceId) && terminalList!=null && !"".equals(terminalList)){
+            String terminalCode="";
+            try {
+                JSONArray termianlArr = JSONArray.fromObject(terminalList);
+                if(termianlArr!=null){
+                    JSONObject terminal=JSONObject.fromObject(termianlArr.get(0));
+                    if(terminal!=null && terminal.containsKey("partyID")){
+                        terminalCode=terminal.get("partyID").toString();
+                    }
+                }
+            }catch (JSONException e){
+                terminalCode="";
+            }
+            if(!"".equals(terminalCode)) {
+                synchronized (this) {
+                    String type="";
+                    JSONObject paramsJson = new JSONObject();
+                    paramsJson.put("meeting_id", conferenceId);
+                    String key = MD5.getMD5(conferenceId + terminalCode + NJXD_FLAG);
+                    paramsJson.put("key", key);
+                    if(ConstantWord.SCREEN_LAYOUT_2P1.equals(splitMode)){
+                        paramsJson.put("e164", terminalCode);
+                        type="Interactive";
+                    }else{
+                        type="Master";
+                    }
+                    String path=getNjxdServerPath(null);
+                    if(!"".equals(path)) {
+                        String url = path + "?act=MeetingCtrl&type="+type;
+                        String result = null;
+                        try {
+                            result = HttpRequestUtil.load(url, paramsJson.toString());
+                        } catch (IOException e) {
+                            result = "";
+                        }
+                        Map<String, String> map = getBackMap(result);
+                        re_value.put("code", map.get("status"));
+                        if (map != null && !map.isEmpty() && STATUS.equals(map.get("status"))) {
+                            if(ConstantWord.SCREEN_LAYOUT_2P1.equals(splitMode)){
+                                re_value.put("screenLayoutState", "0");
+                            }else{
+                                re_value.put("screenLayoutState", "1");
+                            }
+                        } else {
+                            re_value.put("screenLayoutState", "");
+                        }
+                    }
+                }
+            }
+        }
+        return re_value;
+    }
+
+    @Override
+    public JSONObject getInteractPartyForNjxd(String confId) {
+        JSONObject re_value=new JSONObject();
+        if(confId!=null && !"".equals(confId)){
+            synchronized (this){
+                JSONObject paramsJson = new JSONObject();
+                paramsJson.put("meeting_id", confId);
+                String key = MD5.getMD5(confId + NJXD_FLAG);
+                paramsJson.put("key", key);
+                String path=getNjxdServerPath(null);
+                if(!"".equals(path)) {
+                    String url = path + "?act=GetMeeting";
+                    String result = null;
+                    try {
+                        result = HttpRequestUtil.load(url, paramsJson.toString());
+                    } catch (IOException e) {
+                        result = "";
+                    }
+                    Map<String, String> map = getBackMap(result);
+                    if (map != null && !map.isEmpty() && STATUS.equals(map.get("status"))) {
+                        String terminalCode = map.get("interactive");
+                        re_value.put("id", terminalCode);
+                    }
+                }
+            }
+        }
+        return re_value;
+    }
+
+    @Override
+    public boolean delConference(String confId, String confName) {
+        logger.debug("删除mcu会议delConference:会议id=" + confId + ",confName=" + confName);
+        boolean re_value=false;
+        if(confId!=null && !"".equals(confId)){
+            synchronized (this){
+                JSONObject paramsJson = new JSONObject();
+                paramsJson.put("meeting_id", confId);
+                String key = MD5.getMD5(confId + NJXD_FLAG);
+                paramsJson.put("key", key);
+                String path=getNjxdServerPath(null);
+                if(!"".equals(path)) {
+                    String url = path + "?act=DeleteMeeting";
+                    String result = null;
+                    try {
+                        result = HttpRequestUtil.load(url, paramsJson.toString());
+                    } catch (IOException e) {
+                        result = "";
+                    }
+                    Map<String, String> map = getBackMap(result);
+                    if (map != null && !map.isEmpty() && STATUS.equals(map.get("status"))) {
+                        re_value = true;
+                    } else {
+                        re_value = false;
+                    }
+                }
+            }
+        }
+        return re_value;
+    }
+
+    @Override
+    public JSONObject connTerminalForNjxd(String conferenceId, String conferenceName, String terminalId,
+         String terminalIp, String terminalName, String isConn) {
+        JSONObject re_value=new JSONObject();
+        if(conferenceId!=null && !"".equals(conferenceId) && terminalId!=null && !"".equals(terminalId)){
+            synchronized (this){
+                JSONObject paramsJson = new JSONObject();
+                paramsJson.put("meeting_id", conferenceId);
+                paramsJson.put("e164", terminalId);
+                String key = MD5.getMD5(conferenceId + terminalId + NJXD_FLAG);
+                paramsJson.put("key", key);
+                String path=getNjxdServerPath(null);
+                if(!"".equals(path)) {
+                    String url = path + "?act=MeetingCtrl&type=";
+                    if ("true".equals(isConn)) {
+                        url += "Call";
+                    } else {
+                        url += "Hangup";
+                    }
+                    String result = null;
+                    try {
+                        result = HttpRequestUtil.load(url, paramsJson.toString());
+                    } catch (IOException e) {
+                        result = "";
+                    }
+                    Map<String, String> map = getBackMap(result);
+                    re_value.put("code", map.get("status"));
+                    re_value.put("partyIP", terminalIp);
+                }
+            }
+        }
+        return re_value;
+    }
+
+    @Override
+    public Map getHostByIp(String ip) {
+        Map re_value = new HashMap();
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            params.put("hostIp", ip);
+            Result result = HttpServerUtil.deviceService("getDeviceByHostIp", params);
+            if (result.getCode() == 0 && result.getValue() != null) {
+                re_value = (Map) result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("根据设备ip查询设备信息异常,hostIp=" + ip, e);
+        }
+        return re_value;
+    }
+
+    @Override
+    public String getHostCodeByIp(String ip) {
+        String code = "";
+        Map hostMap = getHostByIp(ip);
+        if (hostMap != null && !hostMap.isEmpty()) {
+            code = hostMap.get("mcuCode") == null ? "" : hostMap.get("mcuCode").toString();
+        }
+        return code;
+    }
+
+    @Override
+    public String getHostIsTourByCode(String code) {
+        String re_value ="";
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            params.put("code", code);
+            Result result = HttpServerUtil.deviceService("getHostIsTourByCode", params);
+            if (result.getCode() == 0 && result.getValue() != null) {
+                re_value = result.getValue().toString();
+            }
+        } catch (Exception e) {
+            logger.error("根据设备编码查询设备isTour异常,code=" + code, e);
+        }
+        return re_value;
+    }
+
+    /**
+     * 获取南京旭顶接口地址
+     * @return
+     */
+    private String getNjxdServerPath(String mcuIp){
+        String njxdUrl ="";
+        String serverPort = NJXD_PORT;
+        if (ConfigUtil.getConfig("njxd_port") != null) {
+            serverPort = ConfigUtil.getConfig("njxd_port").toString().trim();
+        }
+        if(!StringUtils.isEmpty(mcuIp)){
+            njxdUrl = "http://" + mcuIp + ":" + serverPort + NJXD_URL;
+        }else {
+            JSONObject mcuJson = getMCUList();
+            if (mcuJson != null && !mcuJson.isEmpty()) {
+                String mcu_ip = mcuJson.get("host_ipaddr").toString();
+                njxdUrl = "http://" + mcu_ip + ":" + serverPort + NJXD_URL;
+            } else {
+                njxdUrl = "";
+            }
+        }
+        return njxdUrl;
+    }
+
+    /**
+     * 转换时间
+     * @param time
+     * @return
+     */
+    private Long getTime(String time){
+        try {
+            if(time!=null && !"".equals(time)) {
+                return DateTimeUtil.parseDateTime(time).getTime()/1000;
+            }else{
+                return 0L;
+            }
+        } catch (ParseException e) {
+            logger.error("时间转换异常", e);
+        }
+        return null;
+    }
+
+    @Override
+    public JSONObject addHostToMcu(String partyName, String partyId, String partyIp) {
+        JSONObject re_value=new JSONObject();
+        if(partyName!=null && !"".equals(partyName) && partyId!=null && !"".equals(partyId) && partyIp!=null && !"".equals(partyIp)){
+            synchronized (this){
+                JSONObject paramsJson = new JSONObject();
+                paramsJson.put("e164", partyId);
+                paramsJson.put("name", partyName);
+                paramsJson.put("bandwidth", BANDWIDTH);
+                paramsJson.put("net_type", NETTYPE);
+                paramsJson.put("ip", partyIp);
+                paramsJson.put("area_id", AREAID);
+                String key = MD5.getMD5(partyName + NETTYPE + AREAID + NJXD_FLAG);
+                paramsJson.put("key", key);
+                String path=getNjxdServerPath(null);
+                if(!"".equals(path)) {
+                    String url = path + "?act=AddTerminal";
+                    String result = null;
+                    try {
+                        result = HttpRequestUtil.load(url, paramsJson.toString());
+                    } catch (IOException e) {
+                        result = "";
+                    }
+                    if(result!=null && !"".equals(result)) {
+                        try {
+                            JSONObject backJson = JSONObject.fromObject(result);
+                            if (backJson != null && backJson.containsKey("status") &&
+                                    STATUS.equals(backJson.get("status").toString())) {
+                                re_value.put("code", STATUS);
+                            }else{
+                                re_value.put("code", "-1");
+                            }
+                        }catch (JSONException e){
+                            logger.error("json转换异常",e);
+                            re_value.put("code", "-2");
+                        }
+                    }else{
+                        re_value.put("code", "-1");
+                    }
+                }
+            }
+        }
+        return re_value;
+    }
+}

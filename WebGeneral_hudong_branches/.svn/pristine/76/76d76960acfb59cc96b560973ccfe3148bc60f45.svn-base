@@ -1,0 +1,21 @@
+#活动教学ip、port
+htech_ip:localhost
+htech_port:8756
+
+#直播流地址
+liveStreamIp:localhost
+
+#平台向终端提供课表是否走威海德，true:走威海德；false:南京旭顶
+isVhd:false
+
+#截图端口号
+screen_port:8759
+#截图分辨率
+screen_resolution:280_160
+
+#南京旭顶mcu终端port
+njxd_port=8088
+
+#捷视飞通的用户名和密码
+jsft_username = admin
+jsft_password = admin

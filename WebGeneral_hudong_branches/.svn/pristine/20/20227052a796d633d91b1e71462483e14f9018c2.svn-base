@@ -1,0 +1,306 @@
+package com.honghe.tech.httpservice;
+
+import net.sf.json.JSONObject;
+
+/**
+ * @author lichunming
+ * @date 2018-09-26
+ * 注：本接口主要提供给捷视飞通设备对接使用(iFreecomm)
+ */
+public interface DeviceToJsftHttpService {
+	/**
+	 * 验证登录捷视飞通MCU
+	 *
+	 * @param url      MCU地址
+	 * @param username 用户名
+	 * @param password 密码
+	 * @return
+	 */
+	JSONObject checkMcuLogin(String url, String username, String password);
+
+	/**
+	 * 添加终端到MCU
+	 * @param url     mcu地址
+	 * @param devName 终端名称
+	 * @param devtype 终端类型
+	 * @param e164    e164号
+	 * @param superdmnid   上级域id，如果是顶级域则值为1
+	 * @param alias    别名  等于e164的值
+	 * @param autoCap    自动能力集，1支持，0，不支持，填1
+	 * @param audioAdaptor    音频能力集 填0
+	 * @param deletableFlag    是否允许删除,(默认可以删除)，填1
+	 *
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject addHostToMcu(String url, String devName, String Ip, String devtype, String e164,String superdmnid,String alias,String autoCap,String audioAdaptor,String deletableFlag);
+
+
+	/**
+	 * 删除终端
+	 *
+	 * @param url mcu地址
+	 * @param id  终端id
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject delHostToMcu(String url, String id);
+
+	/**
+	 * 获取终端列表
+	 *
+	 * @param url mcu地址
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject getHostList(String url);
+
+	/**
+	 * 获取服务器时间
+	 *
+	 * @param url mcu地址
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject getSysTime(String url);
+
+	/**
+	 * 全部静音
+	 *
+	 * @param url    mcu地址
+	 * @param confID 会议id
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject micMuteForMcu(String url, String confID);
+
+	/**
+	 * 取消全部静音
+	 *
+	 * @param url    mcu地址
+	 * @param confID 会议id
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject delmicMuteForMcu(String url, String confID);
+
+	/**
+	 * 获取会议模板列表
+	 *
+	 * @param url mcu地址
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject getConfTempList(String url);
+
+	/**
+	 * 设置多画面-分屏
+	 *
+	 * @param url           mcu地址
+	 * @param confID        会议ID
+	 * @param splitMode     分屏模式
+	 * @param screenLayout  分屏布局
+	 * @param autoSwitchMST 自动切换多画面
+	 * @return jsonObject
+	 */
+	JSONObject getSplitMode(String url, String confID, String splitMode, String screenLayout, String autoSwitchMST);
+
+	/**
+	 * 添加会议
+	 *
+	 * @param url      mcu地址
+	 * @param tmpID    会议模板id
+	 * @param name     会议名称
+	 * @param number   会议E164号
+	 * @param type     会议类型 0：立即会议，1：预约会议，2：永久会议
+	 * @param begin    开始时间---2016-04-27T09:21:39+08:00 格式：”日期”+”T”+时间+”时区”
+	 * @param end      结束时间---2016-04-27T09:21:39+08:00（=10分钟）
+	 * @param chairman 终端id---设置为主会场
+	 * @param conventioners 与会者列表
+	 *                 立即会议-----结束时间
+	 *                 预约会议-----开始,结束时间
+	 *                 永久会议-----不需要添加时间
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject addConf(String url, String tmpID, String name, String number, String type, String begin, String end, String chairman, String conventioners);
+
+	/**
+	 * 添加会场
+	 *
+	 * @param url     mcu地址
+	 * @param confID  会议id
+	 * @param siteIDs 终端id
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject addConven(String url, String confID, String siteIDs);
+
+	/**
+	 * 删除会议
+	 *
+	 * @param url mac地址
+	 * @param id  会议id
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject delConf(String url, String id);
+
+	/**
+	 * 获取会议所有会场
+	 *
+	 * @param url    mac地址
+	 * @param confID 会议id
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject getConevnList(String url, String confID);
+
+	/**
+	 * 邀请会场
+	 *
+	 * @param url     mac地址
+	 * @param confID  会议id
+	 * @param siteIDs 会场的epid
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject callConven(String url, String confID, String siteIDs);
+
+	/**
+	 * 挂断会场
+	 *
+	 * @param url    mac地址
+	 * @param confID 会议id
+	 * @param epID   会场的epid
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject dropConven(String url, String confID, String epID);
+
+	/**
+	 * 开始会议，只能召开预约会议
+	 *
+	 * @param url    mac地址
+	 * @param confID 会议id
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject callConf(String url, String confID);
+
+	/**
+	 * 结束会议
+	 *
+	 * @param url    mac地址
+	 * @param confID 会议id
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject dropConf(String url, String confID);
+
+	/**
+	 * 语音对讲
+	 *
+	 * @param url    mac地址
+	 * @param confID 会议id
+	 * @param epID   会场的epid
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject setTalk(String url, String confID, String epID);
+
+	/**
+	 * 取消对讲
+	 *
+	 * @param url    mac地址
+	 * @param confID 会议id
+	 * @param epID   会场的epid
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject cancelTalk(String url, String confID, String epID);
+
+	/**
+	 * 即时呼叫终端
+	 *
+	 * @param url    mac地址
+	 * @param confID 会议id
+	 * @param host   终端ip或者E164号
+	 * @param type   终端类型
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject callHost(String url, String confID, String host, String type);
+
+	/**
+	 * 对话点名
+	 *
+	 * @param url    mac地址
+	 * @param confID 会议id
+	 * @param epID   会场的epid
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject setDialog(String url, String confID, String epID);
+
+	/**
+	 * 取消对话点名
+	 *
+	 * @param url    mac地址
+	 * @param confID 会议id
+	 * @param epID   会场的epid
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject cancelDialog(String url, String confID, String epID);
+
+	/**
+	 * 图片预览
+	 * @param url    mac地址
+	 * @param confID 会议id
+	 * @param ip   设备ip
+	 * @return
+	 * @author gujt
+	 */
+	String getStrPic(String url, String confID, String ip);
+
+	/**
+	 * 修改会议------只有未召开的会议才可以修改会议参数
+	 * @param url      mcu地址
+	 * @param id       会议id
+	 * @param name     会议名称
+	 * @param number   会议号码，数字类型
+	 * @param type     会议类型 0：立即会议，1：预约会议，2：永久会议
+	 * @param begin    开始时间---2016-04-27T09:21:39+08:00 格式：”日期”+”T”+时间+”时区”
+	 * @param end      结束时间---2016-04-27T09:21:39+08:00（=1>0分钟)
+	 * @return
+	 * @author gujt
+	 */
+	public JSONObject modifyConf(String url,String id,String name,String number,String type,String begin,String end);
+
+	/**
+	 * 预约
+	 * @param url      mcu地址
+	 * @param tmpID    会议模板id
+	 * @param name     会议名称
+	 * @param number   会议E164号
+	 * @param type     会议类型 0：立即会议，1：预约会议，2：永久会议
+	 * @param begin    开始时间---2016-04-27T09:21:39+08:00 格式：”日期”+”T”+时间+”时区”
+	 * @param end      结束时间---2016-04-27T09:21:39+08:00（=10分钟）
+	 * @param chairman 终端id---设置为主会场
+	 * @param conventioners 与会者列表
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject addConfen(String url, String tmpID, String name, String number, String type, String begin, String end, String chairman, String conventioners );
+
+	/**
+	 * 删除会议
+	 * @param url    mcu地址
+	 * @param id    会议id
+	 * @return
+	 * @author gujt
+	 */
+	JSONObject delConfForJSFT(String url , String id);
+
+}

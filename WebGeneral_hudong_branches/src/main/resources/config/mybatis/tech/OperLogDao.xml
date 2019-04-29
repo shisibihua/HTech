@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.tech.dao.OperLogDao">
+    <insert id="saveLog" parameterType="java.util.Map">
+        INSERT INTO tech_oper_log(user_id,time,modulename,content,type)
+        VALUES (#{log.userId},#{log.logTime},#{log.moduleName},#{log.content},#{log.type})
+    </insert>
+    <delete id="deleteLogByIdsArr">
+        DELETE FROM tech_oper_log WHERE log_id IN
+        <if test="logIdsArr!=null and logIdsArr.length>0">
+            <foreach item="item" index="index" collection="logIdsArr" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </delete>
+    <delete id="deleteAllLog">
+        DELETE FROM tech_oper_log
+    </delete>
+    <select id="logListByPage" resultType="java.util.Map">
+        SELECT log.log_id as id,log.user_id as userId,
+        DATE_FORMAT(log.time,'%Y-%m-%d %H:%i:%s') as time,
+        log.type as type,log.content as content,log.modulename as moduleName
+        FROM tech_oper_log as log WHERE 1=1
+        <if test="logType!=null and logType!='' ">
+            AND log.type=#{logType}
+        </if>
+        ORDER by log.log_id desc
+        <if test="pageBool">
+            limit #{firstResult},#{pageSize}
+        </if>
+    </select>
+    <select id="logListByDateByPage" resultType="java.util.Map">
+        SELECT log.log_id as id,log.user_id as userId,
+        DATE_FORMAT(log.time,'%Y-%m-%d %H:%i:%s') as time,
+        log.type as type,log.content as content,log.modulename as moduleName
+        FROM tech_oper_log as log WHERE 1=1
+        <if test="logType!=null and logType!='' ">
+            AND log.type=#{logType}
+        </if>
+        AND DATE(log.time)>=#{startDate}
+        AND DATE(log.time)&lt;=#{endDate}
+        ORDER by log.log_id desc
+        <if test="pageBool">
+            limit #{firstResult},#{pageSize}
+        </if>
+    </select>
+    <select id="logListByIdsArrAndType" resultType="java.util.Map">
+        SELECT log_id as id,user_id as userId,DATE_FORMAT(time,'%Y-%m-%d %H:%i:%s') as time,type,content,modulename as moduleName
+        FROM tech_oper_log as log WHERE 1=1
+        <if test="logType!=null and logType!='' ">
+            AND log.type=#{logType}
+        </if>
+        <if test="logIdsArr!=null and logIdsArr.length>0">
+            AND log.log_id IN
+            <foreach item="item" index="index" collection="logIdsArr" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="getAllLogs" resultType="java.util.HashMap">
+        SELECT log.log_id as id,log.user_id as userId,DATE_FORMAT(log.time,'%Y-%m-%d %H:%i:%s') as time,log.modulename,log.content,log.type
+        FROM tech_oper_log as log ORDER BY log.log_id DESC;
+    </select>
+</mapper>

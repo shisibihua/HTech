@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: honghe:hservice_proxy_sdk:2.0.3-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/honghe/hservice_proxy_sdk/2.0.3-SNAPSHOT/hservice_proxy_sdk-2.0.3-20180523.105226-35.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/honghe/hservice_proxy_sdk/2.0.3-SNAPSHOT/hservice_proxy_sdk-2.0.3-20180523.105226-35-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/honghe/hservice_proxy_sdk/2.0.3-SNAPSHOT/hservice_proxy_sdk-2.0.3-20180523.105226-35-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

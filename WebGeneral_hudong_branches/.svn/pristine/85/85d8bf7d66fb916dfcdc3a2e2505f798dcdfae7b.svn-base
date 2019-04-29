@@ -1,0 +1,722 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.tech.dao.ActivityDao">
+    <!--将数据库返回数据转换为教学活动实体 added by xinqinggang 2018/01/29-->
+    <resultMap id="ActivityMap" type="com.honghe.tech.form.ActivityInfoForm">
+        <id column="activity_id" property="id" javaType="Integer"/>
+        <result column="name" property="name" javaType="String"/>
+        <result column="subject_id" property="subjectId" javaType="Integer"/>
+        <result column="subject_name" property="subjectName" javaType="String"/>
+        <result column="period_id" property="periodId" javaType="Integer"/>
+        <result column="period_name" property="periodName" javaType="String"/>
+        <result column="grade_id" property="gradeId" javaType="Integer"/>
+        <result column="grade_name" property="gradeName" javaType="String"/>
+        <result column="host_id" property="hostId" javaType="Integer"/>
+        <result column="host_name" property="hostName" javaType="String"/>
+        <result column="room_addr" property="areaAddr" javaType="String"/>
+        <result column="room_id" property="hostRoomId" javaType="Integer"/>
+        <result column="city" property="hostCityName" javaType="String"/>
+        <result column="county" property="hostCountyName" javaType="String"/>
+        <result column="school" property="hostSchoolName" javaType="String"/>
+        <result column="room_name" property="hostRoomName" javaType="String"/>
+        <result column="room_students" property="roomStudents" javaType="Integer"/>
+        <result column="uuid" property="uuid" javaType="String"/>
+        <result column="intro" property="intro" javaType="String"/>
+        <result column="user_id" property="userId" javaType="Integer"/>
+        <result column="start_time" property="startTime" javaType="java.util.Date"/>
+        <result column="end_time" property="endTime" javaType="java.util.Date"/>
+        <result column="spare_a" property="sectionId" javaType="String"/>
+    </resultMap>
+
+    <!--保存教学活动信息-->
+    <insert id="saveActivity" parameterType="com.honghe.tech.entity.Activity"  useGeneratedKeys="true" keyProperty="id">
+        insert into tech_activity (
+        name,activity_style_id,period_id,period_name,grade_id,grade_name,subject_id,subject_name,start_time,end_time,intro,
+        host_id,host_name,room_id,room_name,class_id,class_name,cloud_live,
+        uuid,mcu_id,mcu_ip,mcu_type,notice_time,notice_type,
+        send_email,send_message,status,invalid_remark,
+        user_id,is_del,room_addr,area_id,spare_a,spare_b,room_students
+        )VALUES (
+        #{name},#{activityStyleId},#{periodId},#{periodName},#{gradeId},#{gradeName},#{subjectId},#{subjectName},#{startTime},#{endTime},
+        #{intro},#{hostId},#{hostName},#{roomId},#{roomName},#{classId},#{className},#{cloudLive},#{uuid},#{mcuId},#{mcuIp},#{mcuType},#{noticeTime},#{noticeType},
+        #{sendEmail},#{sendMessage},#{status},#{invalidRemark},#{userId},#{isDel},#{roomAddr},
+        #{areaId},#{spareA},#{spareB},#{roomStudents}
+        );
+    </insert>
+
+    <!--根据活动id获取教学信息(仅限修改回填使用)-->
+    <select id="selectActivityById" parameterType="int" resultType="com.honghe.tech.entity.Activity">
+        select ac.activity_id AS id,ac.name AS name, ac.activity_style_id AS activityStyleId, ac.period_id as periodId,ac.period_name as periodName,
+        ac.grade_id AS gradeId, s.name AS name,
+        ac.start_time AS startTime,ac.end_time   AS endTime,ac.intro AS intro, ac.subject_id AS subjectId, ac.subject_name AS subjectName,
+        ac.host_id AS hostId,ac.room_name AS hostName, ac.room_id AS roomId, ac.room_name AS roomName,
+         ac.cloud_live AS cloudLive, ac.area_id AS areaId, ac.notice_type as noticeType, ac.spare_a AS spareA,ac.spare_b as spareB,
+        ac.uuid AS uuid, ac.mcu_id AS mcuId,ac.mcu_ip AS mcuIp, ac.mcu_type AS mcuType, ac.send_email AS sendEmail, ac.send_message AS sendMessage
+        from tech_activity ac
+        LEFT join
+        tech_subject s
+        on
+        ac.subject_id=s.subject_id
+        where
+        ac.activity_id=#{id}
+        AND
+        ac.is_del = 0;
+    </select>
+
+    <!--根据活动id获取教学信息(仅限修改回填使用)-->
+    <select id="selectActivityById2" parameterType="int" resultType="com.honghe.tech.entity.Activity">
+        select ac.activity_id AS id,ac.name AS name, ac.activity_style_id AS activityStyleId, ac.period_id as periodId,ac.period_name as periodName,
+        ac.grade_id AS gradeId,ac.grade_name as gradeName,
+        ac.start_time AS startTime,ac.end_time   AS endTime,ac.intro AS intro, ac.subject_id AS subjectId, ac.subject_name AS subjectName,
+        ac.host_id AS hostId,ac.host_name AS hostName, ac.room_id AS roomId, ac.room_name AS roomName,ac.room_addr as roomAddr,ac.room_students as roomStudents,
+        ac.cloud_live AS cloudLive, ac.area_id AS areaId, ac.notice_type as noticeType, ac.spare_a AS classtimeId,
+        ac.uuid AS uuid, ac.mcu_id AS mcuId,ac.mcu_ip AS mcuIp, ac.mcu_type AS mcuType, ac.send_email AS sendEmail, ac.send_message AS sendMessage,
+        a.province as provinceName,a.city as cityName,a.county as countyName,a.school as schoolName
+        from tech_activity ac
+        LEFT join
+        tech_area a
+        on
+        ac.area_id=a.area_id
+        where
+        ac.activity_id=#{id}
+        AND
+        ac.is_del = 0;
+    </select>
+
+    <!--根据活动id和其它参数修改教学活动信息-->
+    <update id="updateActivityByParam" parameterType="java.util.Map">
+        update tech_activity ac
+        <set>
+        <if test="name!=null">ac.name =#{name},</if>
+        <if test="gradeId!=null">ac.grade_id =#{gradeId},</if>
+        <if test="gradeName!=null">ac.grade_name =#{gradeName},</if>
+        <if test="periodId!=null">ac.period_id =#{periodId},</if>
+        <if test="periodName!=null">ac.period_name =#{periodName},</if>
+        <if test="subjectId!=null">ac.subject_id =#{subjectId},</if>
+        <if test="subjectName!=null">ac.subject_name =#{subjectName},</if>
+        <if test="intro!=null">ac.intro =#{intro},</if>
+        <if test="hostId!=null">ac.host_id =#{hostId},</if>
+        <if test="hostName!=null">ac.host_name =#{hostName},</if>
+        <if test="roomId!=null">ac.room_id =#{roomId},</if>
+        <if test="roomName!=null">ac.room_name =#{roomName},</if>
+        <if test="roomStudents!=null">ac.room_students =#{roomStudents},</if>
+        <if test="classId!=null">ac.class_id =#{classId},</if>
+        <if test="className!=null">ac.class_name =#{className},</if>
+        <if test="cloudLive!=null">ac.cloud_live =#{cloudLive},</if>
+        <if test="uuid!=null">ac.uuid =#{uuid},</if>
+        <if test="areaId!=null">ac.area_id =#{areaId},</if>
+        <if test="mcuId!=null">ac.mcu_id =#{mcuId},</if>
+        <if test="mcuIp!=null">ac.mcu_ip =#{mcuIp},</if>
+        <if test="mcuType!=null">ac.mcu_type =#{mcuType},</if>
+        <if test="sendEmail!=null">ac.send_email =#{sendEmail},</if>
+        <if test="sendMessage!=null">ac.send_message =#{sendMessage},</if>
+        <if test="noticeTime!=null">ac.notice_time =#{noticeTime},</if>
+        <if test="noticeType!=null">ac.notice_type =#{noticeType},</if>
+        <if test="status!=null">ac.status =#{status},</if>
+        <if test="userId!=null">ac.user_id =#{userId},</if>
+        <if test="roomAddr!=null">ac.room_addr =#{roomAddr},</if>
+        <if test="spareA!=null">ac.spare_a =#{spareA},</if>
+        <if test="spareB!=null">ac.spare_b =#{spareB},</if>
+        <if test="invalidRemark!=null">ac.invalid_remark =#{invalidRemark}</if>
+        </set>
+        where ac.activity_id=#{id}
+    </update>
+
+    <!--通过当天时间（格式：2018-01-01）查询教学活动列表-->
+    <select id="getActivitiesByDate" parameterType="String" resultType="com.honghe.tech.entity.Activity">
+        SELECT activity_id AS id,name AS name,activity_style_id AS activityStyleId,update_time AS updateTime,
+        subject_id AS subjectId,grade_id AS gradeId,host_id AS hostId,room_id AS roomId,room_name as roomName,class_id AS classId,
+        uuid AS uuid,intro AS intro,start_time AS startTime,end_time AS endTime,send_email AS sendEmail,send_message AS sendMessage,
+        mcu_id AS mcuId,mcu_type AS mcuType,cloud_live AS cloudLive,status AS status,invalid_remark AS invalidRemark,
+        user_id AS userId,notice_time AS noticeTime,spare_b as spareB FROM tech_activity WHERE start_time LIKE concat('%',#{nowDate},'%') AND is_del = 0
+        ORDER BY start_time ASC
+    </select>
+
+    <!--通过当天时间（格式：2018-01-01）查询教学活动列表-->
+    <select id="getActivitiesByDateAndRoomId" resultType="java.util.Map">
+        SELECT
+            a.activity_id,
+            a.name AS name,
+            a.activity_style_id,
+            a.update_time,
+            a.subject_id,
+            a.grade_id,
+            a.host_id,
+            a.room_id,
+            a.room_name,
+            a.class_id,
+            a.uuid AS uuid,
+            a.intro AS intro,
+            a.start_time,
+            a.end_time,
+            a.send_email,
+            a.send_message,
+            a.mcu_id,
+            a.mcu_type,
+            a.cloud_live,
+            a.status AS status,
+            a.invalid_remark,
+            a.user_id,
+            a.notice_time,
+            a.spare_b,
+            b.assist_teacher_id,
+            b.assist_teacher_name,
+            b.accept_room_id,
+            b.accept_room_name
+        FROM
+            tech_activity a
+        LEFT JOIN tech_assteach_r_activity b ON a.uuid = b.uuid
+        WHERE
+            a.start_time LIKE #{nowDate}
+        AND a.is_del = 0
+        AND (
+            a.room_id = #{roomId}
+            OR b.accept_room_id = #{roomId}
+        )
+        GROUP BY a.uuid ORDER BY a.start_time ASC
+    </select>
+
+    <select id="getMasterActivities" resultType="java.util.Map">
+        SELECT
+        a.activity_id,
+        a.name AS name,
+        a.activity_style_id,
+        a.update_time,
+        a.subject_id,
+        a.grade_id,
+        a.host_id,
+        a.room_id,
+        a.room_name,
+        a.class_id,
+        a.uuid AS uuid,
+        a.intro AS intro,
+        a.start_time,
+        a.end_time,
+        a.send_email,
+        a.send_message,
+        a.mcu_id,
+        a.mcu_type,
+        a.cloud_live,
+        a.status AS status,
+        a.invalid_remark,
+        a.user_id,
+        a.notice_time,
+        a.spare_b,
+        b.assist_teacher_id,
+        b.assist_teacher_name,
+        b.accept_room_id,
+        b.accept_room_name
+        FROM
+        tech_activity a
+        LEFT JOIN tech_assteach_r_activity b ON a.uuid = b.uuid
+        WHERE
+        a.start_time LIKE #{nowDate}
+        AND a.is_del = 0
+        AND a.room_id = #{roomId}
+        GROUP BY a.uuid ORDER BY a.start_time ASC
+    </select>
+
+    <!--通过整点时间（格式：2018-01-01 08:00）得到某时间点以后的教学活动-->
+    <select id="getActivitiesByTime" parameterType="java.util.Map" resultType="com.honghe.tech.entity.Activity">
+        SELECT activity_id AS id,name AS name,activity_style_id AS activityStyleId,update_time AS updateTime,
+        subject_id AS subjectId,grade_id AS gradeId,host_id AS hostId,room_id AS roomId,class_id AS classId,
+        uuid AS uuid,intro AS intro,start_time AS startTime,end_time AS endTime,send_email AS sendEmail,send_message AS sendMessage,
+        mcu_id AS mcuId,mcu_type AS mcuType,cloud_live AS cloudLive,status AS status,invalid_remark AS invalidRemark,
+        user_id AS userId,notice_time AS noticeTime FROM tech_activity WHERE start_time &gt;= #{startTime} AND is_del = 0
+        AND start_time LIKE concat('%',#{date},'%')
+    </select>
+
+    <!--删除教学活动（假删）-->
+    <update id="deleteActivity" parameterType="int">
+        UPDATE tech_activity SET is_del = 1 WHERE activity_id=#{id};
+    </update>
+
+    <!--根据教室id查询教学监管列表-->
+    <select id="teachingActivityListByPage" resultType="java.util.Map">
+        SELECT a.roomid,a.roomName,a.teacherName,a.areaId,a.activity_id,a.name,a.grade_name,
+        a.subject_name,a.host_name,a.room_id,DATE_FORMAT(a.start_time,'%Y-%m-%d %H:%i:%s') as start_time,
+        DATE_FORMAT(a.end_time,'%Y-%m-%d %H:%i:%s') as end_time,a.uuid
+        FROM
+        (
+            (
+                SELECT a.accept_room_id AS roomid,a.accept_room_name AS roomName,
+                        a.area_id AS areaId,a.assist_teacher_name as teacherName,b.*
+                FROM  tech_assteach_r_activity a
+                RIGHT JOIN tech_activity b ON a.uuid = b.uuid WHERE
+                a.accept_room_id IN
+                <if test="classRoomIdArr != null and classRoomIdArr.length >0">
+                    <foreach item="item" index="index" collection="classRoomIdArr" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                AND now() BETWEEN b.start_time AND b.end_time AND b.is_del = 0
+            )
+            UNION
+            (
+                SELECT c.room_id AS roomid,c.room_name AS roomName,c.area_id AS areaId,c.host_name as teacherName,c.*
+                FROM tech_activity c WHERE
+                c.room_id IN
+                <if test="classRoomIdArr != null and classRoomIdArr.length >0">
+                    <foreach item="item" index="index" collection="classRoomIdArr" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                AND now() BETWEEN c.start_time AND c.end_time AND c.is_del = 0
+            )
+        ) AS a
+        ORDER BY a.start_time asc
+        <if test="pageBool">
+            limit #{firstResult},#{pageSize}
+        </if>
+    </select>
+    <!--根据教室idArr查询正上课的教学活动列表-->
+    <select id="getTeachingActivityListByRoomIdArr" resultType="java.util.Map">
+        SELECT a.roomid,a.activity_id,a.name,a.grade_name,
+        a.subject_id,a.host_name,a.room_id,a.room_name,DATE_FORMAT(a.start_time,'%Y-%m-%d %H:%i:%s') as start_time,
+        DATE_FORMAT(a.end_time,'%Y-%m-%d %H:%i:%s') as end_time,a.uuid
+        FROM
+        (
+            (
+               SELECT a.accept_room_id AS roomid,b.*  FROM  tech_assteach_r_activity a
+               RIGHT JOIN tech_activity b ON a.uuid = b.uuid WHERE
+               a.accept_room_id IN
+                <if test="classRoomIdArr != null and classRoomIdArr.length >0">
+                    <foreach item="item" index="index" collection="classRoomIdArr" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+               AND now() BETWEEN b.start_time AND b.end_time AND b.is_del = 0
+            )
+            UNION
+            (
+                SELECT c.room_id AS roomid,c.* FROM tech_activity c WHERE
+                  c.room_id IN
+                    <if test="classRoomIdArr != null and classRoomIdArr.length >0">
+                        <foreach item="item" index="index" collection="classRoomIdArr" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                    </if>
+                AND now() BETWEEN c.start_time AND c.end_time AND c.is_del = 0
+            )
+        ) AS a
+    </select>
+    <!--查询正上课的教室ids-->
+    <select id="getTeachingActivityRoomIds" resultType="java.lang.String">
+        SELECT group_concat(a.roomid) as ids
+        FROM
+        (
+            (
+                SELECT a.accept_room_id AS roomid,b.*  FROM  tech_assteach_r_activity a
+                RIGHT JOIN tech_activity b ON a.uuid = b.uuid
+                WHERE now() BETWEEN b.start_time AND b.end_time AND b.is_del = 0
+            )
+            UNION
+            (
+                SELECT c.room_id AS roomid,c.* FROM tech_activity c
+                WHERE now() BETWEEN c.start_time AND c.end_time AND c.is_del = 0
+            )
+        ) AS a
+    </select>
+
+    <!--根据教室id查询主讲教学监管列表,首页直播-->
+    <select id="teachingActivityMasterListByPage" resultType="java.util.Map">
+        SELECT a.room_id AS roomid,a.room_name AS roomName,a.host_name as teacherName,
+        a.area_id AS areaId,a.activity_id,a.name,a.grade_name,
+        a.subject_name,a.host_name,a.room_id,DATE_FORMAT(a.start_time,'%Y-%m-%d %H:%i:%s') as start_time,
+        DATE_FORMAT(a.end_time,'%Y-%m-%d %H:%i:%s') as end_time,a.uuid
+        FROM tech_activity a WHERE
+        a.room_id IN
+        <if test="classRoomIdArr != null and classRoomIdArr.length >0">
+            <foreach item="item" index="index" collection="classRoomIdArr" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND now() BETWEEN a.start_time AND a.end_time AND a.is_del = 0
+        ORDER BY a.start_time asc
+        <if test="pageBool">
+            limit #{firstResult},#{pageSize}
+        </if>
+    </select>
+    <!--根据教学活动id、uuid分页查询一拖三教学监管-->
+    <select id="techingListByUuidByPage" resultType="java.util.Map">
+        select activityId,activityName,teacherName,classRoomId,classRoomName,
+        DATE_FORMAT(startTime,'%Y-%m-%d %H:%i:%s') as startTime,
+        DATE_FORMAT(endTime,'%Y-%m-%d %H:%i:%s') as endTime,areaId
+        FROM
+        (
+            (
+                SELECT DISTINCT
+                act.activity_id as activityId,
+                act.name as activityName,
+                act.host_name as teacherName,
+                act.room_id as classRoomId,
+                act.room_name as classRoomName,
+                act.start_time as startTime,
+                act.end_time as endTime,
+                act.area_id as areaId
+                FROM
+                tech_activity act
+                LEFT JOIN tech_assteach_r_activity ass ON act.uuid = ass.uuid
+                WHERE
+                act.uuid = #{uuid} AND act.is_del=0
+            )
+            UNION
+            (
+                SELECT DISTINCT act.activity_id,
+                act.name,
+                ass.assist_teacher_name,
+                ass.accept_room_id,
+                ass.accept_room_name,
+                act.start_time,
+                act.end_time,
+                ass.area_id
+                FROM
+                tech_assteach_r_activity ass
+                RIGHT JOIN tech_activity act ON act.uuid = ass.uuid
+                WHERE
+                ass.uuid = #{uuid} and act.is_del=0
+            )
+        )as activity
+        <if test="pageBool">
+            limit #{firstResult},#{pageSize}
+        </if>
+    </select>
+
+    <!--根据教室id获取月中某时间段内每天的活动总数 added by xinqinggang 2018/02/01-->
+    <select id="selectDayActivityNumByTime" parameterType="java.util.Map" resultType="java.util.Map">
+        select DATE_FORMAT(ac.start_time,'%Y-%m-%d') as dayNum,count(*) as acitivityNum  FROM tech_activity ac  where ac.is_del=0  and ac.start_time BETWEEN #{startTime} AND #{endTime} and ac.room_addr like #{roomAddr} GROUP BY DATE_FORMAT (ac.start_time, '%Y-%m-%d');
+    </select>
+
+    <!--根据教室id获取某天所有课程信息 added by xinqinggang 2018/02/01-->
+    <select id="selectActivityByRoomIdAndTime" parameterType="java.util.Map" resultMap="ActivityMap">
+        select ac.activity_id,ac.name,ac.subject_id,ac.grade_id,ac.host_id,ac.host_name,ac.room_id,ac.uuid,ac.intro,ac.start_time,ac.end_time,ar.city,ar.county,ar.school FROM tech_activity ac LEFT join tech_area ar on ac.area_id=ar.area_id  where ac.is_del=0  and TO_DAYS(ac.start_time)=TO_DAYS(#{dateTime}) and ac.room_addr like #{roomAddr} order by ac.start_time asc;
+    </select>
+
+    <!--根据教室id获取今天预告课程信息 added by xinqinggang 2018/02/01-->
+    <select id="selectPreActivityByRoomId" parameterType="java.lang.Integer" resultMap="ActivityMap">
+        select ac.activity_id,ac.name,ar.city,ar.county,ar.school,ac.room_id,ac.room_name,ac.host_name,ac.start_time,ac.end_time FROM tech_activity ac LEFT join tech_area ar on ac.area_id=ar.area_id where ac.is_del=0 and ac.room_id = #{roomId} and ac.end_time>=now() and TO_DAYS(ac.start_time)=TO_DAYS(now()) ORDER by ac.start_time asc;
+    </select>
+
+<!--获取时间段内拥有活动的主讲教室总数 added by xinqinggang 2018/02/03-->
+    <select id="selectRoomTotalNum" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(DISTINCT ac.room_id)   FROM tech_activity ac
+        where ac.is_del=0 and ac.activity_style_id=1
+        and ac.start_time &lt;=#{endTime} and ac.end_time &gt;#{startTime}
+        <if test="activityName!=null"> and ac.name like #{activityName}</if>
+        <if test="roomAddr!=null"> and ac.room_addr like #{roomAddr}</if>;
+    </select>
+
+    <update id="updateActivityStatus" parameterType="java.util.Map">
+        update tech_activity ac where ac.status=1 where ac.end_time &lt;=now() where
+        ac.start_time BETWEEN #{startTime} AND #{endTime} AND ac.room_addr LIKE #{roomAddr} and ac.id_del=0;
+    </update>
+
+    <!--通过时间信息，地点id得到课时数，用于统计  李卓远  2018-02-02-->
+    <select id="getStatisticalQuantityOfCity" parameterType="java.util.Map" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM tech_activity
+        WHERE is_del=0
+            <if test="startTime != null and startTime!=''">
+                AND start_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime!=''">
+                AND start_time &lt;= #{endTime}
+            </if>
+            <if test='cityOrCountyOrSchool=="city"'>
+                AND room_addr LIKE "%-"#{placeId}"-%"
+            </if>
+            <if test='cityOrCountyOrSchool=="county"'>
+                AND room_addr LIKE "%-%-"#{placeId}"-%"
+            </if>
+            <if test='cityOrCountyOrSchool=="school"'>
+                AND room_addr LIKE "%-%-%-"#{placeId}
+            </if>
+    </select>
+
+    <!--获得老师课时数统计  李卓远 2018-02-06-->
+    <select id="getTeacherOfStatistics" parameterType="java.util.Map" resultType="java.util.HashMap">
+        SELECT host_id AS hostId, area_id AS areaId, host_name AS hostName, count(*) AS num FROM tech_activity
+        WHERE is_del=0
+            <if test="startTime != null and startTime!=''">
+                AND start_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime!=''">
+                AND start_time &lt;= #{endTime}
+            </if>
+        GROUP BY host_id
+    </select>
+
+    <!--获得学科课时数统计  李卓远 2018-02-06-->
+    <select id="getSubjectOfStatistics" parameterType="java.util.Map" resultType="java.util.HashMap">
+        SELECT ac.subject_id AS subjectId,CONCAT(per.name,subject_name) AS subjectName, count(1) AS num FROM tech_activity ac
+        LEFT JOIN tech_period per ON per.period_id=ac.period_id
+        WHERE ac.is_del=0
+            <if test="startTime != null and startTime!=''">
+                AND ac.start_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime!=''">
+                AND ac.start_time &lt;= #{endTime}
+            </if>
+        GROUP BY ac.subject_id
+    </select>
+
+    <!--周课表 部分-->
+    <!-- 根据主讲教室地址查询主讲教室课程名称-->
+    <select id="getActivityNameByRoomAddr" parameterType="java.util.Map" resultMap="ActivityMap">
+        select ac.spare_a ,ac.activity_id ,ac.name,ac.start_time,ac.end_time from tech_activity ac where ac.is_del=0
+  <if test="roomId!=null">and ac.room_id=#{roomId}</if>
+        and ac.start_time BETWEEN #{startTime} AND #{endTime} AND ac.room_addr like #{roomAddr};
+    </select>
+
+    <!-- 根据主讲教师id查看课称名称-->
+    <select id="getActivityNameByTeacherId" parameterType="java.util.Map" resultMap="ActivityMap">
+        select ac.spare_a , ac.activity_id ,ac.name,ac.start_time,ac.end_time from tech_activity ac where
+        ac.start_time BETWEEN #{startTime} AND #{endTime} and ac.host_id=#{teacherId} and ac.is_del=0;
+    </select>
+
+
+    <!--首页部分-->
+    <!-- 根据地点id串查询主讲教室课程数量-->
+    <select id="getTotalHostCourseCase" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(activity_id) as hostCourseNum from tech_activity ac WHERE ac.room_addr LIKE #{areaAddr}
+        <!-- 计算学期主讲课堂总数-->
+        <if test="startTermTime!=null">and ac.start_time BETWEEN #{startTermTime} and #{endTermTime} </if>
+        <!-- 计算本周主讲课堂总数-->
+        <if test="weekTotalCourse!=null">and YEARWEEK(DATE_FORMAT(ac.start_time,'%Y-%m-%d')-INTERVAL 1 DAY)=YEARWEEK(now()-INTERVAL 1 DAY)</if>
+        <!-- 计算本周已授课堂总数-->
+        <if test="weekHasDoneCourse!=null">and ac.end_time &lt;=now()</if>
+        <!-- 计算本周应授课堂总数-->
+        <if test="weekDoneCourse!=null">and ac.end_time &lt;DATE_ADD(str_to_date(DATE_FORMAT(NOW(),'%Y-%m-%d'),'%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY) </if>
+        AND ac.is_del=0;
+    </select>
+
+    <!-- 学期主讲教室教室数量-->
+    <select id="selectHostTeacherNum" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(DISTINCT ac.host_id) from tech_activity ac where ac.start_time BETWEEN #{startTime} and #{endTime} and ac.room_addr like #{roomAddr} and ac.is_del=0;
+    </select>
+
+    <!-- 学期收益学生数量-->
+    <select id="selectAllStudentsNum" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT sum(s.students) as students FROM
+        (
+            (
+                SELECT
+                    IFNULL(sum(ac.room_students),0) AS students
+                FROM
+                    tech_activity ac
+                where ac.start_time BETWEEN #{startTime} and #{endTime} and ac.room_addr like #{roomAddr} and ac.is_del=0
+            )
+            UNION
+            (
+                SELECT
+                    IFNULL(sum(ass.room_students),0) AS students
+                FROM
+                    tech_activity ac
+                RIGHT JOIN tech_assteach_r_activity ass ON ac.uuid = ass.uuid
+                where ac.start_time BETWEEN #{startTime} and #{endTime} and ac.room_addr like #{roomAddr} and ac.is_del=0
+            )
+        ) AS s;
+    </select>
+
+    <!-- 查询活动信息-->
+    <!--根据地址id串查询时间内教学活动信息(支持教学活动名称查询)  added by xinqinggang 2018/02/02-->
+    <select id="selectAcInfosByRoomAddr" parameterType="java.util.Map" resultMap="ActivityMap">
+        select ac.activity_id,ac.name,ac.subject_id,ac.subject_name,ac.grade_id,ac.grade_name,ac.host_id,ac.host_name,ac.room_id,ar.city as city,ar.county,
+        ar.school as school,ac.room_name,ac.room_students,ac.uuid,ac.intro,ac.start_time,ac.end_time,ac.room_addr
+        from tech_activity ac LEFT JOIN tech_area ar on ac.area_id=ar.area_id
+         where ac.start_time &lt; #{endTime} and ac.end_time &gt; #{startTime}
+        <if test="activityName!=null"> and lower(ac.name) like lower(#{activityName})</if>
+          <if test="areaIds!=null"> and ac.room_addr like #{areaIds}</if>
+          and ac.activity_style_id=1 AND ac.is_del=0 order by ac.room_id asc,ac.status asc,ac.start_time asc;
+    </select>
+
+    <!--按条件查询活动信息记录 added by xinqinggang 2018/01/31-->
+    <select id="selectActivityInfoByParam" parameterType="java.util.Map" resultMap="ActivityMap">
+        select ac.activity_id,ac.name,ac.subject_id,ac.subject_name,ac.grade_id,ac.grade_name,ac.host_id,ac.host_name,ac.room_id,
+        ac.room_name,ac.uuid,ac.intro,ac.start_time,ac.end_time,ac.intro,ac.user_id,ar.city,ar.county,ar.school
+        from tech_activity ac LEFT JOIN tech_area ar on ac.area_id=ar.area_id where ac.is_del=0
+        <if test="id!=null">And ac.activity_id=#{id}</if>
+        <if test="name!=null">And ac.name=#{name}</if>
+        <if test="gradeId!=null">And ac.grade_id=#{gradeId}</if>
+        <if test="subjectId!=null">And ac.subject_id=#{subjectId}</if>
+        <if test="hostId!=null">And ac.host_id=#{hostId}</if>
+        <if test="roomId!=null">And ac.room_id=#{roomId}</if>
+        order by ac.update_time asc;
+    </select>
+
+    <!--根据活动id查询本周内的活动信息 added by xinqinggang 2018/02/01-->
+    <select id="selectAcInfoDuringWeekByAcId" parameterType="java.util.Map" resultMap="ActivityMap">
+        select ac.activity_id FROM tech_activity ac  where ac.is_del=0 and ac.activity_id = #{id} and YEARWEEK(DATE_FORMAT(ac.start_time,'%Y-%m-%d'),1)=YEARWEEK(now(),1);
+    </select>
+
+    <!--修改-->
+    <!--修改活动状态-->
+    <update id="updateAcStatus" parameterType="java.util.Map">
+        update tech_activity ac set ac.status=1 where 1=1
+        <if test="startTime!=null">and ac.start_time &gt; #{startTime}</if>
+        <if test="endTime!=null">and ac.end_time &lt;=now() </if>
+        <if test="areaIds!=null">and ac.room_addr LIKE #{areaIds}</if>
+        and ac.is_del=0 and ac.status=0;
+    </update>
+
+    <select id="getLectTeacherList" resultType="java.util.Map">
+        SELECT ac.host_id as hostId,ac.host_name as hostName,
+        area.city,area.county,area.school
+        FROM tech_activity ac
+        LEFT JOIN tech_area area ON ac.area_id=area.area_id
+        where ac.activity_id=#{activityId} AND ac.is_del=0
+    </select>
+
+    <select id="getCourseTodayListByTime" resultType="java.util.Map">
+        SELECT DISTINCT ac.activity_id as activityId,
+        DATE_FORMAT(ac.start_time,'%Y-%m-%d %H:%i:%s') as startTime,
+        DATE_FORMAT(ac.end_time,'%Y-%m-%d %H:%i:%s') as endTime,
+        DATE_FORMAT(ac.start_time,'%H:%i') as start_time,
+        DATE_FORMAT(ac.end_time,'%H:%i') as end_time,
+        ac.name as name
+        FROM tech_activity as ac LEFT JOIN tech_assteach_r_activity ass ON ac.uuid=ass.uuid
+        WHERE ac.start_time>=#{startTime} AND ac.end_time&lt;=#{endTime} AND ac.room_id=#{roomId} AND ac.is_del=0
+        ORDER BY ac.start_time asc;
+    </select>
+
+    <select id="getLectCourseListByTime" resultType="java.util.Map">
+        SELECT DISTINCT ac.activity_id as activityId,ac.name as activityName,
+        ac.grade_id as gradeId,ac.grade_name as gradeName,
+        ac.subject_id as subjectId,ac.subject_name as subjectName,
+        ac.host_id as teacherId,ac.host_name as teacherName,
+        DATE_FORMAT(ac.start_time,'%H:%i') as start_time,
+        DATE_FORMAT(ac.end_time,'%H:%i') as end_time
+        FROM tech_activity as ac
+        WHERE ac.start_time&lt;=#{time} AND ac.end_time>=#{time} AND ac.room_id=#{roomId} AND ac.is_del=0
+        ORDER BY ac.start_time asc;
+    </select>
+
+    <select id="getRoomListByUuid" resultType="java.util.Map">
+        SELECT uuid,roomId,roomName,school
+        FROM
+        (
+            (
+            SELECT DISTINCT
+                ac.uuid AS uuid,
+                ac.room_id AS roomId,
+                ac.room_name AS roomName,
+                area.school
+            FROM
+                tech_activity AS ac
+            LEFT JOIN tech_assteach_r_activity AS ass ON ac.uuid = ass.uuid
+            LEFT JOIN tech_area as area ON area.area_id=ac.area_id
+            WHERE
+              ac.uuid = #{uuid} AND ac.is_del=0
+            )
+            UNION
+            (
+            SELECT DISTINCT
+                ass.uuid,
+                ass.accept_room_id,
+                ass.accept_room_name,
+                area.school
+            FROM
+                tech_assteach_r_activity as ass
+                LEFT JOIN tech_area as area ON area.area_id=ass.area_id
+            WHERE
+              ass.uuid = #{uuid}
+            )
+        )as room
+    </select>
+
+    <!--查询一个小时之后的所有的活动 -->
+    <select id="selectAcAfterHour" resultType="java.util.Map">
+        SELECT  ac.activity_id as activityId,DATE_FORMAT(ac.start_time,'%Y-%m-%d') as startDate,DATE_FORMAT(ac.end_time,'%Y-%m-%d') as endDate,ac.spare_a as classtimeId
+        FROM tech_activity ac where ac.start_time>DATE_ADD(now(),INTERVAL 6 MINUTE) and ac.is_del=0;
+    </select>
+
+    <!--查询时间内的所有教学活动信息 -->
+    <select id="selectAcDuringTime" resultType="java.util.Map">
+        SELECT  ac.activity_id as activityId,DATE_FORMAT(ac.start_time,'%Y-%m-%d') as startDate,DATE_FORMAT(ac.end_time,'%Y-%m-%d') as endDate,ac.spare_a as classtimeId
+        FROM tech_activity ac where ac.start_time &lt; #{endTime}  and ac.end_time &gt;=#{startTime} and ac.is_del=0;
+    </select>
+
+    <!--同步活动作息时间 -->
+    <update id="sysnAcClasstime" parameterType="java.util.Map">
+        update tech_activity set start_time=#{startTime},end_time=#{endTime} where activity_id=#{activityId};
+    </update>
+
+    <!--同步活动作息时间 -->
+    <update id="updateNoticeTimeByAcId" parameterType="java.util.Map">
+        update tech_activity set notice_time=#{noticeTime} where activity_id=#{activityId};
+    </update>
+
+    <!--根据通知时间查询活动 -->
+    <select id="selectAcByNoticeTime"   resultType="java.util.Map">
+        SELECT  ac.activity_id as activityId,ac.host_id as hostId,ac.name as name,DATE_FORMAT(ac.start_time,'%Y-%m-%d %H:%i') as startDate,DATE_FORMAT(ac.end_time,'%Y-%m-%d %H:%i') as endDate,ac.send_email as sendEmail,ac.send_message as sendMessage,ac.notice_type as noticeType,ac.uuid as uuid
+        FROM tech_activity ac where DATE_FORMAT(ac.notice_time,'%Y-%m-%d %H:%i') = DATE_FORMAT(now(),'%Y-%m-%d %H:%i') and (ac.send_email=1 or ac.send_message=1) and ac.is_del=0;
+    </select>
+
+    <!--&lt;!&ndash;根据教室、课节和时间查询活动 &ndash;&gt;-->
+    <select id="selectAcByClassTime"  parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT  ac.activity_id as activityId,ac.name as name,ac.room_id as roomId,ac.room_name as roomName,ac.host_id as teacherId,ac.host_name as hostName,ass.accept_room_id as acceptRoomId,ass.accept_room_name as acceptRoomName,ac.uuid as uuid,ass.assist_teacher_id as assistTeacherId,ass.assist_teacher_name as assistTeacherName
+        FROM tech_activity ac RIGHT JOIN tech_assteach_r_activity ass on ac.uuid=ass.uuid
+        where ac.start_time &lt;=#{endTime} and ac.end_time &gt;= #{startTime}
+        <if test="activityId!=null">and ac.activity_id!=#{activityId}</if>
+        and ac.spare_a=#{classtimeId} and ac.is_del=0;
+    </select>
+
+    <!-- 优化统计部分-->
+    <!-- 根据地点分组查询课程数量 -->
+    <select id="getAcCountByAreaGroup" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT ar.city,ar.county,ar.school,area.area.areaId,area.num from
+        (
+        SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(room_addr,'-',#{num}),'-',-1) as areaId,count(*) as num,area_id as areaNode  from tech_activity
+        WHERE 1=1
+        <if test="startTime!=null"> and start_time &gt;= #{startTime}</if>
+        <if test="endTime!=null">and end_time &lt;=#{endTime}</if>
+         and is_del=0
+        GROUP BY SUBSTRING_INDEX(room_addr,'-',#{num}) ORDER by num desc limit 0,10)
+        as area LEFT JOIN tech_area ar on area.areaNode=ar.area_id;
+    </select>
+
+    <select id="getOverdueActivityId"  parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT group_concat(activity_id) as activityId
+        FROM tech_activity ac
+        where ac.end_time &lt; #{date} and ac.is_del=0;
+    </select>
+
+    <select id="getConfID" resultType="java.lang.String">
+        select spare_b as confID from tech_activity where name=#{name} and start_time=#{startTime} and end_time=#{endTime} and is_del=0 and room_id=#{roomId}
+    </select>
+
+    <select id="getWeekTotalHour" resultType="java.lang.String">
+        SELECT
+          count(DISTINCT ac.activity_id) AS weekTotal
+        FROM
+          tech_activity ac
+        LEFT JOIN
+        tech_assteach_r_activity ass
+        ON ac.uuid = ass.uuid
+        WHERE
+            CONCAT(
+            ac.name,
+            '-',
+            ac.host_id,
+            '-',
+            ac.room_id,
+            '-',
+            ac.subject_id,
+            '-',
+            ac.grade_id
+            ) IN (#{activityInfo})
+            AND ac.start_time > #{startTime}
+            AND ac.end_time &lt; #{endTime}
+            AND ac.is_del = 0
+            AND CONCAT(
+            accept_room_id,
+            '-',
+            assist_teacher_id
+            ) IN
+                <if test="assActivityInfoArr != null and assActivityInfoArr.length >0">
+                    <foreach item="item" index="index" collection="assActivityInfoArr" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+    </select>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.tech.dao.SubjectDao">
+       <!--根据学科id查询学科名称-->
+       <select id="selectSubNameById" parameterType="int" resultType="java.lang.String">
+              select s.name from tech_subject s where s.subject_id=#{id};
+       </select>
+       <!--根据学科id查询学科名称-->
+       <select id="selectSubById" parameterType="int" resultType="java.util.Map">
+              select s.subject_id as subId,s.name,s.period_id as periodId,p.name as periodName from tech_subject s
+              LEFT  join tech_period p on p.period_id=s.period_id where s.subject_id=#{id};
+       </select>
+
+       <!--根据学段id查询所有学科-->
+       <select id="selectAllSubByPeriodId"  parameterType="java.lang.Integer"  resultType="com.honghe.tech.entity.Subject">
+              select s.subject_id as id,s.name from tech_subject s WHERE s.period_id=#{periodId};
+       </select>
+
+       <!--根据学段id及名称查询学科-->
+       <select id="selectSubByPeriodIdAndName"    resultType="com.honghe.tech.entity.Subject">
+              select s.subject_id as id,s.name from tech_subject s WHERE s.period_id=#{periodId} and s.name=#{name};
+       </select>
+
+       <!--根据参数查询学科-->
+       <select id="selectAllSubByParam" parameterType="java.util.Map" resultType="java.util.Map">
+              select s.subject_id as subjectId,s.name,s.period_id as periodId from tech_subject s where 1=1
+              <if test="periodId!=null"> and s.period_id=#{periodId}</if>;
+       </select>
+
+       <!--根据参数保存学科信息-->
+       <insert id="saveSubject" parameterType="java.util.Map">
+              insert into tech_subject (name,period_id) VALUES (#{name},#{periodId});
+       </insert>
+
+       <!--根据修改保存学科信息-->
+       <update id="updateSubject" parameterType="java.util.Map">
+              update tech_subject set name=#{name},period_id=#{periodId} where subject_id=#{subId};
+       </update>
+
+       <!--根据学科id删除学科信息-->
+       <delete id="deleteSubjectBySubjectId" parameterType="java.lang.Integer">
+              delete from  tech_subject  where subject_id=#{subjectId};
+       </delete>
+</mapper>
+

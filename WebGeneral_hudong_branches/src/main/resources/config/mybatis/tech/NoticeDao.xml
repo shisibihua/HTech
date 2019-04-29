@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.tech.dao.NoticeDao">
+
+    <insert id="saveNotice" parameterType="java.util.List" useGeneratedKeys="true">
+        insert into tech_notice (user_id,content,name,pub_user_id,status,pub_time,type,activity_id)
+        values
+            <foreach item="item" index="index" collection="list"  separator=",">
+                (#{item.userId},#{item.content},#{item.name},#{item.pubUserId},
+                #{item.status},#{item.pubTime},#{item.type},#{item.activityId})
+            </foreach>
+    </insert>
+
+    <update id="changeNoticeStatus">
+        update tech_notice set status=1 where user_id=#{userId}
+        <if test="noticeIdArr != null and noticeIdArr.length >0">
+            and notice_id in
+            <foreach item="item" index="index" collection="noticeIdArr" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+
+    <select id="noticeListByPage" resultType="java.util.Map">
+        SELECT DISTINCT nt.notice_id as id,nt.user_id as userId,nt.content as content,
+        nt.name as name,DATE_FORMAT(nt.pub_time,'%Y-%m-%d %H:%i') as pubTime,nt.pub_user_id as pubUserId,nt.status as status,
+        nt.type as type,nt.activity_id as activityId
+        from tech_notice nt
+        where 1=1
+         <if test="userId!=null and userId.length>0">
+           and nt.user_id=#{userId}
+         </if>
+        ORDER BY nt.pub_time desc
+        <if test="pageBool">
+            limit #{firstResult},#{pageSize}
+        </if>
+    </select>
+
+    <select id="unReadNoticeNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) as num from tech_notice as notice WHERE notice.status=0
+        <if test="userId!=null and userId.length>0">
+            AND notice.user_id=#{userId}
+        </if>
+    </select>
+    <delete id="deleteOverdueNotices">
+        DELETE FROM tech_notice WHERE activity_id IN
+        <foreach item="item" index="index" collection="activityIdsArr" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteNoticeByActivityId" parameterType="java.lang.Integer">
+        DELETE FROM tech_notice WHERE activity_id=#{activityId}
+    </delete>
+</mapper>

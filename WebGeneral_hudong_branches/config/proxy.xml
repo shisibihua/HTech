@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy>
+    <!-- 注册服务地址 -->
+    <registry></registry>
+    <services>
+        <service>
+            <name>user</name>
+            <url>http://localhost:8770/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>ad</name>
+            <url>http://localhost:8770/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>deviceConnectionCommand</name>
+            <url>http://localhost:8770/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>curriculum</name>
+            <url>http://localhost:8770/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>interactiveTeachingCommand</name>
+            <url>http://localhost:8770/service/cloud/httpCommandService</url>
+        </service>
+
+        <service>
+            <name>area</name>
+            <url>http://localhost:8770/service/cloud/httpCommandService</url>
+        </service>
+
+        <service>
+            <name>notify</name>
+            <url>http://localhost:8770/service/cloud/httpCommandService</url>
+        </service>
+    </services>
+</proxy>

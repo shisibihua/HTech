@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.tech.dao.TermDao">
+       <!--<resultMap id="TermMap" type="java.util.Map">-->
+              <!--<id column="term_id" property="termId" javaType="Integer"/>-->
+              <!--<result column="schoolyear_id" property="schoolYearId" javaType="Integer"/>-->
+              <!--<result column="schoolyearName" property="schoolYearName" javaType="String"/>-->
+              <!--<result column="name" property="name" javaType="String"/>-->
+              <!--<result column="status" property="status" javaType="Integer"/>-->
+              <!--<result column="create_time" property="createTime" javaType="String"/>-->
+              <!--<result column="create_user_id" property="userId" javaType="Integer"/>-->
+              <!--<result column="update_time" property="updateTime" javaType="String"/>-->
+              <!--<result column="startdate" property="startDate" javaType="String"/>-->
+              <!--<result column="enddate" property="endDate" javaType="String"/>-->
+              <!--<result column="type" property="type" javaType="Integer"/>-->
+       <!--</resultMap>-->
+       <!-- 根据参数查询学期或假期信息 -->
+       <select id="findInfoByParam"  parameterType="java.util.Map" resultType="java.util.Map">
+              select t.term_id as termId,s.name as schoolyearName,t.name,t.status,
+              t.create_user_id as createUserId,DATE_FORMAT(t.startdate,'%Y-%m-%d') as startDate,DATE_FORMAT(t.enddate,'%Y-%m-%d') as endDate,t.type
+              from cur_term AS t  left JOIN tech_schoolyear s on t.schoolyear_id=s.schoolyear_id  where t.type=#{type}
+              <if test="name!=null">and t.name=#{name}</if>
+              <if test="status!=null">and t.status=#{status}</if>
+              <if test="endDate!=null"> and t.startdate &lt;#{endDate}</if>
+              <if test="startDate!=null">and t.enddate &gt;#{startDate}</if>
+              <if test="schoolyearId!=null">and t.schoolyear_id=#{schoolyearId}</if>
+              order by t.startdate desc
+              <!--<if test="beginNum!=null"> limit #{beginNum},#{size}</if>-->
+       </select>
+
+       <!-- 根据id查询学期或假期信息 -->
+       <select id="findInfoById"  parameterType="java.lang.Integer"  resultType="java.util.Map">
+              select t.term_id as termId,s.name  as schoolyearName,t.name as name,t.status as status,
+              t.create_user_id as createUserId,t.startdate as startDate,t.enddate as endDate,t.type as type
+              from cur_term AS t left JOIN tech_schoolyear s on t.schoolyear_id=s.schoolyear_id  where t.term_id=#{id}
+       </select>
+
+       <!-- 根据学年id查询学期信息 -->
+       <select id="findInfoBySchoolyearId"  parameterType="java.lang.String" resultType="java.util.Map">
+              select t.term_id as termId,t.name,t.status,t.startdate as startDate,t.enddate as endDate
+              from cur_term AS t where t.schoolyear_id=#{schoolyearId} and t.type=1 ORDER by t.startdate;
+       </select>
+
+       <!-- 根据参数查询信息数量-->
+       <select id="findInfoNumByParam"  parameterType="java.util.Map" resultType="java.lang.Integer">
+              select count(*) as count from cur_term AS t  where t.type=#{type}
+       </select>
+
+       <!-- 获取现在正在使用的学期-->
+       <select id="findTermUsing"   resultType="java.util.Map">
+               select t.term_id as termId,t.name,t.status,t.startdate as startDate,t.enddate as endDate
+              from cur_term AS t where  now() BETWEEN t.startdate and t.enddate and t.type=1 and t.status=1; ;
+       </select>
+
+       <!-- 保存学期或假期信息 -->
+       <insert id="saveInfo" parameterType="java.util.Map" >
+              insert into cur_term (schoolyear_id,name,status,create_time,create_user_id,startdate,enddate,type)
+              VALUES
+              (
+              #{schoolyearId},#{name},0,now(),#{userId},#{startDate},#{endDate},#{type}
+              );
+       </insert>
+
+       <!-- 修改学期或假期信息 -->
+       <update id="updateInfo" parameterType="java.util.Map">
+              update cur_term SET schoolyear_Id=#{schoolyearId},name=#{name},status=#{status},startdate=#{startDate},enddate=#{endDate},type=#{type} where term_id=#{termId};
+       </update>
+
+       <!-- 修改学期或假期信息状态 -->
+       <update id="updateInfoStatus" parameterType="java.util.Map">
+              update cur_term SET status=#{status} where term_id=#{id};
+       </update>
+
+       <!-- 删除学期或假期信息 -->
+       <delete id="deleteInfoById" parameterType="java.lang.Integer">
+              DELETE from cur_term  where term_id=#{id};
+       </delete>
+</mapper>

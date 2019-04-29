@@ -1,0 +1,23 @@
+#
+#Fri Jun 08 16:43:35 CST 2018
+com.honghe.tech.service.impl.UserCheckServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.TechCommand=org.springframework.stereotype.Component,com.honghe.spring.Command
+com.honghe.tech.service.impl.StatisticsServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.service.impl.SubjectServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.httpservice.impl.UserHttpServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.service.impl.ClasstimeServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.httpservice.impl.AreaHttpServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.listener.StartupInitialize=org.springframework.stereotype.Component
+com.honghe.tech.service.impl.TeachingSupervisionServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.service.impl.CommentServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.service.impl.ScheduleServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.service.impl.ActivityServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.service.impl.NoticeServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.service.impl.ActivityStyleServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.httpservice.impl.DeviceHttpServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.service.impl.TermServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.httpservice.impl.NoticeHttpServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.service.impl.OperLogServiceImpl=org.springframework.stereotype.Component
+com.honghe.tech.util.SensitiveWordInit=org.springframework.stereotype.Component
+com.honghe.tech.listener.BackUpLogListener=org.springframework.stereotype.Component
+com.honghe.tech.httpservice.impl.AdHttpServiceImpl=org.springframework.stereotype.Component

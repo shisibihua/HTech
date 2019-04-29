@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.tech.dao.CommentDao">
+    <!--将数据库返回数据转换为评论实体 add by caoqian-->
+    <resultMap id="CommentMap" type="com.honghe.tech.entity.Comment">
+        <id column="comment_id" property="commentId" javaType="Integer"/>
+        <result column="user_id" property="commentUserId" javaType="Integer"/>
+        <result column="activity_id" property="activityId" javaType="Integer"/>
+        <result column="visible" property="visible" javaType="Integer"/>
+        <result column="replay_id" property="replayId" javaType="Integer"/>
+        <result column="content" property="content" javaType="String"/>
+        <result column="update_time" property="updateTime" javaType="Date"/>
+    </resultMap>
+    <insert id="saveComment" parameterType="com.honghe.tech.entity.Comment" useGeneratedKeys="true"  keyProperty="commentId">
+        insert into tech_comment (comment_id,user_id,content,update_time,activity_id,replay_id,visible)
+        values(#{commentId,jdbcType=INTEGER},#{commentUserId,jdbcType=INTEGER},#{content,jdbcType=VARCHAR},
+        #{updateTime,jdbcType=TIMESTAMP},#{activityId,jdbcType=INTEGER},#{replayId,jdbcType=INTEGER},#{visible,jdbcType=INTEGER})
+    </insert>
+
+    <delete id="deleteCommentByCondition">
+        delete from tech_comment where
+        <if test="userId==1">
+            <if test="replayId==0">
+                comment_id=#{commentId} OR replay_id=#{commentId}
+            </if>
+            <if test="replayId!=0">
+               comment_id=#{commentId} AND replay_id=#{replayId}
+            </if>
+        </if>
+        <if test="userId!=1">
+            <if test="replayId==0">
+                <if test="flag">
+                    comment_id=#{commentId} OR replay_id=#{commentId}
+                </if>
+            </if>
+            <if test="replayId!=0">
+                comment_id=#{commentId} AND user_id=#{userId} AND replay_id=#{replayId}
+            </if>
+        </if>
+    </delete>
+
+
+    <select id="commentListByPage" resultType="java.util.Map">
+        SELECT DISTINCT ct.comment_id,ct.user_id,ct.content,ct.update_time,
+        ct.activity_id,ct.replay_id,ct.visible,ct.spare_a,ct.spare_b
+        from tech_comment ct
+        left join tech_live_stream ls on ct.activity_id =  ls.activity_id
+        where ct.activity_id=#{activityId} and ct.replay_id=0
+        ORDER BY ct.update_time desc
+        <if test="pageBool">
+            limit #{firstResult},#{pageSize}
+        </if>
+    </select>
+
+    <!--根据评论id查询评论 added by xinqinggang 2018/02/01-->
+    <select id="selectCommentById" parameterType="java.lang.Integer" resultMap="CommentMap">
+        select ct.comment_id,ct.user_id,ct.content,ct.update_time,
+        ct.activity_id,ct.replay_id,ct.visible
+        from tech_comment ct where ct.comment_id=#{commentId};
+    </select>
+
+    <select id="getReplayCommentListById" parameterType="java.lang.String" resultType="java.util.Map">
+        select ct.comment_id as id,ct.user_id as userId,
+        ct.content,ct.update_time as updateTime,
+        ct.replay_id as replayId,ct.visible
+        from tech_comment ct where ct.replay_id=#{commentId};
+    </select>
+</mapper>

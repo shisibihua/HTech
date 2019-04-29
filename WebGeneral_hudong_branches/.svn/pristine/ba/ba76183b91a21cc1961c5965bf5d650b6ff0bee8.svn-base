@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.tech.dao.SchoolyearDao">
+       <!-- 根据参数查询学期或假期信息 -->
+       <select id="findSchoolYearAll"   resultType="java.util.Map">
+              SELECT DISTINCT s.schoolyear_id as schoolyearId,s.name from tech_schoolyear s right join cur_term t on s.schoolyear_id=t.schoolyear_id
+              WHERE t.status=1;
+       </select>
+
+       <!-- 保存学期或假期信息 -->
+       <insert id="saveSchoolYear" parameterType="java.util.Map" >
+              insert into tech_schoolyear (name,create_time)
+              VALUES
+              (
+              #{name},now()
+              );
+       </insert>
+
+       <select id="selectSchoolYearByName" parameterType="java.lang.String" resultType="java.util.Map">
+              select s.schoolyear_id As schoolyearId,s.name from tech_schoolyear s where s.name=#{name};
+       </select>
+</mapper>

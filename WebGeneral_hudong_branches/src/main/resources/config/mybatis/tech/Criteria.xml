@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.tech.dao.CriteriaDao">
+       <!-- 根据策略id删除作息约束条件 -->
+       <delete id="deleteCriteriaByScheduleId" parameterType="java.lang.Integer">
+              delete from cur_criteria where schedule_id=#{scheduleId};
+       </delete>
+
+       <!-- 插入作息约束条件 -->
+       <insert id="saveCriteria" parameterType="java.util.Map">
+              insert into cur_criteria
+              (schedule_id,create_time,morning,user_id,am,pm,night,start_time,end_time)
+              values
+              (#{scheduleId},now(),#{morning},#{userId},#{am},#{pm},#{night},#{startTime},#{endTime});
+       </insert>
+
+       <!-- 修改作息约束条件 -->
+       <update id="updateCriteria" parameterType="java.util.Map">
+              update cur_criteria SET
+              <if test="moring!=null">morning=#{moring},</if>
+              <if test="am!=null">am=#{am},</if>
+              <if test="pm!=null">pm=#{pm},</if>
+              <if test="night!=null">night=#{night},</if>
+              <if test="startTime!=null">start_time=#{startTime},</if>
+              <if test="endTime!=null">end_time=#{endTime}</if>
+              where schedule_id=#{scheduleId};
+       </update>
+</mapper>

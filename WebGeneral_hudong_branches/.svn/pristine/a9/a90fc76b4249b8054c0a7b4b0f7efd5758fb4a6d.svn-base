@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: honghe:hcommon_spring_plugin:2.0.3-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/honghe/hcommon_spring_plugin/2.0.3-SNAPSHOT/hcommon_spring_plugin-2.0.3-20180519.054425-43.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/honghe/hcommon_spring_plugin/2.0.3-SNAPSHOT/hcommon_spring_plugin-2.0.3-20180519.054425-43-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/honghe/hcommon_spring_plugin/2.0.3-SNAPSHOT/hcommon_spring_plugin-2.0.3-20180519.054425-43-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
