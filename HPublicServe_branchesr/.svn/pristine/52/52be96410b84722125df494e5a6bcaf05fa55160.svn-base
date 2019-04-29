@@ -1,0 +1,20 @@
+<div class="m-header">
+    <div class="m-header-con">
+        <div class="logo"><span></span><img src="../../images/logo.png" alt="用户服务系统" title="用户服务系统">设备服务系统</div>
+        <div class="nav">
+            <ul>
+                <li><a href="device_service.html?id=0">设备管理</a></li>
+                <li><a href="device_block.html?id=1">设备分组</a></li>
+            </ul>
+        </div>
+
+        <div class="user">
+            <ul>
+                <li><a href="javascript:void(0)">admin</a></li>
+                <span class="line-head"></span>
+                <li><a class="logout" href="javascript:void(0)">退出</a></li>
+                <li><a href="javascript:void(0)">返回首页</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

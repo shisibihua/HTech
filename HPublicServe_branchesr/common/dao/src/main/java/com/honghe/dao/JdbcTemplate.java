@@ -1,0 +1,358 @@
+package com.honghe.dao;
+
+import com.honghe.dao.connection.ConnectionUtil;
+import com.honghe.dao.connection.JdbcConnectionProvider;
+import jodd.db.DbQuery;
+import jodd.db.DbSession;
+import jodd.db.DbTransactionMode;
+import jodd.joy.page.PageData;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by zhanghongbin on 2015/5/13.
+ */
+public final class JdbcTemplate {
+
+    String connnectionUrl;
+
+    public JdbcTemplate(String connectionUrl) {
+        this.connnectionUrl = connectionUrl;
+    }
+
+    public final Connection getConnection() {
+        return ConnectionUtil.getConnection(this.connnectionUrl);
+    }
+
+    /**
+     * @param sql
+     * @return
+     */
+    public final Map<String, String> find(String sql) {
+        Connection connecton = ConnectionUtil.getConnection(this.connnectionUrl);
+        DbQuery dbQuery = new DbQuery(connecton, sql);
+        Map<String, String> result = new HashMap<>();
+        try {
+            ResultSet rs = dbQuery.execute();
+            ResultSetMetaData metaData = rs.getMetaData();
+            if (rs.next()) {
+                for (int i = 0; i < metaData.getColumnCount(); i++) {
+                    String columnName = metaData.getColumnLabel(i + 1);
+                    Object value = rs.getObject(columnName);
+                    if (value == null) value = "";
+                    result.put(columnName, value.toString());
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            return result;
+        } finally {
+            dbQuery.close();
+            ConnectionUtil.closeConnection(connecton);
+        }
+    }
+
+    public final Map<String, String> find(String sql, String keyFileName, String valueFieldName) {
+        Connection connecton = ConnectionUtil.getConnection(this.connnectionUrl);
+        DbQuery dbQuery = new DbQuery(connecton, sql);
+        Map<String, String> result = new HashMap<>();
+        try {
+            ResultSet rs = dbQuery.execute();
+            while (rs.next()) {
+                Object key = rs.getObject(keyFileName);
+                if (key == null) key = "";
+                Object value = rs.getObject(valueFieldName);
+                if (value == null) value = "";
+                result.put(key.toString(), value.toString());
+            }
+            return result;
+        } catch (Exception e) {
+            return result;
+        } finally {
+            dbQuery.close();
+            ConnectionUtil.closeConnection(connecton);
+        }
+    }
+
+    public final Map<String, Map<String, String>> find(String sql, String keyFiledName) {
+        Connection connecton = ConnectionUtil.getConnection(this.connnectionUrl);
+        DbQuery dbQuery = new DbQuery(connecton, sql);
+        Map<String, Map<String, String>> result = new HashMap<>();
+        try {
+            ResultSet rs = dbQuery.execute();
+            ResultSetMetaData metaData = rs.getMetaData();
+            while (rs.next()) {
+                Map<String, String> record = new HashMap<>();
+                for (int i = 0; i < metaData.getColumnCount(); i++) {
+                    String columnName = metaData.getColumnLabel(i + 1);
+                    if (columnName.equals(keyFiledName)) continue;
+                    Object value = rs.getObject(columnName);
+                    if (value == null) value = "";
+                    record.put(columnName, value.toString());
+                }
+                result.put(rs.getString(keyFiledName), record);
+            }
+            return result;
+        } catch (Exception e) {
+            return result;
+        } finally {
+            dbQuery.close();
+            ConnectionUtil.closeConnection(connecton);
+        }
+    }
+
+    public List<String> findField(String sql) {
+        Connection connecton = ConnectionUtil.getConnection(this.connnectionUrl);
+        DbQuery dbQuery = new DbQuery(connecton, sql);
+        List<String> result = new ArrayList<>();
+        try {
+            ResultSet rs = dbQuery.execute();
+            ResultSetMetaData metaData = rs.getMetaData();
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                String columnName = metaData.getColumnLabel(i + 1);
+                result.add(columnName);
+            }
+
+            return result;
+        } catch (Exception e) {
+            return result;
+        } finally {
+            dbQuery.close();
+            ConnectionUtil.closeConnection(connecton);
+        }
+    }
+
+    public List<String> findValue(String sql) {
+        Connection connecton = ConnectionUtil.getConnection(this.connnectionUrl);
+        DbQuery dbQuery = new DbQuery(connecton, sql);
+        List<String> result = new ArrayList<>();
+        try {
+            ResultSet rs = dbQuery.execute();
+            ResultSetMetaData metaData = rs.getMetaData();
+            if(metaData.getColumnCount() > 0){
+                String fieldName = metaData.getColumnLabel(1);
+                while(rs.next()){
+                    result.add(rs.getObject(fieldName).toString());
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            return result;
+        } finally {
+            dbQuery.close();
+            ConnectionUtil.closeConnection(connecton);
+        }
+    }
+
+    /**
+     * @param sql
+     * @return
+     */
+    public final List<Map<String, String>> findList(String sql) {
+        Connection connecton = ConnectionUtil.getConnection(this.connnectionUrl);
+        DbQuery dbQuery = new DbQuery(connecton, sql);
+        List<Map<String, String>> result = new ArrayList<>();
+        try {
+            ResultSet rs = dbQuery.execute();
+            ResultSetMetaData metaData = rs.getMetaData();
+            while (rs.next()) {
+                Map<String, String> row = new HashMap<>();
+                for (int i = 0; i < metaData.getColumnCount(); i++) {
+                    String columnName = metaData.getColumnLabel(i + 1);
+                    try{
+                        Object value = rs.getObject(columnName);
+                        if (value == null) value = "";
+                        row.put(columnName, value.toString());
+                    }catch (Exception e){
+                        row.put(columnName, "");
+                    }
+                }
+                result.add(row);
+            }
+            return result;
+        } catch (Exception e) {
+            return result;
+        } finally {
+            dbQuery.close();
+            ConnectionUtil.closeConnection(connecton);
+        }
+    }
+
+    /**
+     * @param
+     * @return
+     */
+    public final long add(String sql, String... generateId) {
+        Connection connecton = ConnectionUtil.getConnection(this.connnectionUrl);
+        DbQuery dbQuery = new DbQuery(connecton, sql);
+        try {
+            dbQuery.setGeneratedColumns(generateId);
+            int n = dbQuery.executeUpdate();
+            if (n == 0) return 0;
+            return dbQuery.getGeneratedKey();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        } finally {
+            dbQuery.close();
+            ConnectionUtil.closeConnection(connecton);
+        }
+    }
+
+
+    public final boolean add(String sql, Object... params) {
+        Connection connecton = ConnectionUtil.getConnection(this.connnectionUrl);
+        DbQuery dbQuery = new DbQuery(connecton, sql);
+        for (int i = 0; i < params.length; i++) {
+            dbQuery.setString(i + 1, params[i].toString());
+        }
+        try {
+            int n = dbQuery.executeUpdate();
+            if (n == 0) return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            dbQuery.close();
+            ConnectionUtil.closeConnection(connecton);
+        }
+        return true;
+    }
+
+    @Deprecated
+    public final boolean add(Connection connection, String sql, Object... params) {
+        DbQuery dbQuery = new DbQuery(connection, sql);
+        for (int i = 0; i < params.length; i++) {
+            dbQuery.setString(i + 1, params[i].toString());
+        }
+        try {
+            int n = dbQuery.executeUpdate();
+            if (n == 0) return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            dbQuery.close();
+        }
+        return true;
+    }
+
+    public final long add(Connection connection, String sql, String generateId, Object... params) {
+        DbQuery dbQuery = new DbQuery(connection, sql);
+        dbQuery.setGeneratedColumns(generateId);
+        for (int i = 0; i < params.length; i++) {
+            dbQuery.setString(i + 1, params[i].toString());
+        }
+        try {
+
+            int n = dbQuery.executeUpdate();
+            if (n == 0) return 0;
+            return dbQuery.getGeneratedKey();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        } finally {
+            dbQuery.close();
+        }
+
+    }
+
+
+    @Deprecated
+    public PageData find(int page, int pageSize, String countSql, String resultSql) {
+        int count = (int) JdbcTemplateUtil.getJdbcTemplate().count(countSql);
+        int start = PageData.calcFirstItemIndexOfPage(page, pageSize, count);
+        List<Map<String, String>> result = JdbcTemplateUtil.getJdbcTemplate().findList(resultSql + " limit " + start + "," + pageSize);
+        PageData pageData = new PageData(page, count, pageSize, result);
+        return pageData;
+    }
+
+    public PageData findByPage(int page, int pageSize, String countSql, String resultSql) {
+        int count = (int) JdbcTemplateUtil.getJdbcTemplate().count(countSql);
+        int start = PageData.calcFirstItemIndexOfPage(page, pageSize, count);
+        List<Map<String, String>> result = JdbcTemplateUtil.getJdbcTemplate().findList(resultSql.replaceFirst("\\?", String.valueOf(start))
+                .replaceFirst("\\?", String.valueOf(pageSize)));
+        PageData pageData = new PageData(page, count, pageSize, result);
+        return pageData;
+    }
+
+
+    /**
+     * @param
+     * @return
+     */
+    public final boolean update(String sql) {
+        return delete(sql);
+    }
+
+    public final boolean delete(String sql) {
+        Connection connecton = ConnectionUtil.getConnection(this.connnectionUrl);
+        DbQuery dbQuery = new DbQuery(connecton, sql);
+        try {
+            int n = dbQuery.executeUpdate();
+            if (n == 0) return false;
+            return true;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            dbQuery.close();
+            ConnectionUtil.closeConnection(connecton);
+        }
+
+    }
+
+    public final boolean execute(String... sql) {
+        boolean flag = true;
+        DbSession dbSession = new DbSession(new JdbcConnectionProvider(ConnectionUtil.getConnection(this.connnectionUrl)));
+        dbSession.beginTransaction(new DbTransactionMode().setReadOnly(false));
+        for (String _sql : sql) {
+            if (!flag) break;
+            DbQuery dbQuery = new DbQuery(dbSession, _sql);
+            try {
+                dbQuery.executeUpdate();
+            } catch (Exception e) {
+                e.printStackTrace();
+                dbSession.rollbackTransaction();
+                flag = false;
+            } finally {
+                dbQuery.close();
+            }
+        }
+        if (flag) {
+            dbSession.commitTransaction();
+        }
+        dbSession.closeSession();
+        return flag;
+
+    }
+
+    /**
+     * @param
+     * @return
+     */
+    public final long count(String sql) {
+        Connection connecton = ConnectionUtil.getConnection(this.connnectionUrl);
+        DbQuery dbQuery = new DbQuery(connecton, sql);
+        try {
+            return dbQuery.executeCount();
+        } catch (Exception e) {
+            return 0l;
+        } finally {
+            dbQuery.close();
+            ConnectionUtil.closeConnection(connecton);
+        }
+
+    }
+
+    public static void main(String[] args) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate("jdbc:mysql://192.168.16.170:8788/football?user=root&password=bhjRjxwC8EBqaJC7&useUnicode=true&characterEncoding=utf8");
+        String sql = "SELECT tag_name FROM video where tag_name <> '' group by tag_name";
+        System.out.println(jdbcTemplate.findValue(sql));
+    }
+}

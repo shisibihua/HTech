@@ -1,0 +1,86 @@
+/* 添加、修改机构-高级设置样式 */
+.clearFix:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+.senior-setting {
+    height: 30px;
+    line-height: 30px;
+    margin-top: 15px;
+    padding-left: 10px;
+}
+.senior-setting .title {
+    cursor: pointer;
+    display: inline-block;
+    padding-right: 5px;
+}
+.senior-setting .title:after {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-top-color: #000;
+    position: relative;
+    top: 5px;
+    left: 5px;
+    cursor: pointer;
+}
+.senior-setting .setting-content {
+    margin-top: 10px;
+    display: none;
+}
+.senior-setting .setting-content .ip-setting {
+    float: left;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    margin-left: 10px;
+}
+.senior-setting .setting-content .port-setting {
+    float: left;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    margin-left: 20px;
+}
+#ip {
+    width: 110px;
+    height: 30px;
+}
+#port {
+    width: 50px;
+    height: 30px;
+}
+
+/* 组织机构右边*/
+.campus-tab {
+
+}
+
+.campus-tab .title {
+    height: 50px;
+    line-height:50px;
+    border-bottom: 1px solid #ccc;
+    margin: 0 10px;
+}
+
+.campus-tab .title li {
+    float: left;
+    width: 100px;
+    height: 50px;
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+}
+.campus-tab .title .current:after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 3px;
+    background: #286090;
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+}

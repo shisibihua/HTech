@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceMaxCodeMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.DeviceMaxCode" >
+    <id column="code_id" property="codeId" jdbcType="INTEGER" />
+    <result column="code_maxcode" property="maxCode" jdbcType="VARCHAR" />
+    <result column="code_deviceType" property="deviceType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    code_id, code_maxcode,code_deviceType
+  </sql>
+  <select id="selectMaxCode"  resultMap = "BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from device_maxcode
+    WHERE code_deviceType = #{deviceType,jdbcType=VARCHAR};
+  </select>
+  <insert id="insert" parameterType="com.honghe.deviceNew.entity.DeviceMaxCode" >
+    insert into device_maxcode (code_maxcode,code_deviceType)
+    values (#{maxCode,jdbcType=VARCHAR},#{deviceType,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceMaxCode" >
+    update device_maxcode
+    set code_id = #{codeId,jdbcType=VARCHAR},
+      code_deviceType = #{deviceType,jdbcType=VARCHAR},
+      code_maxcode = #{maxCode,jdbcType=VARCHAR}
+    where code_id = #{codeId,jdbcType=INTEGER}
+  </update>
+</mapper>

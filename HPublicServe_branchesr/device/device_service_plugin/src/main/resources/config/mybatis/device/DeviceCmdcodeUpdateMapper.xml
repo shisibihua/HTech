@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceCmdcodeUpdateMapper" >
+    <select id="getDeviceCmdCodeUpdate" resultType="java.util.Map" parameterType="java.lang.String" >
+        select a.cmd_code_update
+        from device_command_update a ,device_host b
+        where a.device_specification_id = b.device_specification_id and b.ip_addr=#{ip};
+    </select>
+
+
+    <!--String sql = "select count(*) as count from device_cmdcode_update a ,device_host b where a.dspec_id = b.dspec_id and a.cmdcode_update = '" + cmdCodeUpdate + "' and b.host_ipaddr='" + ip + "'";-->
+    <select id="getCount" resultType="java.util.Map" parameterType="java.lang.String" >
+        select count(*) as count
+        from device_command_update a ,device_host b
+        where a.device_specification_id = b.device_specification_id and b.ip_addr = #{ip} and a.cmd_code_update = #{cmdCodeUpdate};
+    </select>
+
+</mapper>

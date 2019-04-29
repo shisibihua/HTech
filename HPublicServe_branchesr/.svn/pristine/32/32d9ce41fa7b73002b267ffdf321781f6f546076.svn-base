@@ -1,0 +1,166 @@
+<ul id="left_nav_ul">
+    <li>
+        <a href="javascript:void(0)"><i></i><h6>全体学生</h6>
+            <div class="menu-btns">
+                <span class="a-btn a-btn-add btn-add-org"></span>
+                <span class="a-btn a-btn-edit"></span>
+                <span class="a-btn a-btn-delete btn-delete"></span>
+            </div>
+        </a>
+
+        <ul>
+            <li>
+                <a href="javascript:void(0)"><i></i><h6>高一年级</h6>
+                    <div class="menu-btns">
+                        <span class="a-btn a-btn-add btn-add-org"></span>
+                        <span class="a-btn a-btn-edit"></span>
+                        <span class="a-btn a-btn-delete btn-delete"></span>
+                    </div>
+                </a>
+                <ul>
+                    <li>
+                        <a href="javascript:void(0)"><i></i><h6>高一（1）班</h6>
+                            <div class="menu-btns">
+                                <span class="a-btn a-btn-add btn-add-org"></span>
+                                <span class="a-btn a-btn-edit"></span>
+                                <span class="a-btn a-btn-delete btn-delete"></span>
+                            </div>
+                       </a>
+                        <ul>
+                            <li>
+                                <a href="javascript:void(0)"><i></i><h6>1班一组1班一组1班一组</h6>
+                                    <div class="menu-btns">
+                                        <span class="a-btn a-btn-add btn-add-org"></span>
+                                        <span class="a-btn a-btn-edit"></span>
+                                        <span class="a-btn a-btn-delete btn-delete"></span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"><i></i><h6>1班二组</h6>
+                                    <div class="menu-btns">
+                                        <span class="a-btn a-btn-add btn-add-org"></span>
+                                        <span class="a-btn a-btn-edit"></span>
+                                        <span class="a-btn a-btn-delete btn-delete"></span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"><i></i><h6>1班三组</h6>
+                                    <div class="menu-btns">
+                                        <span class="a-btn a-btn-add btn-add-org"></span>
+                                        <span class="a-btn a-btn-edit"></span>
+                                        <span class="a-btn a-btn-delete btn-delete"></span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"><i></i><h6>1班四组</h6>
+                                    <div class="menu-btns">
+                                        <span class="a-btn a-btn-add btn-add-org"></span>
+                                        <span class="a-btn a-btn-edit"></span>
+                                        <span class="a-btn a-btn-delete btn-delete"></span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><i></i><h6>高一（2）班</h6>
+                            <div class="menu-btns">
+                                <span class="a-btn a-btn-add btn-add-org"></span>
+                                <span class="a-btn a-btn-edit"></span>
+                                <span class="a-btn a-btn-delete btn-delete"></span>
+                            </div>
+                       </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><i></i><h6>高一（3）班</h6>
+                            <div class="menu-btns">
+                                <span class="a-btn a-btn-add btn-add-org"></span>
+                                <span class="a-btn a-btn-edit"></span>
+                                <span class="a-btn a-btn-delete btn-delete"></span>
+                            </div>
+                       </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><i></i><h6>高一（4）班</h6>
+                            <div class="menu-btns">
+                                <span class="a-btn a-btn-add btn-add-org"></span>
+                                <span class="a-btn a-btn-edit"></span>
+                                <span class="a-btn a-btn-delete btn-delete"></span>
+                            </div>
+                       </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i></i><h6>高二年级</h6>
+                    <div class="menu-btns">
+                        <span class="a-btn a-btn-add btn-add-org"></span>
+                        <span class="a-btn a-btn-edit"></span>
+                        <span class="a-btn a-btn-delete btn-delete"></span>
+                    </div>
+                </a>
+                <ul>
+                    <li>
+                        <a href="javascript:void(0)"><i></i><h6>高二（1）班</h6>
+                            <div class="menu-btns">
+                                <span class="a-btn a-btn-add btn-add-org"></span>
+                                <span class="a-btn a-btn-edit"></span>
+                                <span class="a-btn a-btn-delete btn-delete"></span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><i></i><h6>高二（2）班</h6>
+                            <div class="menu-btns">
+                                <span class="a-btn a-btn-add btn-add-org"></span>
+                                <span class="a-btn a-btn-edit"></span>
+                                <span class="a-btn a-btn-delete btn-delete"></span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i></i><h6>高三年级</h6>
+                    <div class="menu-btns">
+                        <span class="a-btn a-btn-add btn-add-org"></span>
+                        <span class="a-btn a-btn-edit"></span>
+                        <span class="a-btn a-btn-delete btn-delete"></span>
+                    </div>
+                </a>
+                <ul>
+                    <li>
+                        <a href="javascript:void(0)"><i></i><h6>高三（1）班</h6>
+                            <div class="menu-btns">
+                                <span class="a-btn a-btn-add btn-add-org"></span>
+                                <span class="a-btn a-btn-edit"></span>
+                                <span class="a-btn a-btn-delete btn-delete"></span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"><i></i><h6>高三（2）班</h6>
+                            <div class="menu-btns">
+                                <span class="a-btn a-btn-add btn-add-org"></span>
+                                <span class="a-btn a-btn-edit"></span>
+                                <span class="a-btn a-btn-delete btn-delete"></span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0)"><i></i><h6>复读年级</h6>
+                    <div class="menu-btns">
+                        <span class="a-btn a-btn-add btn-add-org"></span>
+                        <span class="a-btn a-btn-edit"></span>
+                        <span class="a-btn a-btn-delete btn-delete"></span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </li>
+</ul>

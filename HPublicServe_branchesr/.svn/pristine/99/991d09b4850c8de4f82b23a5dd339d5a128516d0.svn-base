@@ -1,0 +1,26 @@
+.a-btn {
+    display: inline-block;
+    width: 16px;
+    height: 15px;
+    cursor: pointer;
+    float: left;
+}
+
+.a-btn + .a-btn {
+    margin-left: 12px;
+}
+
+.a-btn-details {background-repeat: no-repeat;}
+
+.a-btn-details:hover {background-repeat: no-repeat;}
+
+.a-btn-edit {background-repeat: no-repeat;}
+
+.a-btn-edit:hover {background-repeat: no-repeat;}
+
+.a-btn-delete {background-repeat: no-repeat;}
+
+.a-btn-delete:hover {background-repeat: no-repeat;}
+.a-btn-add {background-repeat: no-repeat;}
+
+.a-btn-add:hover {background-repeat: no-repeat;}.a-btn-details{background-position:0px 0px}.a-btn-details:hover{background-position:-23px 0px}.a-btn-edit{background-position:-46px 0px}.a-btn-edit:hover{background-position:0px -25px}.a-btn-delete{background-position:-25px -25px}.a-btn-delete:hover{background-position:-71px 0px}.a-btn-add{background-position:-71px -25px}.a-btn-add:hover{background-position:0px -50px}.a-btn-details,.a-btn-details:hover,.a-btn-edit,.a-btn-edit:hover,.a-btn-delete,.a-btn-delete:hover,.a-btn-add,.a-btn-add:hover{background-image: url(../images/a-button_z.png)}

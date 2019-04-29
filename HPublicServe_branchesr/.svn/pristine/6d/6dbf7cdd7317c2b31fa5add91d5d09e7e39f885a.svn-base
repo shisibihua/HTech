@@ -1,0 +1,8 @@
+[ERROR][2018-05-08 10:18:15,493][com.honghe.communication.main.listener.HttpServletLoadListener]java.lang.ClassNotFoundException: com/honghe/device/event/EventOnAndOffLine
+[ERROR][2018-05-08 10:18:15,500][com.honghe.communication.main.listener.HttpServletLoadListener]java.lang.ClassNotFoundException: com/honghe/device/event/EventConsumer
+[ERROR][2018-05-08 10:26:40,327][com.honghe.communication.main.listener.HttpServletLoadListener]java.lang.ClassNotFoundException: com/honghe/device/event/EventOnAndOffLine
+[ERROR][2018-05-08 10:26:43,222][com.honghe.communication.main.listener.HttpServletLoadListener]java.lang.ClassNotFoundException: com/honghe/device/event/EventConsumer
+[ERROR][2018-05-08 10:29:13,952][com.honghe.communication.main.listener.HttpServletLoadListener]java.lang.ClassNotFoundException: com/honghe/device/event/EventOnAndOffLine
+[ERROR][2018-05-08 10:36:45,281][com.honghe.communication.main.listener.HttpServletLoadListener]java.lang.ClassNotFoundException: com/honghe/device/event/EventConsumer
+[ERROR][2018-05-08 10:38:06,664][com.honghe.communication.main.listener.HttpServletLoadListener]java.lang.ClassNotFoundException: com/honghe/device/event/EventOnAndOffLine
+[ERROR][2018-05-08 10:38:09,825][com.honghe.communication.main.listener.HttpServletLoadListener]java.lang.ClassNotFoundException: com/honghe/device/event/EventConsumer

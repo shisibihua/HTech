@@ -1,0 +1,133 @@
+/* reset */
+html,body,h1,h2,h3,h4,h5,h6,div,dl,dt,dd,ul,ol,li,p,blockquote,pre,hr,figure,table,caption,th,td,form,fieldset,legend,input,button,textarea,menu{margin:0;padding:0;border:0;}
+header,footer,section,article,aside,nav,hgroup,address,figure,figcaption,menu,details{display:block;}
+table{border-collapse:collapse;border-spacing:0;}
+caption,th{text-align:left;font-weight:normal;}
+i,cite,em,var,address,dfn{font-style:normal;}
+[hidefocus],summary{outline:0;}
+li{list-style:none;}
+h1,h2,h3,h4,h5,h6,small{font-size:100%;}
+sup,sub{font-size:83%;}
+pre,code,kbd,samp{font-family:inherit;}
+q:before,q:after{content:none;}
+textarea{overflow:auto;resize:none;}
+label,summary{cursor:default;}
+a,button{cursor:pointer;}
+h1,h2,h3,h4,h5,h6,em,strong,b{font-weight:bold;}
+del,ins,u,s,a,a:hover{text-decoration:none;}
+body,textarea,input,button,select,keygen,legend,a{font:14px/1.2 \5FAE\8F6F\96C5\9ED1,arial,sans-serif,\9ED1\4F53,\5B8B\4F53;color:#212121;outline:0;}
+body{background:#f5f7f8;}
+a:hover{color:#286090;}
+
+input,select,textarea {padding: 0 10px;border-radius: 3px;border: 1px solid #dbdbdb;}
+
+.ellitext{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.clearfix{height: 0; line-height: 0; clear: both;}
+
+/*头部--m-header*/
+.m-header{
+    width: 100%;
+    min-width: 1200px;
+    height: 80px;
+}
+.m-header-con{
+    width: 1200px;
+    height: 100%;
+    margin: 0 auto;
+}
+.m-header .logo{
+    float: left;
+    max-width: 320px;
+    height: 100%;
+    text-align: center;
+    margin-left: 20px;
+    font-size: 24px;
+    color: #fff;
+}
+.m-header .logo span{
+    display: inline-block;
+    width: 0;
+    height: 100%;
+    vertical-align: middle;
+}
+.m-header .logo img{
+    vertical-align: middle;
+    margin-right: 20px;
+}
+
+
+.nav{
+    float: left;
+    height: 33px;
+    margin-left: 70px;
+    margin-top: 23px;
+}
+.nav ul li{
+    display: block;
+    float: left;
+    width: 100px;
+    height: 33px;
+    text-align: center;
+    margin-right: 10px;
+}
+.nav ul li a{
+    display: block;
+    width: 100%;
+    height: 100%;
+    line-height: 33px;
+    font-size: 14px;
+}
+
+
+.user{
+    float: right;
+    height: 30px;
+    margin-top: 25px;
+    margin-right: 10px;
+}
+.user ul li{
+    display: block;
+    float: left;
+    height: 30px;
+    text-align: center;
+}
+.line-head{
+    border-left: 1px solid #fff;
+    float: left;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 5px;
+    display: block;
+    height: 20px;
+}
+.user ul li + li{
+    margin-left: 15px;
+}
+.user ul li a{
+    display: inline-block;
+    height: 100%;
+    line-height: 30px;
+    font-size: 14px;
+}
+
+
+.user li {
+    float: left;
+}
+.line-head {
+    border-left: 1px solid #fff;
+    float: left;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 5px;
+    display: block;
+    height: 20px;
+}
+.user li a {
+    color: #fff;
+}
+
+
+
+
+

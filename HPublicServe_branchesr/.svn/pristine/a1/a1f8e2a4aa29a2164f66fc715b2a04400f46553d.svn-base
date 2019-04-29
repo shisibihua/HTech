@@ -1,0 +1,383 @@
+.win-device-add{
+	width: 370px;
+}
+.win-device-add-title{
+	width: 100%;
+	height: 30px;
+	margin-top: 15px;
+}
+.win-device-add-title > p{
+	height: 30px;
+	line-height: 30px;
+	margin-left: 25px;
+	width: 80px;
+	float: left;
+}
+#select-device{
+	float: left;
+}
+.win-device-add-main{
+	width: 370px;
+}
+.win-device-add-li{
+	display: none;
+	float: left;
+	width: 370px;
+}
+.win-device-add-li ul{
+	float: left;
+	width: 100%;
+}
+.win-device-add-li ul li{
+	height: 30px;
+	margin-top: 15px;
+	width: 100%;
+}
+.win-device-add-li ul li p{
+	height: 30px;
+	line-height: 30px;
+	margin-left: 25px;
+	width: 80px;
+	float: left;
+}
+.win-device-add-li ul li input{
+	width: 206px;
+	height: 30px;
+	border-radius: 3px;
+	float: left;
+}
+
+.win-device-edit {
+    float: left;
+    width: 360px;
+    height:60px;
+}
+
+.win-device-edit-main {
+    float: left;
+    width: 360px;
+}
+
+.win-device-edit-li {
+    float: left;
+    width: 360px;
+}
+
+.win-device-edit-li ul {
+    float: left;
+    width: 100%;
+}
+
+.win-device-edit-li ul li {
+    height: 30px;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.win-device-edit-li ul li p {
+    height: 30px;
+    line-height: 30px;
+    margin-left: 25px;
+    width: 80px;
+    float: left;
+}
+
+.win-device-edit-li ul li input {
+    width: 206px;
+    height: 30px;
+    border-radius: 3px;
+    float: left;
+}
+
+.select-dg {
+    float: left;
+    height: 30px;
+    line-height: 30px;
+}
+.select-dg > span{
+	cursor: pointer;
+	margin-top: 6px;
+	margin-right: 10px;
+	float: left;
+	width: 16px;
+	height: 16px;
+	border:1px solid #bdbdbd;
+	border-radius: 100%;
+}
+.select-dg > font{
+	margin-right: 30px;
+	float: left;
+}
+.select-dg > span > span{
+	margin-top: 3px;
+	margin-left: 3px;
+	float: left;
+	width: 10px;
+	height: 10px;
+	background: #4898d5;
+	border-radius: 100%;
+}
+#select-dws *{
+	margin: 0;
+}
+.win-foin-de > span{
+	float: left;
+	display: block;
+	width: 60px;
+	height: 60px;
+	margin-top: 20px;
+	margin-left: 30px;
+	background: url(../images/userimg.png) no-repeat 0 0 ;
+}
+.win-foin-de-main{
+	float: right;
+	width: 280px;
+}
+.win-foin-de-main > span {
+	display: block;
+	margin-top: 20px;
+	font-size: 16px;
+}
+.win-foin-de-main ul{
+	margin-top: 5px;
+	float: left;
+	width: 100%;
+}
+.win-foin-de-main ul li{
+	float: left;
+	width: 100%;
+}
+.win-foin-de-main ul li > p {
+	float: left;
+	width: 80px;
+}
+.win-foin-de-main ul li > span{
+	float: left;
+}
+.win-block-fep{
+	float: left;
+	width: 750px;
+	height: 300px;
+	margin-top: 15px;
+	margin-left: 2%;
+}
+.win-block-fep-title{
+	float: left;
+	width: 100%;
+}
+.win-block-fep-main{
+	margin-top: 10px;
+	float: left;
+	width: 100%;
+	height: 250px;
+	margin-bottom: 15px;
+}
+.win-block-fep-main-title{
+	background: #eaedf1;
+	float: left;
+	width: 768px;
+	height: 40px;
+	line-height: 40px;
+}
+.win-block-fep-main-title > span,.win-block-fep-main-info > span{
+	float: left;
+	height: 40px;
+	line-height: 40px;
+	margin-left: 30px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	text-align: center;
+
+}
+.win-block-fep-main-info{
+	float: left;
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	border-bottom: 1px solid #eaedf1;
+	width: 768px;
+}
+.w-block-fep-name{
+	width: 150px;
+}
+.w-block-fep-lei{
+	width: 150px;
+}
+
+.w-block-fep-ip{
+	width: 150px;
+}
+.w-block-fep-jg{
+	width: 150px;
+}
+.win-block-mul{
+	width: 98%;
+	margin-left: 2%;
+}
+.win-block-mul > div{
+	float: left;
+	height: 500px;
+}
+.win-block-mul-tit{
+	width: 250px;
+}
+.three-icon{
+	width: 30px;
+}
+.three-icon > span{
+	display: block;
+	float: left;
+	background: url(../images/deive-mu-icon.png) no-repeat 0 0;
+	width: 10px;
+	margin-top: 225px;
+	margin-left: 10px;
+	height: 50px;
+}
+.win-block-mul-li{
+	width: 323px;
+}
+.win-block-mul-s,.win-block-mul-d{
+	float: left;
+	margin-left: 10px;
+	margin-top: 10px;
+}
+.win-block-mul-d *{
+	float: left;
+}
+.win-block-mul-title{
+	float: left;
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+}
+.win-block-mul-title > span{
+	float: left;
+	width: 100%;
+	display: block;
+	height: 30px;
+	text-indent: .5em;
+	line-height: 30px;
+}
+.win-block-mul-main{
+	float: left;
+	border: 1px solid #d7dbe5;
+	width: 100%;
+	height: 470px;
+}
+.win-block-mul-main-tit {
+	float: left;
+	width: 100%;
+	height: 50px;
+} 
+.win-select-block{
+	cursor: pointer;
+	display: block;
+	height: 30px;
+	line-height: 30px;
+	margin-left: 5px;
+}
+.blue{
+	color: #286090;
+}
+.hot{
+	color: #c9302c;
+}
+.win-block-mains{
+	float: left;
+	width: 100%;
+	height: 420px;
+}
+.win-block-mains-li{
+	float: left;
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+}
+.win-block-mains-li > span{
+	text-indent: .5em;
+	display: block;
+	height: 30px;
+	line-height: 30px;
+	float: left;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+	overflow:hidden;
+}
+.w-mains-li-name{
+	width:170px; 
+}
+.w-mains-li-lei{
+	width:120px; 
+}
+span.w-mains-li-icon{
+	cursor: pointer;
+	width:16px;
+	height: 16px;
+	margin-top: 9px;
+}
+span.w-mains-bth{
+	background: url(../images/w-icon-q.png) no-repeat 0 0;
+}
+.w-tongdao-device-title{
+	width: 100%;
+	height: 26px;
+	margin-left: 2%;
+	text-align: center;
+	line-height: 26px;
+	font-size: 16px;
+	margin: 5px 0;
+}
+.w-tongdao-device{
+	width: 96%;
+	border: 1px solid #bdbdbd;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	height: 130px;
+}
+.w-tongdao-device-m{
+	border: 1px solid #f1f1f1;
+	height: 200px;
+	margin-left: 2.5%;
+	width: 100%;
+} 
+.add-tongdao-device{
+	margin-left: 2.5%;
+	width: 100%;
+}
+.add-tongdao-device > span{
+	display: block;
+	width: 80px;
+	text-align: center;
+	height: 30px;
+	line-height: 30px;
+	background: #2e6da4;
+	color: #fff;
+	border-radius: 3px;
+	margin: 10px auto 0 auto;
+	cursor: pointer;
+}
+.delete-tongdao-device{
+	display: block;
+	width: 100%;
+	height: 30px;
+}
+.delete-tongdao-device>span{
+	display: block;
+	width: 50px;
+	cursor: pointer;
+	float: right;
+	height: 20px;
+	text-align: center;
+	border-radius: 3px;
+	background: #ccc;
+	margin-top: 10px;
+	margin-right: 20px;
+	line-height: 20px;
+	
+}
+.w-tongdao-device-lis{
+	float: left;
+	display: none;
+	width: 100%;
+}

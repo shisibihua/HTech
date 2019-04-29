@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service>
+    <!-- 是否开启监控系统 localhost  -->
+    <monitor></monitor>
+    <!-- 是否开启跟踪系统zipkin localhost:9411 -->
+    <trace></trace>
+    <!-- mq 中间件地址 localhost:5672 -->
+    <mq>localhost:5672</mq>
+    <!--一般用于调试 0 校园版 1 区域版 2 区域校园版 不填为默认 -->
+    <serviceVersion></serviceVersion>
+    <!-- 注册服务地址 -->
+    <registry></registry>
+    <!-- 端口号类型默认default 为 jetty.xml配置文件端口, random 为随机端口号 -->
+    <portType>default</portType>
+    <!-- 本机ip 如果不填写则自动获取 -->
+    <ip></ip>
+    <!-- mysql数据同步中间件ip默认为localhost -->
+    <canal>localhost</canal>
+    <!-- license ip 默认为localhost 临时使用，以后可能去掉 -->
+    <license>localhost</license>
+</service>

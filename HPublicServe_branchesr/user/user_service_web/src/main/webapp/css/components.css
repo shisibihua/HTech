@@ -1,0 +1,711 @@
+/*!a-button/a-button.css*/
+.a-btn {
+    display: inline-block;
+    width: 16px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.a-btn + .a-btn {
+    margin-left: 11px;
+}
+
+.a-btn-details {background-repeat: no-repeat;}
+
+.a-btn-details:hover {background-repeat: no-repeat;}
+
+.a-btn-edit {background-repeat: no-repeat;}
+
+.a-btn-edit:hover {background-repeat: no-repeat;}
+
+.a-btn-delete {background-repeat: no-repeat;}
+
+.a-btn-delete:hover {background-repeat: no-repeat;}
+.a-btn-add {background-repeat: no-repeat;}
+
+.a-btn-add:hover {background-repeat: no-repeat;}
+.a-btn-pwd {background: url(../images/modify_pwd.png) no-repeat;}
+
+.a-btn-pwd:hover {background: url(../images/modify_pwd_hover.png) no-repeat;}
+/*!button/button.css*/
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    color: #fff;
+}
+
+.btn + .btn {
+    margin-left: 15px;
+}
+
+.btn-default {
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ccc;
+}
+
+.btn-default:hover {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
+
+.btn-blue {
+    background-color: #337ab7;
+    border-color: #2e6da4;
+}
+
+.btn-blue:hover {
+    background-color: #286090;
+    border-color: #204d74;
+}
+
+.btn-light-blue {
+    background-color: #5bc0de;
+    border-color: #46b8da;
+}
+
+.btn-light-blue:hover {
+    background-color: #31b0d5;
+    border-color: #269abc;
+}
+
+.btn-green {
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+.btn-green:hover {
+    background-color: #449d44;
+    border-color: #398439;
+}
+
+.btn-orange {
+    background-color: #f0ad4e;
+    border-color: #eea236;
+}
+
+.btn-orange:hover {
+    background-color: #ec971f;
+    border-color: #d58512;
+}
+
+.btn-red {
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+.btn-red:hover {
+    background-color: #c9302c;
+    border-color: #ac2925;
+}
+
+.btn-group {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.btn-group > .btn {
+    float: left;
+}
+
+.btn-group > .btn + .btn {
+    margin-left: 0;
+}
+
+.btn-group>.btn:first-child:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.btn-group>.btn:not(:first-child):not(:last-child) {
+    border-radius: 0;
+}
+
+.btn-group>.btn:last-child:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+/*!check/check.css*/
+.m-check,
+.m-check-all {
+    display: inline-block;
+    float: left;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+}
+
+/*!footer/footer.css*/
+.m-footer{
+    clear: both;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    bottom: 0;
+}
+/*!menu/menu.css*/
+.m-menu{
+    width: 322px;
+    list-style: none;
+}
+.m-menu li{
+    height: 40px;
+    line-height: 40px;
+    padding-left:40px;
+}
+
+.m-menu .m-menu-btn{
+    width: 176px;
+    display: inline-block;
+    font-size:14px;
+    color: #212121;
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    padding-right: 30px;
+}
+.m-menu .menu-btns{
+    display: none;
+    margin-top: 3px;
+}
+.m-menu li.selected{
+    background:#eaedf1;
+}
+.m-menu li:hover{
+    background: #eaedf1;
+}
+.m-menu li:hover .menu-btns{
+    display: inline-block;
+}
+/*!organization/add-org.css*/
+.add-org {
+    display: none;
+    margin: 10px;
+}
+
+.select-org {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    margin-bottom: 15px;
+}
+.current-organization{
+    display: inline-block;
+    margin-left: 10px;
+    width:250px;
+    vertical-align: top;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.org-name {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+}
+
+input.organization-name {
+    width: 346px;
+    height: 28px;
+    line-height: 28px;
+}
+
+/*!organization/allot-member.css*/
+.m-allot-member{
+    display: none;
+}
+.m-allot-member .main-list {
+    width: 660px;
+    margin: 10px 0 0;
+    margin-top: 10px;
+}
+
+.m-allot-member .u-title > div {
+    display: inline-block;
+    float: left;
+    padding: 0 10px;
+}
+
+.m-allot-member .u-title {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    margin-left: 30px;
+}
+
+.m-allot-member .u-check {
+    width: 20px;
+}
+
+.m-allot-member .u-check .m-check {
+    margin: 6px 0 0 6px;
+}
+
+.m-allot-member .u-check .m-check-all {
+    margin: 6px 0 0 6px;
+}
+
+.m-allot-member .u-item {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    border-bottom: 1px solid #d7dbe5;
+    margin-left: 30px;
+}
+
+.m-allot-member .u-item > div {
+    display: inline-block;
+    float: left;
+    height: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 0 10px;
+}
+
+.m-allot-member .u-name {
+    width: 60px;
+}
+
+.m-allot-member .u-name .user-con {
+    width: 100%;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    margin: 0;
+
+}
+.user-con-span{
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.m-allot-member .u-sex {
+    width: 30px;
+}
+
+.m-allot-member .u-tel {
+    width: 100px;
+}
+
+.m-allot-member .u-email {
+    width: 210px;
+}
+
+.m-allot-member .u-identity {
+    width: 60px;
+}
+
+.m-allot-member .u-status {
+    width: 40px;
+}
+/*!organization/delete-org.css*/
+.m-delete{
+    width: 200px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 14px;
+    color: #212121;
+    display: none;
+}
+.m-delete-org-user{
+    display: none;
+    margin: 20px 50px;
+}
+/*!organization/details-org.css*/
+.m-details{
+    width: 360px;
+    display: none;
+}
+.details-name img{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 10px;
+}
+.name-details-name{
+    width: 235px;
+    height: 60px;
+    padding:0 10px;
+    display: inline-block;
+}
+.name-details-name span{
+    width: 235px;
+    font-size: 12px;
+    color: #212121;
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.name-details-name span.name-first{
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+.details-content{
+    border:1px solid #eaedf1;
+    margin-top: 15px;
+}
+.details-content-title{
+    background:#eaedf1;
+    width: 338px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    color:#212121;
+    padding:0 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.system-role-content{
+    width: 318px;
+    padding:10px 10px;
+}
+.system-role-content .select-system{
+    margin: 0;
+}
+.system-role-content select{
+    width: 246px;
+    height: 30px;
+    margin: 0 0 10px 0;
+}
+.system-role-content .details-system-list{
+    width: 300px;
+}
+.system-role-content .details-system-list li{
+    float: left;
+    width: 95px;
+    height: 25px;
+    line-height: 25px;
+    padding-right: 5px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.equipment{
+    padding:10px 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.details-left{
+    padding:10px 0 10px 10px;
+    width:300px;
+}
+.details-left > div{
+    width: 300px;
+    line-height: 30px;
+    font-size: 14px;
+    color:#212121;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+/*!roles/add-role.css*/
+.add-role{
+    display: none;
+    margin: 10px;
+}
+.add-role .add-role-name{
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    margin-bottom: 20px;
+}
+.add-role .add-role-name input.role-name{
+    width: 204px;
+    height: 28px;
+    line-height: 28px;
+}
+
+.add-role .add-role-con{
+    clear: both;
+    width: 640px;
+    height: auto;
+    line-height: 20px;
+}
+.add-role .add-role-con > p{
+    display: inline-block;
+    float: left;
+}
+.add-role .con-list{
+    float: left;
+    margin-left: 30px;
+    max-width: 540px;
+}
+
+.add-role .con-list .con-item{
+    margin-bottom: 15px;
+}
+
+.add-role .con-list .con-item label{
+    max-width: 330px;
+    margin-left: 10px;
+}
+
+.add-role .con-list .con-item.con-identify{
+    float: left;
+    margin-right: 20px;
+}
+.add-role .con-list .con-item.con-identify label{
+    display: inline-block;
+    width: 110px;
+    max-width: 110px;
+}
+
+
+
+/*删除角色弹窗*/
+.delete-role-confirm{
+    margin: 0 50px;
+}
+/*!search/search.css*/
+.m-search {
+    display: inline-block;
+    width: 240px;
+    height: 28px;
+}
+
+.m-search input {
+    width: 185px;
+    height: 28px;
+    float: left;
+    border: 1px solid #dbdbdb;
+    border-radius: 0;
+}
+
+.m-search .btn-search {width: 28px;
+    height: 30px;
+    border: 1px solid #dbdbdb;
+    border-left: none;background-repeat: no-repeat;}
+/*!users/add-users.css*/
+.add-users{
+    width:340px;
+    padding:0 20px;
+    display: none;
+}
+.add-users input{
+    width: 225px;
+    height: 30px;
+    margin-left: 3px;
+}
+.add-users input[type="radio"]{
+    display: inline;
+    float: left;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    margin-top: 3px;
+}
+.add-users label{
+    display: inline;
+    float: left;
+    margin-right: 10px;
+}
+.user-add-subject{
+    width: 90px;
+}
+.teacher-add-subject{
+    width: 100px;
+}
+.add-users textarea{
+    width: 234px;
+    height: 60px;
+    margin-left: 3px;
+    padding:5px 5px;
+}
+.add-users table tr{
+    height: 40px;
+}
+/*!users/allot-users.css*/
+.allot-users{
+    width: 440px;
+    margin: 0 20px;
+    display: none;
+}
+.allot-users .select-system{
+    height: 30px;
+    line-height: 30px;
+}
+.allot-users select{
+
+}
+.allot-users .allot-syetem-list{
+    width: 440px;
+    margin-top:10px;
+    padding:0 20px;
+}
+.allot-users .allot-syetem-list li{
+    float: left;
+    width: 130px;
+    height: 30px;
+    line-height: 30px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
+}
+.allot-users .allot-syetem-list li label{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    width: 80px;
+    cursor: pointer;
+}
+.allot-users .allot-syetem-list li .m-check{
+    margin:6px 10px 0 0;
+}
+/*!users/delete-users.css*/
+.delete-users{
+    width: 200px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 14px;
+    color: #212121;
+    display: none;
+}
+/*!users/edit-users.css*/
+.edit-users{
+    width:340px;
+    padding:10px 20px;
+    display: none;
+}
+.edit-users input{
+    width: 225px;
+    height: 30px;
+    margin-left: 3px;
+}
+.edit-users input[type="radio"]{
+    display: inline;
+    float: left;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    margin-top: 3px;
+}
+.edit-users label{
+    display: inline;
+    float: left;
+    margin-right: 10px;
+}
+.edit-add-subject{
+    width: 70px;
+}
+.edit-users table tr{
+    height: 40px;
+}
+/*修改密码*/
+.user-modify-pwd{
+    display: none;
+    margin:10px 30px;
+}
+.user-modify-pwd input{
+    width: 225px;
+    height: 30px;
+    margin-left: 3px;
+}
+.user-leading{
+    display: none;
+    margin: 10px;
+}
+
+.user-heading{
+    display: none;
+    margin: 10px;
+}
+
+.user-heading input{
+    display: inline-block;
+    float: left;
+    width: 200px;
+    height: 30px;
+    line-height: 30px;
+    margin-right: 10px;
+    margin-bottom: 30px;
+}
+.user-heading a{display:inline-block;
+    float: left; width:80px; cursor: pointer; text-align: center; height:30px; line-height: 30px; background:white; border: 1px solid #dbdbdb; border-radius: 4px; position:relative; overflow:hidden;
+    margin-right: 10px;
+}
+.user-heading input[type=file]{position:absolute; cursor: pointer; right:0; top:0; font-size:100px; opacity:0; filter:alpha(opacity=0);}
+.user-leading input{
+    display: inline-block;
+    float: left;
+    width: 200px;
+    height: 30px;
+    line-height: 30px;
+    margin-right: 10px;
+}
+.user-leading a{display:inline-block;
+    float: left; width:80px; cursor: pointer; text-align: center; height:30px; line-height: 30px; background:white; border: 1px solid #dbdbdb; border-radius: 4px; position:relative; overflow:hidden;
+    margin-right: 10px;
+}
+.user-leading input[type=file]{position:absolute; cursor: pointer; right:0; top:0; font-size:100px; opacity:0; filter:alpha(opacity=0);}
+.download-failed{
+    display: none;
+    margin: 10px;
+}
+
+.campus-leading{
+    display: none;
+    margin: 10px;
+}
+.campus-leading input{
+    display: inline-block;
+    float: left;
+    width: 200px;
+    height: 30px;
+    line-height: 30px;
+    margin-right: 10px;
+}
+.campus-leading a{display:inline-block;
+    float: left; width:80px; cursor: pointer; text-align: center; height:30px; line-height: 30px; background:white; border: 1px solid #dbdbdb; border-radius: 4px; position:relative; overflow:hidden;
+    margin-right: 10px;
+}
+.campus-leading input[type=file]{position:absolute; cursor: pointer; right:0; top:0; font-size:100px; opacity:0; filter:alpha(opacity=0);}
+.download-failed{
+    display: none;
+    margin: 10px;
+}
+/*!users/net-users.css*/
+.net-users{
+    width: 440px;
+    display: none;
+}
+.net-users .select-system{
+    height: 30px;
+    line-height: 30px;
+}
+.net-users .users-system-list{
+    width: 440px;
+    margin-top:10px;
+    padding:0 20px;
+}
+.net-users .users-system-list li{
+    float: left;
+    width: 146px;
+    height: 30px;
+    line-height: 30px;
+}
+.net-users .users-system-list li .m-check{
+    margin:6px 10px 0 0;
+}.m-search .btn-search{background-position:6px 6px}.a-btn-details{background-position:-26px 0px}.a-btn-details:hover{background-position:-49px 0px}.a-btn-edit{background-position:0px -27px}.a-btn-edit:hover{background-position:-25px -27px}.a-btn-delete{background-position:-72px 0px}.a-btn-delete:hover{background-position:-72px -25px}.a-btn-add{background-position:0px -52px}.a-btn-add:hover{background-position:-25px -52px}.m-search .btn-search,.a-btn-details,.a-btn-details:hover,.a-btn-edit,.a-btn-edit:hover,.a-btn-delete,.a-btn-delete:hover,.a-btn-add,.a-btn-add:hover{background-image: url(../images/components_z.png)}

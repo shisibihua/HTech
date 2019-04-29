@@ -1,0 +1,259 @@
+package com.honghe.user.dao;
+
+import com.honghe.user.util.JdbcTemplateUtil;
+import com.honghe.organization.agency.dao.Agency;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by zhanghongbin on 2016/7/27.
+ */
+public final class CampusDao {
+
+    public final static CampusDao INSTANCE = new CampusDao();
+    public final static int TYPE_SHCOOL = 3;
+    public final static int TYPE_AREA = 2;
+
+    public long add(Map<String, Object> data) {
+        String campusId = data.get("campusId").toString().trim();
+        String userId = data.get("userId").toString().trim();
+        String sql = "insert into ad_campus2user(campus_id,user_id) values('" + campusId + "','" + userId + "')";
+        return JdbcTemplateUtil.getJdbcTemplate().add(sql, "id");
+    }
+
+    public boolean hasData(long campusId, long userId) {
+        long count = JdbcTemplateUtil.getJdbcTemplate().count("select count(id) from ad_campus2user where user_id='" + userId + "' and campus_id='" + campusId + "'");
+        if (count == 0) {
+            return false;
+        }
+        return true;
+    }
+
+
+    public final long findIdByName(String name) {
+        List<Map<String, String>> result = JdbcTemplateUtil.getJdbcTemplate().findList("select id from ad_campus where name='" + name.trim() + "'");
+        if (result.isEmpty()) {
+            return 0;
+        }
+        return Long.parseLong(result.get(0).get("id"));
+    }
+
+    public final List<Map<String, String>> getAllCampus() {
+        List<Map<String, String>> result = JdbcTemplateUtil.getJdbcTemplate().findList("select id,name from ad_campus");
+        return result;
+    }
+
+    public final List<Map<String, String>> getCampusByCampusName(String name) {
+        List<Map<String, String>> result = JdbcTemplateUtil.getJdbcTemplate().findList("select id,name from ad_campus  where name='"+name+"'");
+        return result;
+    }
+    public final long addUserAgencyRelation(String campusId, String userId) {
+        if (campusId == null || "".equals(campusId) || userId == null || "".equals(userId)) {
+            return -1;
+        }
+        String sql = "insert into ad_campus2user(campus_id,user_id) values('" + campusId + "','" + userId + "')";
+
+        return JdbcTemplateUtil.getJdbcTemplate().add(sql, "id");
+    }
+
+    public final boolean deleteUserAgencyRelation(String userId) {
+        if (userId == null || "".equals(userId)) {
+            return false;
+        }
+        String sql = "delete from ad_campus2user where user_id='" + userId + "'";
+
+        return JdbcTemplateUtil.getJdbcTemplate().delete(sql);
+    }
+
+
+    public final List<Map<String,String>> getAllCampusInfo(){
+        List<Map<String,String>> campusList = new ArrayList<>();
+        String sql = "select id as agencyId,name as agencyName from ad_campus where type_id <="+TYPE_SHCOOL+" and type_id>="+TYPE_AREA;
+        campusList = JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+        return campusList;
+    }
+
+
+    /*----------------------修改资源平台调用用户服务机构相关接口，机构表由agency改为ad_campus-----------------------------------*/
+
+
+    /**
+     * add20160314
+     *
+     * @param agency_id 机构id
+     * @return 结果集
+     * 根据机构id查询机构
+     */
+
+    public final List<Map<String, String>> findAgencyById(String agency_id) {
+        String sql = "select id,name,p_id as pId,type_id as level,stages_id as stageId,schoolyear,url,number,remark " +
+                "from ad_campus a where a.id= '" + agency_id+"'";
+        return JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+    }
+
+    /**
+     * 按机构名字查询 不带用户信息
+     *
+     * @param name 机构名称
+     * @return 结果集
+     */
+    public final List<Map<String, String>> getAgencyByName(String name) {
+        String sql = "select id,name,p_id as pId,type_id as level,stages_id as stageId,schoolyear,url,number,remark " +
+                "from ad_campus a where a.name like " + "'%" + name + "%'";
+        return JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+    }
+
+    /**
+     * 查询所有机构信息
+     *
+     * @return 结果集
+     */
+
+    public final List<Map<String, String>> findAgency() {
+
+        String sql = "select id,name,p_id as pId,type_id as level,stages_id as stageId,schoolyear,url,number," +
+                "remark from ad_campus";
+        return JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+    }
+
+    /**
+     * 根据机构多个id查询相应的多个机构信息
+     *
+     * @param agencyIds
+     * @return
+     */
+    public final List<Map<String, String>> getAgencys(String agencyIds) {
+        List<Map<String, String>> list = new ArrayList<>();
+        String[] agencyId = agencyIds.split(",");
+        for (int i = 0; i < agencyId.length; i++) {
+            if (agencyId[i] != null && !"".equals(agencyId[i])) {
+                String sql = "select id as agencyId,name as agencyName,p_id as pId,stages_id as agencyLevel," +
+                      "stages_id as stageId,schoolyear,url,number,remark from ad_campus as a where a.id = '" + agencyId[i]+"'";
+                list.add(JdbcTemplateUtil.getJdbcTemplate().find(sql));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * add 20160314
+     * 根据机构id查询所有子机构以及所有子机构下属机构
+     *
+     * @param agencyId 机构id
+     * @return
+     */
+    public final Agency findSonAgency(int agencyId) {
+        String sql = "select * from ad_campus";
+        List<Map<String, String>> result = JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+        Agency rootAgency = new Agency();
+        for (Map<String, String> _result : result) {
+            String id = _result.get("id");
+            if (Integer.parseInt(id) == agencyId) {
+                rootAgency.setId(id);
+                rootAgency.setLevel(_result.get("type_id"));
+                rootAgency.setName(_result.get("name"));
+                break;
+            }
+        }
+        roundList(rootAgency.getAgencyList(), result, agencyId);
+        return rootAgency;
+    }
+
+    private final void roundList(List<Agency> agencyList, List<Map<String, String>> result, int agency_id) {
+        for (Map<String, String> itemResult : result) {
+            String p_id = itemResult.get("p_id");
+            if (Integer.parseInt(p_id) == agency_id) {
+                String currentAgencyId = itemResult.get("id");
+                Agency agency = new Agency(currentAgencyId, itemResult.get("name"), itemResult.get("type_id"));
+                agencyList.add(agency);
+                roundList(agency.getAgencyList(), result, Integer.parseInt(currentAgencyId));
+            }
+        }
+    }
+
+
+    /**
+     * 根据机构id获取他的上一级机构
+     *
+     * @param agencyId
+     * @return
+     */
+    public final Map<String, String> getParentAgency(String agencyId) {
+        String sql = "select id as agency_id,name as agency_name,p_id,type_id as agency_level from ad_campus " +
+                "where id=(SELECT a.p_id from ad_campus a where a.id ='" + agencyId + "')";
+        return JdbcTemplateUtil.getJdbcTemplate().find(sql);
+    }
+
+    /**
+     * 获取机构级别
+     * @param agencyId
+     * @param count
+     * @return
+     */
+    public int getAgencyLevel(int agencyId,int count){
+        count++;
+        String sql = "select p_id from ad_campus where id=" + agencyId;
+        Map<String,String> map = JdbcTemplateUtil.getJdbcTemplate().find(sql);
+        int pId = Integer.parseInt(map.get("p_id"));
+        if(pId == 0){
+            return count;
+        }else{
+            return getAgencyLevel(pId,count);
+        }
+    }
+
+    /**
+     * 更新机构
+     *
+     * @param data map集合
+     * @return true/false
+     */
+
+    public final boolean update(Map<String, Object> data) {
+        String agencyId = data.get("agencyId").toString();
+
+        String updateSql = "";
+        if (data.containsKey("agencyName")) {
+            String agencyName = data.get("agencyName").toString().trim();
+            updateSql += "name='" + agencyName + "',";
+        }
+        if (data.containsKey("pId")) {
+            String pId = data.get("pId").toString().trim();
+            updateSql += "p_id=" + pId + ",";
+        }
+        if (data.containsKey("agencyLevel")) {
+            String agencyLevel = data.get("agencyLevel").toString().trim();
+            updateSql += "type_id=" + agencyLevel + ",";
+        }
+
+        if (updateSql.length() == 0) {
+            return false;
+        }
+        updateSql = updateSql.substring(0, updateSql.length() - 1);
+        return JdbcTemplateUtil.getJdbcTemplate().update("update ad_campus set " + updateSql + " where id=" + agencyId);
+    }
+
+    /**
+     * 通过机构ip查询对应的机构信息
+     * @param currenIp 机构对应的ip
+     * @return
+     */
+    public List<Map<String,String>> getCampusInfoByIp(String currenIp){
+        List<Map<String,String>> campusInfo = new ArrayList<>();
+        List<Map<String,String>> campusList = JdbcTemplateUtil.getJdbcTemplate().findList("select * from ad_campus");
+        if (campusList.size()>0&&campusList!=null){
+            for (Map campus:campusList){
+                String url = campus.get("url").toString();
+                String[] urlStr = url.split(":");
+                String ip = urlStr[0];
+                 if (ip.equals(currenIp)){
+                     campusInfo.add(campus);
+                 }
+            }
+        }
+        return campusInfo;
+    }
+}

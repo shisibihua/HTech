@@ -1,0 +1,56 @@
+package com.honghe.deviceNew.dao;
+
+import com.honghe.deviceNew.entity.DeviceHost;
+import com.honghe.spring.MybatisDao;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
+
+@MybatisDao
+public interface DeviceHostMapper {
+    int deleteByPrimaryKey(Integer hostId);
+
+    long insert(DeviceHost record);
+
+    long insertSelective(DeviceHost record);
+
+    int getHostCountByType(@Param("deviceType") String deviceType);
+
+    List<Map<String, Object>> getExistingTypeList();
+
+    List<Map<String,String>>getConditionsHostListByPage(@Param("areaId")String areaId,@Param("conditions")String conditions,@Param("deviceType")String deviceType,@Param("start")int currentPage,@Param("end")int pageSize);
+
+    Map getAreaDevice(Integer hostId);
+
+    int deleteAreaDevice(Integer hostId);
+
+    DeviceHost selectByPrimaryKey(Integer hostId);
+
+    DeviceHost getDeviceByHostIp(String hostIp);
+
+    Map<String,Object> getDeviceInfoByIp(@Param("hostIpaddr")String hostIp);
+
+    Map<String,Object> getHostInfoByMcuCode(String mcuCode);
+
+    int updateByPrimaryKeySelective(DeviceHost record);
+
+    int updateByPrimaryKey(DeviceHost record);
+
+    List<Map<String,Object>> getDeviceInfo(@Param("deviceType") String deviceType) throws Exception;
+
+    int deleteDevices(String[] arrCode);
+
+    DeviceHost isHas(String hostName);
+
+    List<DeviceHost> getDeviceHostList();
+
+    List<Map<String,Object>> getHostInfo();
+    List<Map<String,Object>> getMcuHostInfo();
+
+    int updateBatchHostNames(@Param("list")List list);
+
+    List<Map<String, Object>> getHostInfoByPage(@Param("hostIdStr") String[] hostIdStr, @Param("deviceType") String deviceType, @Param("start") int currentPage, @Param("end") int pageSize);
+
+    Map<String,Object> getDeviceInfoById(@Param("hostId") String hostId);
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy>
+    <!-- 注册服务地址 -->
+    <registry></registry>
+    <services>
+        <service>
+            <name>user</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>ad</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>resource</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>curriculum</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>devconnect</name>
+            <url>http://localhost:9230/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>storage</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+    </services>
+</proxy>

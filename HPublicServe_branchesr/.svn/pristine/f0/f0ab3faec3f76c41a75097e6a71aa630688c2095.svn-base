@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceDloadparmRsMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.DeviceDloadparmRs" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <id column="DEVICENO" property="deviceno" jdbcType="VARCHAR" />
+    <result column="CENTERID" property="centerid" jdbcType="INTEGER" />
+    <result column="DEVICEID" property="deviceid" jdbcType="INTEGER" />
+    <result column="DEVICEMODEL" property="devicemodel" jdbcType="VARCHAR" />
+    <result column="DOWNLOADTIME" property="downloadtime" jdbcType="TIMESTAMP" />
+    <result column="OCCURTIME" property="occurtime" jdbcType="TIMESTAMP" />
+    <result column="OPERATOR" property="operator" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="INTEGER" />
+    <result column="TYPE" property="type" jdbcType="INTEGER" />
+    <result column="UUID" property="uuid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, DEVICENO, CENTERID, DEVICEID, DEVICEMODEL, DOWNLOADTIME, OCCURTIME, OPERATOR, 
+    STATUS, TYPE, UUID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.honghe.deviceNew.entity.DeviceDloadparmRsKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from device_dloadparm_rs
+    where ID = #{id,jdbcType=BIGINT}
+      and DEVICENO = #{deviceno,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceDloadparmRsKey" >
+    delete from device_dloadparm_rs
+    where ID = #{id,jdbcType=BIGINT}
+      and DEVICENO = #{deviceno,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.honghe.deviceNew.entity.DeviceDloadparmRs" >
+    insert into device_dloadparm_rs (ID, DEVICENO, CENTERID, 
+      DEVICEID, DEVICEMODEL, DOWNLOADTIME, 
+      OCCURTIME, OPERATOR, STATUS, 
+      TYPE, UUID)
+    values (#{id,jdbcType=BIGINT}, #{deviceno,jdbcType=VARCHAR}, #{centerid,jdbcType=INTEGER}, 
+      #{deviceid,jdbcType=INTEGER}, #{devicemodel,jdbcType=VARCHAR}, #{downloadtime,jdbcType=TIMESTAMP}, 
+      #{occurtime,jdbcType=TIMESTAMP}, #{operator,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{type,jdbcType=INTEGER}, #{uuid,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.honghe.deviceNew.entity.DeviceDloadparmRs" >
+    insert into device_dloadparm_rs
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="deviceno != null" >
+        DEVICENO,
+      </if>
+      <if test="centerid != null" >
+        CENTERID,
+      </if>
+      <if test="deviceid != null" >
+        DEVICEID,
+      </if>
+      <if test="devicemodel != null" >
+        DEVICEMODEL,
+      </if>
+      <if test="downloadtime != null" >
+        DOWNLOADTIME,
+      </if>
+      <if test="occurtime != null" >
+        OCCURTIME,
+      </if>
+      <if test="operator != null" >
+        OPERATOR,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="type != null" >
+        TYPE,
+      </if>
+      <if test="uuid != null" >
+        UUID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="deviceno != null" >
+        #{deviceno,jdbcType=VARCHAR},
+      </if>
+      <if test="centerid != null" >
+        #{centerid,jdbcType=INTEGER},
+      </if>
+      <if test="deviceid != null" >
+        #{deviceid,jdbcType=INTEGER},
+      </if>
+      <if test="devicemodel != null" >
+        #{devicemodel,jdbcType=VARCHAR},
+      </if>
+      <if test="downloadtime != null" >
+        #{downloadtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="occurtime != null" >
+        #{occurtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="uuid != null" >
+        #{uuid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.honghe.deviceNew.entity.DeviceDloadparmRs" >
+    update device_dloadparm_rs
+    <set >
+      <if test="centerid != null" >
+        CENTERID = #{centerid,jdbcType=INTEGER},
+      </if>
+      <if test="deviceid != null" >
+        DEVICEID = #{deviceid,jdbcType=INTEGER},
+      </if>
+      <if test="devicemodel != null" >
+        DEVICEMODEL = #{devicemodel,jdbcType=VARCHAR},
+      </if>
+      <if test="downloadtime != null" >
+        DOWNLOADTIME = #{downloadtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="occurtime != null" >
+        OCCURTIME = #{occurtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        OPERATOR = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        TYPE = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="uuid != null" >
+        UUID = #{uuid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+      and DEVICENO = #{deviceno,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceDloadparmRs" >
+    update device_dloadparm_rs
+    set CENTERID = #{centerid,jdbcType=INTEGER},
+      DEVICEID = #{deviceid,jdbcType=INTEGER},
+      DEVICEMODEL = #{devicemodel,jdbcType=VARCHAR},
+      DOWNLOADTIME = #{downloadtime,jdbcType=TIMESTAMP},
+      OCCURTIME = #{occurtime,jdbcType=TIMESTAMP},
+      OPERATOR = #{operator,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=INTEGER},
+      TYPE = #{type,jdbcType=INTEGER},
+      UUID = #{uuid,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+      and DEVICENO = #{deviceno,jdbcType=VARCHAR}
+  </update>
+</mapper>

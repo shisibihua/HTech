@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy>
+
+    <!-- 是否开启跟踪系统zipkin localhost:9411 -->
+    <trace></trace>
+    <!-- 调用方式 remote,native 默认不填写为自动识别 -->
+    <call></call>>
+    <!-- 注册服务地址 -->
+    <registry></registry>
+    <services>
+        <service>
+            <name>user</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>area</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>so</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>event</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>ad</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>device</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>resource</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>curriculum</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>devconnect</name>   <!--设备连接服务地址-->
+            <url>http://localhost:9230/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>project</name>
+            <url>http://localhost:8020/ProgramBuilder/ProjectService</url>
+        </service>
+        <service>
+            <name>storage</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>digitalClassCommand</name>
+            <url>http://localhost:210/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>iClassification</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>authority</name>
+            <url>http://localhost:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>organization</name>
+            <url>http://192.168.20.44:7070/service/cloud/httpCommandService</url>
+        </service>
+        <service>
+            <name>Multimedia</name>
+            <url>http://localhost:9052</url>
+        </service>
+        <service>
+            <name>Multimedia_v1</name>
+            <url>http://localhost:9100</url>
+        </service>
+    </services>
+</proxy>

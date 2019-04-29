@@ -1,0 +1,712 @@
+define('device/device', function(require, exports, module) {
+    var $ = require('jquery');
+    var  PAGESIZE="13";//每页条目大小
+    var  CURRENTPAGE = "1";//当前页
+    var  DEVICE_SECURITYEQUIPMENT = 11;//安防设备
+    var  DEVICE_AUDIOEQUIPMENT = 10; //音频设备
+    var  DEVICE_RECOURD = 12; //录播设备
+    var  DEVICE_VIDEOMEETING = 21; //视频会议设备
+    var  DEVICE_CONFERENCETERMINAL = 13; // 会议终端设备
+
+    $("#search").val("");
+    $(".win-device-add-li").children("ul").children("li").children("input").val("");
+    $(".w-tongdao-device-lis").find("input").val("");
+    $(".w-mcu-device-lis").find("input").val("");
+    var Pagination = require('pagination/pagination');
+    var selectList = require('select-list/select');
+    require('check/check');
+    require('search/search');
+    module.exports = {
+        init: function (){
+            this.url = location.href.substring(0, location.href.lastIndexOf("/"));
+            this.getDevice();//获取所有设备列表
+            this.getDeviceCount();//获取现有设备数
+            this.addDevice();//自动添加设备
+            this.delManyHost();//批量删除设备
+            this.searchByCondition();//按设备名称或ip搜索设备，点击搜索按钮搜索设备
+            this.selectOption();//获取选中的设备类型,为批量删除功能提供服务
+            this.mannelAdd();//手动添加设备
+            this.getAllType();//获取现有的所有设备类型
+            this.editDevice();//编辑设备，更改设备名称
+            this.keyDownShow();//输入要选择的关键词后敲回车搜索设备
+            this.getSelectType();//通过配置文件获取设备类型
+        },
+        //获取所有设备列表
+        getDevice:function (){
+            var that = this;
+            var flag = "1";//用来区分分页类型的，1表示获取所有设备，2表示搜索符合条件的设备
+            $.post(that.url + "/device/getDeviceList.do",{
+                'page':CURRENTPAGE,
+                'pageSize':PAGESIZE
+            },function(data){
+                var html="";
+                console.log(data.device.totalItems+";;;;;;;;;;");
+
+                var total = data.device.totalItems;//一次查询的设备总数
+                if(total==0){
+                    $('#deviceList').html("<div class='note-m'>还未添加设备</div>");
+                    $(".m-page").html("");
+                }else if(total>0&&total<=PAGESIZE){
+                    $(".m-page").html("");
+                    that.showDeviceInfo(data,html);
+                }else{
+                    var inputWord = "";
+                    var deviceType = "";
+                    that.initPage(total,inputWord,deviceType,flag);
+                }
+            },'json')
+        },
+        tab_li:function(tab_list,tab){
+
+            tab.each(function () {
+                    var x = $(this).attr("id");
+                    if (x == tab_list) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                })
+
+        },
+        //获取现有设备数
+        getDeviceCount:function(){
+            var that = this;
+            $.post(that.url + "/device/getdCount.do",function(data){
+                var deviceStr = "";
+                deviceStr+="<p>现有设备：</p>"
+                deviceStr+="<span "+(data.count.hrecCount>0?'':'style=\"display:none\"')+">录播设备<span>"+data.count.hrecCount+"</span></span>"
+                deviceStr+="<span "+(data.count.httcCount>0?'':' style=\"display:none\"')+">大屏设备<span>"+data.count.httcCount+"</span></span>"
+                deviceStr+="<span "+(data.count.digitalCount>0?'':' style=\"display:none\"')+">班牌设备<span>"+data.count.digitalCount+"</span></span>"
+                deviceStr+="<span "+(data.count.htprCount>0?'':' style=\"display:none\"')+">投影仪设备<span>"+data.count.htprCount+"</span></span>"
+                deviceStr+="<span "+(data.count.hhtwbCount>0?'':' style=\"display:none\"')+">白板一体机<span>"+data.count.hhtwbCount+"</span></span>"
+                deviceStr+="<span "+(data.count.positionCount>0?'':' style=\"display:none\"')+">定位天线<span>"+data.count.positionCount+"</span></span>"
+                deviceStr+="<span "+(data.count.audioCount>0?'':' style=\"display:none\"')+">音频设备<span>"+data.count.audioCount+"</span></span>"
+                deviceStr+="<span "+(data.count.securityCount>0?'':' style=\"display:none\"')+">安防设备<span>"+data.count.securityCount+"</span></span>"
+                deviceStr+="<span "+(data.count.hhtccCount>0?'':' style=\"display:none\"')+">中控设备<span>"+data.count.hhtccCount+"</span></span>"
+                deviceStr+="<span "+(data.count.hhtmcuCount>0?'':' style=\"display:none\"')+">视频会议设备<span>"+data.count.hhtmcuCount+"</span></span>"
+                deviceStr+="<span "+(data.count.hhtcteCount>0?'':' style=\"display:none\"')+">会议终端设备<span>"+data.count.hhtcteCount+"</span></span>"
+                deviceStr+="<span "+(data.count.unknownCount>0?'':' style=\"display:none\"')+">未知设备<span>"+data.count.unknownCount+"</span></span>";
+                $(".main-top-info").html(deviceStr);
+            },'json')
+        },
+        //自动添加设备
+        addDevice:function(){
+            var that = this;
+            $(".btn-zadd-device").on("click", function () {
+                var inputWord = $('#search').val();
+                var deviceType = $('.select-list ul li.selected').attr('data-value');
+                layer.open({
+                    type: 3,
+                    title: false,
+                    closeBth: 0
+                    //shade:.8,
+                    //end: function () {
+                    //
+                    //}
+                })
+                $.post(that.url+"/device/addDevice.do",function(data){
+                    var discoverCount = data.discover.discoverCount;
+                            layer.open({
+                                type: 1,
+                                closeBth: 0,
+                                title: false,
+                                shade: false,
+                                area: ['200px', '50px'],
+                                content: "<p style='text-align:center;line-height:50px'>"+( discoverCount>0?'自动添加' + discoverCount + '个设备':'未发现新设备')+"</p>",
+                                end:function(){
+                                    layer.closeAll();
+                                    if(inputWord==""&&deviceType==""){
+                                        that.getDevice();
+                                        that.getAllType();
+                                    }else {
+                                        that.searchByType(deviceType,inputWord);
+                                        $('#search').val(inputWord);
+                                        $('#system.select-button').val(deviceType);
+                                    }
+                                    //that.getDevice();
+                                    that.getDeviceCount();
+                                }
+                            });
+                },'json')
+
+            });
+        },
+        //删除设备
+        delSigleHost:function(){
+            var that = this;
+            $(".a-btn-delete").on("click", function () {
+                var inputWord = $('#search').val();
+                var deviceType = $('.select-list ul li.selected').attr('data-value');
+                var hostidStr = $(this).attr('id');
+                var hostTypeStr = $(this).attr('dtype');
+                if(hostTypeStr=="NVR"){
+                    hostTypeStr = "HHREC";
+                }
+                var hostipStr = $(this).parent('.u-operation').parent('.u-item').find("#d-ip").text();
+                layer.confirm('确定删除该设备吗？',function(){
+                    $.post(that.url + "/device/deleteDevice.do",{
+                        hostIdStr:hostidStr,
+                        hostIpStr:hostipStr,
+                        hostTypeStr:hostTypeStr
+                    },function(data){
+                        console.log(data.result.msg);
+                        layer.msg(data.result.msg);
+                        if(inputWord==""&&deviceType==""){
+                            that.getDevice();
+                            that.getAllType();
+                        }else {
+                            that.searchByType(deviceType,inputWord);
+                            $('#search').val(inputWord);
+                            $('#system.select-button').val(deviceType);
+                        }
+                        that.getDeviceCount();
+                    },'json')
+                })
+            });
+        },
+        //批量删除设备
+        delManyHost:function(){
+            var that = this;
+            $(".user-btns .btn-delete-device").on("click",function(){
+                var hostidStr = "";
+                var hostipStr = "";
+                var hostTypeStr = "";
+                var selecthost=$('#deviceList .u-item .u-check .m-checked');
+                var inputWord = $('#search').val();
+                var deviceType = $('.select-list ul li.selected').attr('data-value');
+                if(selecthost.length==0){
+                    layer.msg("请至少选择一个设备");
+                }else{
+                    selecthost.each(function(){
+                        var deviceType = $(this).attr('dtype');
+                        if(deviceType=="NVR"){
+                            deviceType = "HHREC";
+                        }
+                        hostidStr+=$(this).attr('id')+",";
+                        hostTypeStr+=deviceType+",";
+                        hostipStr+= $(this).parents('.u-item').find("#d-ip").text()+",";
+                    })
+                    layer.confirm('确定要删除这些设备吗？',function(){
+                        $.post(that.url + "/device/deleteDevice.do",{
+                            hostIdStr:hostidStr,
+                            hostIpStr:hostipStr,
+                            hostTypeStr:hostTypeStr
+                        },function(data){
+                            layer.msg(data.result.msg);
+                            if(inputWord==""&&deviceType==""){
+                                that.getDevice();
+                                that.getAllType();
+                            }else {
+                                that.searchByType(deviceType,inputWord);
+                                $('#search').val(inputWord);
+                                $('#system.select-button').val(deviceType);
+                            }
+                            that.getDeviceCount();
+                        },'json')
+                    })
+                }
+
+            });
+        },
+        //输入要选择的关键词后敲回车搜索设备
+        keyDownShow:function(){
+            var that = this;
+            $('.main-list-info-li  .m-search input').bind('keypress', function(event){
+                if(event.keyCode == '13'){
+                    //点回车键进行搜索
+                    that.searchDevice();
+                }
+            });
+        },
+        //按设备名称或ip搜索设备，点击搜索按钮搜索设备
+        searchByCondition:function(){
+            var that = this;
+            $('.btn-search').on("click",function(){
+                that.searchDevice();
+            })
+        },
+        //按设备名称或ip搜索设备,用于点击搜索按钮和敲回车来进行搜索
+        searchDevice:function(){
+            var flag = "2";//用来区分分页类型的，1表示获取所有设备，2表示搜索符合条件的设备
+            var that = this;
+            var inputWord = $('#search').val();
+            var deviceType = $('.select-list ul li.selected').attr('data-value');
+            $.post(that.url + "/device/searchByNameOrIp.do",{
+                'conditions':inputWord,
+                'currentPage':CURRENTPAGE,
+                'pageSize':PAGESIZE,
+                'deviceType':deviceType
+            },function(data){
+                var html = "";
+                var total = data.device.totalItems; //获取查询到的所有设备的总数
+                if(total==0){
+                    $('#deviceList').html("<div class='note-m'>未查找到您所找的设备</div>");
+                    $(".m-page").html("");
+                }else if(total>0&&total<=PAGESIZE){
+                    $(".m-page").html("");
+                    that.showDeviceInfo(data,html);
+                }else{
+                    that.initPage(total,inputWord,deviceType,flag);
+                }
+            },'json');
+    },
+        //按设备类型进行搜索
+        searchByType:function(deviceType,inputWord){
+            inputWord=$('#search').val();
+            var that = this;
+            var flag = "2";//用来区分分页类型的，1表示获取所有设备，2表示搜索符合条件的设备
+            $.post(that.url + "/device/searchByNameOrIp.do",{
+                'conditions':inputWord,
+                'currentPage':CURRENTPAGE,
+                'pageSize':PAGESIZE,
+                'deviceType':deviceType
+            },function(data){
+                var html = "";
+                //var totalp = data.result.pageItemsCount; //获取查询到的当前页的设备总数
+                var total = data.device.totalItems; //获取查询到的所有设备的总数
+                if(total==0){
+                    $('#deviceList').html("<div class='note-m'>未查找到您所找的设备</div>");
+                    $(".m-page").html("");
+                }else if(total>0&&total<=PAGESIZE){
+                    $(".m-page").html("");
+                    that.showDeviceInfo(data,html);
+                }else{
+                    that.initPage(total,inputWord,deviceType,flag);
+                }
+            },'json');
+
+        },
+        //编辑设备，更改设备名称
+        editDevice: function () {
+            var that = this;
+            $(".a-btn-edit").on("click", function () {
+                var inputWord = $('#search').val();
+                var deviceType = $('.select-list ul li.selected').attr('data-value');
+                var name = $(this).parent('.u-operation').parent('.u-item').find('.user-con').text();
+                $(".win-device-edit-li").find(".hostName").val(name);
+                var hostid = $(this).attr('id');
+                layer.open({
+                    type: 1,
+                    title: '编辑设备',
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['390px', '160px'],
+                    content: $(".win-device-edit"),
+                    btn: ["确定", "取消"],
+                    end: function (index, layero) {
+                        layer.close(index);
+                    },
+                    yes: function (index, layero) {
+                        var hostName = $(".win-device-edit-li").find(".hostName").val();
+                        if (hostName == name) {
+                            layer.msg("未作出修改");
+                            return
+                        }else if(hostName==""){
+                            layer.msg("设备名称不能为空");
+                            return false
+                        }
+                        $.post(that.url + "/device/updateHostName.do", {
+                            hostId: hostid,
+                            hostName: hostName
+                        }, function (data) {
+                            layer.msg(data.result.msg);
+                            if(inputWord==""&&deviceType==""){
+                                that.getDevice();
+                                that.getAllType();
+                            }else {
+                                that.searchByType(deviceType,inputWord);
+                                $('#search').val(inputWord);
+                                $('#system.select-button').val(deviceType);
+                            }
+                        }, 'json')
+                        layer.close(index);
+                    }
+                });
+            });
+        },
+        //添加设备类型选择
+        getSelectType:function(){
+            var that = this;
+            $.post(that.url+"/device/getTypeByProperties.do",function(data){
+                var html="";
+                var name = data.name.split(",");
+                var val = data.value.split(",");
+                for(var i=0;i<name.length;i++){
+                    html+="<option value='"+val[i]+"'>"+name[i]+"</option>";
+                }
+                $("#select-device").html(html);
+                var select = new SelectList('#select-device', function (option) {
+                    var tab_list = option.attr('data-value');
+                    console.log('value = ' + option.attr('data-value'));
+                    var tab = $(".win-device-add-li");
+                    console.log('text = ' + $(".win-device-add-li"));
+                    that.tab_li(tab_list,tab);
+
+                });
+                select.init();
+                //录播子类型选择
+                var select_va = $("input[name='select-dws']").val();
+                if (select_va == 1) {
+                    select_va = 0;
+                }
+                that.tab_li(select_va,$(".w-tongdao-device-lis"));
+                //视频会议子类型选择（mcu）
+                var select_mcu = $("input[name='select-mcu']").val();
+                that.tab_li(select_mcu,$(".w-mcu-device-lis"));
+            },'json')
+        },
+        //手动添加设备
+        mannelAdd: function () {
+            var that = this;
+            $(".btn-add-device").on("click", function () {
+                var inputWord = $('#search').val();
+                var deviceType = $('.select-list ul li.selected').attr('data-value');
+                var tab = $(".win-device-add-li");
+                that.tab_li($("#select-device").find("input[name='select-device']").val(), tab);
+                layer.open({
+                    type: 1,
+                    title: '添加设备',
+                    shadeClose: false,
+                    shade: 0.8,
+                    area: ['390px', '510px'],
+                    btn: ["确定", "取消"],
+                    content: $(".win-device-add"),
+                    end: function (index, layero) {
+                        $(".win-device-add-li").children("ul").children("li").children("input").val("");
+                        $(".w-tongdao-device-lis").find("input").val("");
+                        $(".w-mcu-device-lis").find("input").val("");
+                        layer.close(index);
+                    },
+                    yes: function (index, layero) {
+                         $(".win-device-add-li").each(function () {
+                            var deviceTypes = $("input[name='select-device']").val();
+
+                            if ($(this).css('display')=="block") {
+                                var className = !$(this).find('.hostName').val() ? "" : $(this).find('.hostName').val().trim();//设备名称
+                                var hostPort = !$(this).find('#hostPort').val() ? "" : $(this).find('#hostPort').val();//端口号
+                                var hostChannel = !$(this).find('#hostChannel').val() ? "" : $(this).find('#hostChannel').val();//通道号
+                                var userName = !$(this).find('#userName').val() ? "" : $(this).find('#userName').val();//用户名
+                                var password = !$(this).find('#password').val() ? "" : $(this).find('#password').val();//密码
+                                var ip = !$(this).find('.hostIp').val() ? "" : $(this).find('.hostIp').val();//ip地址
+                                var clientCode="";  //mcu设备编码 ||
+                                var isTour = "";
+                                var metString = "";
+                                var cameraString = "";
+                                if (deviceTypes ==DEVICE_SECURITYEQUIPMENT){
+                                     isTour = !$(this).find(".select-dg").find(".selected").attr("valnum") ? "1" : $(this).find(".select-dg").find(".selected").attr("valnum");//是否支持巡课
+                                }
+                                if (deviceTypes == DEVICE_RECOURD) {
+                                    var hrecType = $(this).find("#select-dws input[name='select-dws']").val();
+                                    deviceTypes = deviceTypes + "," + hrecType;
+                                    $(".w-tongdao-device-lis").each(function(){
+                                        var theType = $(this).attr('id');
+                                        if($(this).css('display')=="block"){
+                                            className = !$(this).find('.hostName').val() ? "" : $(this).find('.hostName').val().trim();
+                                            var portnum = $(this).find('.metString').length;
+                                            for (var i = 0; i < portnum; i++) {
+                                                metString += $(this).find('.metString').eq(i).val() + ",";//通道地址
+                                                cameraString += $(this).find('.portName').eq(i).val().trim() + ",";//通道名称
+                                            }
+                                            ip = !$(this).find('.hostIp').val() ? "" : $(this).find('.hostIp').val();//ip地址
+                                        }
+                                    });
+                                }
+                                if (deviceTypes == DEVICE_VIDEOMEETING) {
+                                    var mcuType = $(this).find("#select-mcu input[name='select-mcu']").val();
+                                    deviceTypes = deviceTypes + "," + mcuType;
+                                    $(".w-mcu-device-lis").each(function(){
+                                        var theType = $(this).attr('id');
+                                        if($(this).css('display')=="block"){
+                                            className = !$(this).find('.hostName').val() ? "" : $(this).find('.hostName').val().trim();
+                                            ip = !$(this).find('.hostIp').val() ? "" : $(this).find('.hostIp').val();//ip地址
+                                            clientCode=!$(this).find('.clientCode').val() ? "" : $(this).find('.clientCode').val().trim();
+                                        }
+                                    });
+                                }
+                                if (metString == ",") {
+                                    metString = "";
+
+                                }
+                                if(cameraString == ","){
+                                    cameraString = "";
+                                }
+
+                                if (deviceTypes == DEVICE_CONFERENCETERMINAL) {
+                                    clientCode = $('.meetingClientCode').val().trim();
+                                }
+
+                                var isIp = /^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$/;
+                                if (className == "") {
+                                    layer.msg("名称不能为空" );
+                                    return false;
+                                } else if(deviceTypes ==DEVICE_SECURITYEQUIPMENT&&hostPort ==""){
+                                    layer.msg("端口号不能为空");
+                                    return false;
+                                } else if(deviceTypes ==DEVICE_SECURITYEQUIPMENT&&hostPort.length >5){
+                                    layer.msg("端口号不能超过五位数");
+                                    return false;
+                                } else if(deviceTypes ==DEVICE_SECURITYEQUIPMENT&&userName ==""){
+                                    layer.msg("用户名不能为空");
+                                    return false;
+                                } else if(deviceTypes ==DEVICE_SECURITYEQUIPMENT&&password ==""){
+                                    layer.msg("密码不能为空");
+                                    return false;
+                                } else if (ip == ""&&deviceTypes != "12,6"&&deviceTypes!="12,4") {
+                                    layer.msg("ip不能为空");
+                                    return false;
+                                }
+                               /* else if ((!isIp.test(ip))&&deviceTypes != "12,6"&&deviceTypes!=DEVICE_AUDIOEQUIPMENT) {
+                                    layer.msg("请输入正确格式的ip");
+                                    return false;
+                                }*/
+                                else if(deviceTypes==DEVICE_AUDIOEQUIPMENT&&ip.length>5){
+                                    layer.msg("ID不能超过五位数");
+                                    return false;
+                                }else if((deviceTypes==(DEVICE_VIDEOMEETING+","+mcuType) || deviceTypes==DEVICE_CONFERENCETERMINAL) && clientCode==""){
+                                     layer.msg("设备编号不能为空!");
+                                     return false;
+                                } else {
+                                    layer.close(index);
+                                    layer.load();
+                                    $.post(that.url + '/device/mannelAdd.do', {
+                                        deviceType: deviceTypes,
+                                        className: className,
+                                        hostPort: hostPort,
+                                        hostChannel: hostChannel,
+                                        userName: userName,
+                                        password: password,
+                                        ip: ip,
+                                        isTour: isTour,
+                                        metString: metString,
+                                        cameraString: cameraString,
+                                        mcuClientCode:clientCode
+                                    }, function (data){
+                                        layer.closeAll();
+                                        if (data.result == 0) {
+                                            layer.msg("设备添加失败");
+                                            if(inputWord==""&&deviceType==""){
+                                                that.getDevice();
+                                                that.getAllType();
+                                            }else {
+                                                that.searchByType(deviceType,inputWord);
+                                                $('#search').val(inputWord);
+                                                $('#system.select-button').val(deviceType);
+                                            }
+                                            $(".win-device-add-li").children("ul").children("li").children("input").val("");
+                                            $(".w-tongdao-device-lis").find("input").val("");
+                                            $(".w-mcu-device-lis").find("input").val("");
+                                        } else {
+                                            if (data.result.hostId == 0) {
+                                                //layer.close(index);
+                                                layer.msg("设备添加失败");
+                                                console.log("hostId==0");
+                                                that.getErrorInfo(inputWord,deviceType,that);
+                                            }else if (data.result.hostId == -1) {
+                                                layer.msg("设备添加失败,设备ip不可重复!");
+                                                that.getErrorInfo(inputWord,deviceType,that);
+                                            }else if (data.result.hostId == -2) {
+                                                layer.msg("该类型设备已注册，添加失败。");
+                                                that.getErrorInfo(inputWord,deviceType,that);
+                                            }else if (data.result.hostId == -3) {
+                                                console.log("获取已添加设备数量失败");
+                                                layer.msg("设备添加失败");
+                                                that.getErrorInfo(inputWord,deviceType,that);
+                                            }else if (data.result.hostId == -4) {
+                                                layer.msg("设备添加失败");
+                                                console.log("获取授权数量失败")
+                                                that.getErrorInfo(inputWord,deviceType,that);
+                                            }else if (data.result.hostId == -5) {
+                                                layer.msg("该设备类型不存在，添加失败。");
+                                                that.getErrorInfo(inputWord,deviceType,that);
+                                            }else if (data.result.hostId == -6) {
+                                                layer.msg("虚拟设备流地址不能为空，添加失败。");
+                                                that.getErrorInfo(inputWord,deviceType,that);
+                                            }else if (data.result.hostId == -7) {
+                                                layer.msg("向连接服务请求流地址失败，添加失败。");
+                                                that.getErrorInfo(inputWord,deviceType,that);
+                                            }else {
+                                                //layer.close(index);
+                                                layer.msg("设备添加成功");
+                                                if(inputWord==""&&deviceType==""){
+                                                    that.getDevice();
+                                                    that.getAllType();
+                                                    $("#search").val("");
+                                                }else {
+                                                    that.searchByType(deviceType,inputWord);
+                                                    $('#search').val(inputWord);
+                                                    $('#system.select-button').val(deviceType);
+                                                }
+                                                that.getDeviceCount();
+                                                $(".win-device-add-li").children("ul").children("li").children("input").val("");
+                                                $(".w-tongdao-device-lis").find("input").val("");
+                                                $(".w-mcu-device-lis").find("input").val("");
+                                            }
+                                        }
+                                        layer.close(index);
+                                    }, 'json');
+
+                                }
+                            }
+                        })
+                    }
+                });
+            });
+
+        },
+        getErrorInfo:function(inputWord,deviceType,that){
+            if(inputWord==""&&deviceType==""){
+                that.getDevice();
+                that.getAllType();
+            }else {
+                that.searchByType(deviceType,inputWord);
+                $('#search').val(inputWord);
+                $('#system.select-button').val(deviceType);
+            }
+            $(".win-device-add-li").children("ul").children("li").children("input").val("");
+            $(".w-tongdao-device-lis").find("input").val("");
+            $(".w-mcu-device-lis").find("input").val("");
+        },
+        //显示分页信息
+        getDeviceFromPage:function(pageIndex){
+            var pageIndex=pageIndex+1;
+            console.log(pageIndex+"======pageIndex")
+            var that = this;
+            $.post(that.url + "/device/getDeviceList.do",{
+                'page':pageIndex,
+                'pageSize':PAGESIZE
+            },function(data){
+                var html = "";
+                that.showDeviceInfo(data,html);
+            },'json')
+        },
+        //按条件搜索得到的设备分页显示
+        searchDeviceFromPage:function(pageIndex,inputWord,deviceType){
+            pageIndex=pageIndex+1;
+            var that = this;
+            $.post(that.url + "/device/searchByNameOrIp.do",{
+                'conditions':inputWord,
+                'currentPage':pageIndex,
+                'pageSize':PAGESIZE,
+                'deviceType':deviceType
+            },function(data){
+                var html = "";
+                that.showDeviceInfo(data,html);
+            },'json')
+        },
+        //设备信息字符串拼接，显示设备信息
+        showDeviceInfo:function(data,html){
+        var that = this;
+        var device = data.device.items;//设备信息
+        $.each(device,function(index,value){
+            var hostid=value.id;
+            html+="<div class='u-item'>"
+            html+="<div class='u-check'>"
+            html+="<i class='m-check' dtype='"+value.type+"' id='"+hostid+"'></i>"
+            html+="</div>"
+            html+="<div class='u-name'>"
+            html+="<div class='user-head'>"
+            html+="<div class='user-con d-name' style='overflow: hidden;white-space: nowrap; -o-text-overflow: ellipsis;text-overflow: ellipsis;width: 210px;' title='"+value.name+"'>"+value.name+"</div>"
+            html+="<div style='clear:both;line-height:0; height:0;'></div>"
+            html+="</div>"
+            html+="</div>"
+            html+="<div class='u-number d-typeName'>"+value.typeName+"</div>"
+            html+="<div title='"+value.ip+"' class='u-tel' id='d-ip'>"+value.ip+"</div>"
+            html+="<div class='u-email d-arecName'>"+((value.arecName==""||value.arecName==null)?'未分配':value.arecName)+"</div>"
+            // html+="<div class='u-deviceCode d-deviceCode'>"+(value.deviceCode==""?'未分配':value.deviceCode)+"</div>"
+            html+="<div id='operation' class='u-operation'>"
+            html+="<a href='javascript:void(0)' id='"+hostid+"' dtype='"+value.type+"' class='a-btn a-btn-edit btn-edit-users'></a>"
+            html+="<a href='javascript:void(0)' id='"+hostid+"' dtype='"+value.type+"' class='a-btn a-btn-delete btn-delete-users'></a>"
+            html+="</div>";
+            html+="</div>";
+
+        })
+
+
+            $('#deviceList').html(html);
+        $('.m-check-all').removeClass('m-checked');//切换分页时取消选中所有状态
+        that.delSigleHost(); //因删除功能是在拼接的字符串里触发的，所以需加载一遍删除功能
+        that.editDevice(); //加载一遍编辑功能
+        that.initSelect();
+    },
+        //获取现有的所有设备类型
+        getAllType:function(){
+            var that=this;
+            $.post(that.url + "/device/getAllType.do",function(data){
+                var html="";
+                html+="<option value=''>全部类型</option>";
+                $.each(data.typeList,function(index,value){
+                    if(value.dtype_name=="NVR"){
+                        value.dtype_name = "HHREC";
+                    }
+                    html+="<option value='"+value.dtype_name+"'>"+value.dtype_name_cn+"</option>";
+
+                })
+                $("#system").html(html);
+                that.selectOption();
+            },'json')
+        },
+        //分页
+        initPage:function(total,inputWord,deviceType,flag){
+            var that=this;
+            $('.main-list .m-page').html('');
+            if(total>PAGESIZE){
+                console.log("total>pagesize==="+flag)
+                var page = new Pagination(parseInt(total),function(pageIndex){
+                    if(flag=="1"){
+                        that.getDeviceFromPage(pageIndex);
+                    }else if(flag=="2"){
+                        that.searchDeviceFromPage(pageIndex,inputWord,deviceType);
+                    }
+
+                })
+                page.init('.main-list .m-page',PAGESIZE);
+            }
+        },
+        //初始化多选框
+        initSelect: function () {
+
+            var checks = $('.u-item');
+            //单选,当单击整行时依然可以选中或取消选中
+            checks.on('click', function (event) {
+                //判断如果是点击修改或是删除按钮时，不触发选择事件
+                if(event.target=='javascript:void(0)'){
+                  return false;
+                }
+                $(this).find('.u-check .m-check').hasClass('m-checked') ? $(this).find('.u-check .m-check').removeClass('m-checked') &&$(this).css('background',"white") : $(this).find('.u-check .m-check').addClass('m-checked') && $(this).css('background',"#eaedf1");
+                //如果单选的个数与该页设备总数相等，则选中全选框
+                if($('#deviceList .m-checked').length==$('#deviceList .m-check').length){
+                    $('.u-title .m-check-all').addClass('m-checked');
+                }else{
+                    $('.u-title .m-check-all').removeClass('m-checked');
+                }
+            });
+            //如果该项下面有子类，则该项的宽度设置为100%；
+            $('#deviceList .u-item .u-check').each(function () {
+                var childUl = $(this).children('ul');
+                if (childUl && childUl.length > 0) {
+                    $(this).addClass('single-line');
+                }
+            });
+            //如果该项下面有子类，则添加全选功能
+            $('#deviceList .u-item .u-check .m-check').on('click', function () {
+                var li = $(this).closest('li');
+                var childUl = li.children('ul');
+                if (childUl && childUl.length > 0) {
+                    var allChildCheck = li.find('.m-check');
+                    $(this).hasClass('m-checked') ? allChildCheck.addClass('m-checked') : allChildCheck.removeClass('m-checked');
+                }
+            });
+        },
+        //获取选中的设备类型
+        selectOption: function () {
+            var that = this;
+            var inputWord = $('#search').val();
+            var select = new SelectList('#system', function (option) {
+                var deviceType = option.attr('data-value');
+                that.searchByType(deviceType,inputWord);
+            });
+            select.init();
+        }
+
+    }
+});

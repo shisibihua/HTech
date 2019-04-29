@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.sun.jersey:jersey-bundle:1.19">
+    <CLASSES>
+      <root url="jar://G:/apache-maven-3.2.2-dss/repository/com/sun/jersey/jersey-bundle/1.19/jersey-bundle-1.19.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://G:/apache-maven-3.2.2-dss/repository/com/sun/jersey/jersey-bundle/1.19/jersey-bundle-1.19-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://G:/apache-maven-3.2.2-dss/repository/com/sun/jersey/jersey-bundle/1.19/jersey-bundle-1.19-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

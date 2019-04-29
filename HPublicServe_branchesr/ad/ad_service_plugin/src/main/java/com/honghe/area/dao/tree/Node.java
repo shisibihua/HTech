@@ -1,0 +1,119 @@
+package com.honghe.area.dao.tree;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *
+ * @author cnLock
+ * @date 2017/3/9
+ */
+public class Node implements Serializable {
+    /**
+     * 当前级的id
+     */
+    private Integer id;
+    /**
+     * 当前级名称
+     */
+    private String name;
+    /**
+     * 父级的id
+     */
+    private Integer pId;
+    /**
+     * 校区的标识字段，0表示不存在，1表示存在
+     */
+    private String flag;
+    /**
+     * 容纳人数
+     */
+    private String number;
+    private String remark;
+    private String type;
+    private List directories = new ArrayList();
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    Node(Integer id, Integer parentId) {
+        this.id = id;
+        this.pId = parentId;
+    }
+
+    Node(Integer id, String nodeName, Integer parentId) {
+        this.id = id;
+        this.name = nodeName;
+        this.pId = parentId;
+    }
+    Node(Integer id, String nodeName, Integer parentId,String flag) {
+        this.id = id;
+        this.name = nodeName;
+        this.pId = parentId;
+        this.flag = flag;
+    }
+    public Node() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getpId() {
+        return pId;
+    }
+
+    public void setpId(Integer pId) {
+        this.pId = pId;
+    }
+
+    public List getDirectories() {
+        return directories;
+    }
+
+    public void setDirectories(List directories) {
+        this.directories = directories;
+    }
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+}

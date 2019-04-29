@@ -1,0 +1,91 @@
+define('cxMenu/jquery.cxmenu', function(require, exports, module) {
+
+  /*!
+   * cxMenu 1.2
+   * http://code.ciaoca.com/
+   * https://github.com/ciaoca/cxmenu
+   * E-mail: ciaoca@gmail.com
+   * Released under the MIT license
+   * Date: 2014-12-11
+   */
+  
+  var $ = jQuery = require('jquery');
+  
+  (function (factory) {
+      if (typeof define === 'function' && define.amd) {
+          define(['jquery'], factory);
+      } else {
+          factory(jQuery);
+      };
+  }(function ($) {
+      $.cxMenu = function (obj, settings) {
+          if (obj.length < 1) {
+              return
+          };
+  
+          settings = $.extend({}, $.cxMenu.defaults, settings);
+  
+          obj.on(settings.events, 'a', function (e) {
+              e.stopPropagation();
+              var ali = $(this).closest('li');
+              var li = ali.closest('li');
+  
+              var liSiblings = li.siblings();
+  
+              var childUl = li.children('ul');
+              if (childUl.length > 0) {
+  
+                  if (li.hasClass(settings.selectedClass)) {
+                      li.removeClass(settings.selectedClass);
+                      li.find('ul').slideUp(settings.speed);
+                      li.find('li').removeClass(settings.selectedClass);
+                      return false;
+                  };
+  
+                  childUl.slideToggle(settings.speed);
+  
+                  //如果没有子类，则将前面的三角去掉
+                  var childLi = childUl.children('li');
+                  childLi.each(function () {
+                      if ($(this).children('ul').length == 0) {
+                          $(this).find('i').addClass('end');
+                      }
+                  })
+              }
+  
+              if (settings.only) {
+                  liSiblings.removeClass(settings.selectedClass);
+                  liSiblings.find('li').removeClass(settings.selectedClass);
+                  liSiblings.find('ul').slideUp(settings.speed);
+              };
+  
+              ali.addClass(settings.selectedClass);
+              $("#campus-tree").find("a").removeClass("end");
+              if (ali.children('ul').length == 0) {
+                  ali.children('a').addClass('end');
+              }
+              ali.siblings('li').children('a').removeClass('end');
+          });
+      };
+  
+      // 默认值
+      $.cxMenu.defaults = {
+          events: 'click', // 按钮事件
+          selectedClass: 'selected', // 展开时增加的 Class
+          speed: 500, // 切换速度
+          only: true // 同时只展开一个导航
+      };
+  
+      $.fn.cxMenu = function (settings) {
+          if (this.length === 1) {
+              $.cxMenu(this, settings);
+          } else if (this.length > 1) {
+              this.each(function (i) {
+                  $.cxMenu($(this), settings);
+              });
+          };
+          return this;
+      };
+  }));
+
+});

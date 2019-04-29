@@ -1,0 +1,648 @@
+.main {
+    width: 1202px;
+    margin: 0 auto;
+    overflow: hidden;
+    min-height:762px;
+}
+
+.main-left {
+    float: left;
+    width: 320px;
+    min-height: 700px;
+    border-left: 1px solid #d7dbe5;
+    border-right: 1px solid #d7dbe5;
+    margin-bottom: -10000px;
+    padding-bottom: 10000px;
+}
+.scrollbar-left{
+    height: 650px;
+}
+.main-right {
+    float: left;
+    width: 871px;
+    min-height: 700px;
+    border-left: 1px solid #d7dbe5;
+    border-right: 1px solid #d7dbe5;
+    margin-left: 5px;
+    margin-bottom: -10000px;
+    padding-bottom: 10000px;
+}
+
+
+/*main-left*/
+
+.left-top {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-size: 14px;
+    border-bottom: 1px solid #d7dbe5;
+}
+
+.left-top h1 {
+    display: inline-block;
+    text-indent: 40px;
+}
+
+.left-top button {
+    float: right;
+    margin-right: 15px;
+    margin-top: 10px;
+}
+.btnAddOrg{
+    display: none;
+    height: 36px;
+    line-height:30px;
+    margin: 20px auto;
+    border-radius: 3px;
+    width:80%;
+    text-align: center;
+    font-size: 36px;
+    font-weight: 100;
+    color:#508bbd;
+    border:1px dashed #508bbd;
+    cursor: pointer;
+}
+
+/*main-right*/
+
+.right-top {
+    width: 857px;
+    height: 50px;
+    line-height: 50px;
+    font-size: 14px;
+    border-bottom: 1px solid #d7dbe5;
+    padding-left: 20px;
+    color: #212121;
+}
+
+.right-top p {
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width:780px;
+}
+
+.right-search {
+    width: 832px;
+    margin: 20px 0 20px 20px;
+    overflow: hidden;
+}
+
+.right-search .btn {
+    float: right;
+    margin-left: 15px;
+}
+
+.user-list {
+    margin-left: 20px;
+}
+
+.user-list ul {
+    display: block;
+}
+
+.user-list ul li {
+    width: 200px;
+    height: 130px;
+    float: left;
+    border: 1px solid #d7dbe5;
+    margin: 0 8px 8px 0;
+    list-style: none;
+    background: #f2f5f8;
+    cursor: pointer;
+}
+
+.user-list li .status {
+    display: block;
+}
+
+.user-list ul li:hover {
+    box-shadow: 0 -1px 1px #e0e4e9, -1px 0 2px #e0e4e9, 1px 0 1px #e0e4e9, 0 1px 1px #e0e4e9;
+}
+
+.user-name {
+    overflow: hidden;
+}
+
+.user-name > span {
+    display: inline-block;
+    position: relative;
+    float: left;
+    width: 100px;
+    height: 80px;
+    text-align: center;
+    margin-top: 20px;
+}
+.user-name > span.uname {
+    display: inline-block;
+    position: relative;
+    float: left;
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.user-name > span.urole {
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
+    display: inline-block;
+    position: relative;
+    float: left;
+    width: 100px;
+    height:30px;
+    line-height: 30px;
+    text-align: left;
+    overflow: hidden;
+    margin-top: 0px;
+}
+
+
+/*user-list头像点击*/
+
+.user-list li.member-selected {
+    border: 1px solid #449d44;
+}
+
+.headimg {
+    cursor: pointer;
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+}
+
+.head-select {
+    position: absolute;
+    left: 57px;
+    top: 38px;
+    display: none;
+    width: 22px;
+    height: 22px;
+}
+
+.user-name .uname {
+    text-align: left;
+    margin-top: 20px;
+    line-height: 28px;
+    height: 74px;
+}
+
+.user-info {
+    float: right;
+    height: 20px;
+}
+
+.user-info .a-btn-delete {
+    margin-right: 23px;
+}
+
+
+/*角色权限*/
+
+.select-system {
+    margin: 20px;
+}
+
+.permissions-item {
+    margin: 20px;
+}
+
+.permissions-title {
+    height: 30px;
+    line-height: 30px;
+    padding: 0 20px;
+    background: #eaedf1;
+}
+
+.permissions-item > ul {
+    margin-left: 10px;
+    margin-top: 15px;
+}
+
+.permissions-item li label {
+    margin-left: 10px;
+}
+
+.permissions-item > ul > li {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+    line-height: 20px;
+    float:left;
+}
+
+.permissions-item > ul > li ul {
+    display: block;
+    margin-left: 8px;
+    padding-left: 22px;
+    background: url(../images/dotted-line.png) left bottom repeat-y;
+}
+
+.permissions-item > ul > li ul li {
+    display: inline-block;
+    float: left;
+    margin-right: 20px;
+    margin-top: 11px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.single-line {
+    width: 100%;
+}
+
+.permissions-item i {
+    margin-right: 5px;
+}
+
+.operations-btns {
+    clear: both;
+    margin: 20px 20px 50px;
+    text-align: right;
+}
+
+
+/*users*/
+
+.user-main {
+    width: 1200px;
+    margin: 0 auto;
+    border: 1px solid #d7dbe5;
+    border-bottom: none;
+    overflow: hidden;
+    background: #fff;
+    min-height: 761px;
+}
+
+.main-top {
+    height: 30px;
+    margin: 20px;
+}
+
+.user-btns {
+    display: inline-block;
+    float: right;
+    height: 30px;
+}
+
+.user-btns > .btn + .btn-group,
+.user-btns > .btn-group + .btn-group,
+.user-btns > .btn-group + .btn {
+    margin-left: 15px;
+}
+
+.main-list {
+    width: 1160px;
+    margin: 0 auto;
+    color: #212121;
+}
+
+.u-title > div {
+    text-align:center;
+    display: inline-block;
+    float: left;
+    padding: 0 10px;
+}
+
+.u-title {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    background: #eaedf1;
+}
+
+.u-check {
+    width: 30px;
+}
+
+.u-check .m-check {
+    margin: 8px 0 0 11px;
+}
+
+.u-check .m-check-all {
+    margin: 11px 0 0 11px;
+}
+
+.u-item {
+    width: 100%;
+    height: 80px;
+    line-height: 80px;
+    border-bottom: 1px solid #d7dbe5;
+}
+
+.u-item > div {
+    text-align:center;
+    display: inline-block;
+    float: left;
+    height: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 0 10px;
+}
+
+.u-name {
+    width: 120px;
+}
+
+.u-name img {
+    width: 60px;
+    height: 60px;
+    display: inline-block;
+    float: left;
+    margin: 10px 0;
+    border-radius: 50%;
+}
+
+.u-name .user-con {
+    width: 60px;
+    display: inline-block;
+    height: 60px;
+    line-height: 60px;
+    margin: 9px 0 5px 10px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-align: left;
+}
+
+.u-number {
+    width: 120px;
+}
+
+.u-studentName {
+    width: 160px;
+}
+.u-class {
+    width: 160px;
+}
+
+.u-parentName {
+    width: 160px;
+}
+
+/*.u-sex {*/
+    /*width: 60px;*/
+/*}*/
+.u-sex {
+    width: 120px;
+}
+
+.u-tel {
+    width: 110px;
+}
+
+.u-email {
+    width: 260px;
+}
+
+.u-email2 {
+    width: 200px;
+}
+.u-duty {
+    width: 160px;
+}
+
+.u-year {
+    width: 80px;
+}
+.u-org {
+    width: 160px;
+}
+
+.u-identity {
+    width: 90px;
+}
+
+.u-status {
+    width: 90px;
+}
+
+.u-stage {
+    width: 60px;
+}
+
+.u-subject {
+    width: 120px;
+}
+
+.u-operation {
+    width: 100px;
+}
+
+.u-operation .a-btn {
+    margin-top: 30px;
+}
+
+.u-stage .a-btn {
+    margin-top: 30px;
+}
+.top-dr,.top-xz{
+    float: right;
+    height: 30px;
+    line-height: 30px;
+    width: 70px;
+    margin-right: 15px;
+    margin-top: 10px;
+    text-align: center;
+    background: #286090;
+    color: #fff;
+    display: block;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.sprt-tab,.sprt-list{
+    float: right;
+    display: block;
+    height: 16px;
+    width: 16px;
+    cursor: pointer;
+    margin-right: 15px;
+    margin-top: 20px;
+}
+
+.sprt-tab{
+    background: url(../images/icon-tab.png) 0 0  no-repeat;
+}
+.sprt-list{
+    background: url(../images/icon-list.png) 0 0  no-repeat;
+}
+
+.devive-list-ls{
+    height:580px;
+    display: none;
+    float: left;
+    width: 100%;
+}
+.devive-list-title{
+    background: #eaedf1;
+}
+.devive-list-main{
+    border-bottom: 1px solid #eaedf1;
+}
+.devive-list-title,.devive-list-main{
+    height: 33px;
+    width: 96%;
+    margin-left: 2%;
+    float: left;
+}
+.devive-list-title > div,.devive-list-main > div{
+    float: left;
+    height: 40px;
+    line-height: 35px;
+    margin-left: 10px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-align:center;
+}
+.devive-name{
+    width: 180px;
+}
+.devive-lei{
+    width: 120px;
+}
+.devive-ip{
+    width: 180px;
+}
+.devive-dev{
+    width: 180px;
+}
+.devive-cz{
+    width: 80px;
+}
+.devie-delete{
+    margin-top: 13px;
+    margin-left: 32px;
+}
+.devive-list-title{
+    background: #eaedf1;
+}
+.devive-list-main{
+    border-bottom: 1px solid #eaedf1;
+}
+.devive-list-title,.devive-list-main{
+    height: 33px;
+    width: 96%;
+    margin-left: 2%;
+    float: left;
+}
+.devive-list-title > div,.devive-list-main > div{
+    float: left;
+    height: 40px;
+    line-height: 35px;
+    margin-left: 10px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-align:center;
+}
+.devive-name{
+    width: 180px;
+}
+.devive-lei{
+    width: 120px;
+}
+.devive-ip{
+    width: 180px;
+}
+.devive-dev{
+    width: 180px;
+}
+.devive-cz{
+    width: 80px;
+}
+.devie-delete{
+    margin-top: 13px;
+    margin-left: 32px;
+}
+#avatarFile
+{
+    border: 1px solid #cccccc;
+    background-color: #ededed;
+}
+#divUploadAvatar
+{
+    clear: both;
+    width: 500px;
+    margin-top: 5px;
+}
+#divContenter
+{
+    width: 300px;
+    height: 300px;
+    background: #ffffff;
+    float: left;
+    border: 1px solid #ccc;
+}
+#divBG
+{
+    background-repeat: no-repeat;
+}
+/*#divBG img*/
+/*{*/
+    /*width: 300px;*/
+    /*height: 300px;*/
+    /*z-index:-1;*/
+/*}*/
+
+#divCuter
+{
+    border: 2px solid orange;
+    height: 175px;
+    width: 175px;
+    z-index:0;
+    position:relative
+
+}
+#divAvatarInfo
+{
+    margin: auto auto auto 10px;
+    float: left;
+    width: 180px;
+}
+#divImgAvatar
+{
+    border: 1px green solid;
+    width: 175px;
+    height: 175px;
+}
+#imgAvatarView
+{
+    width: 175px;
+    height: 175px;
+}
+#divUploadTxt
+{
+    color: #999999;
+    margin: 15px 10px auto 0px;
+}
+#divUploadBtn
+{
+    margin: 15px 10px auto 0px;
+}
+#divSaveInfo
+{
+    margin: 5px 10px auto 0px;
+    font-weight: bold;
+}
+.btnAvatar
+{
+    background-color: #ededed;
+    height: 23px;
+    border: solid 1px #cdcbcb;
+    text-align: center;
+    line-height: 23px;
+    cursor: pointer;
+}
+

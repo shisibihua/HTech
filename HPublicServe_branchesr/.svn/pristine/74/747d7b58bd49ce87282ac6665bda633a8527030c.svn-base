@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: honghe:hcommon_dbpool:2.0.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://E:/apache-maven-3.2.2/repository/honghe/hcommon_dbpool/2.0.0-SNAPSHOT/hcommon_dbpool-2.0.0-20180516.014838-11.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://E:/apache-maven-3.2.2/repository/honghe/hcommon_dbpool/2.0.0-SNAPSHOT/hcommon_dbpool-2.0.0-20180516.014838-11-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://E:/apache-maven-3.2.2/repository/honghe/hcommon_dbpool/2.0.0-SNAPSHOT/hcommon_dbpool-2.0.0-20180516.014838-11-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,12 @@
+
+CREATE DATABASE IF NOT EXISTS service DEFAULT  CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE service;
+SET FOREIGN_KEY_CHECKS=0;
+
+CREATE TABLE IF NOT EXISTS `campus_user2sip` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `sip_id` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

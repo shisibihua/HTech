@@ -1,0 +1,530 @@
+package com.honghe.web.user.service.teacher;
+
+import com.honghe.service.client.Result;
+import com.honghe.web.user.util.AvatarUtil;
+import com.honghe.web.user.util.ExcelTools;
+import com.honghe.web.user.util.HttpServiceUtil;
+import com.honghe.web.user.util.JsonUtil;
+import jodd.joy.page.PageData;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.List;
+
+/**
+ * Created by sunchao on 2017/1/9.
+ */
+@Service
+public class TeacherService {
+
+    Logger logger = Logger.getLogger(TeacherService.class);
+
+
+    /**
+     * 获取教师列表（分页）
+     */
+    public PageData teacherSearchByPage(String page, String pageSize, String searchWord, String campusId,String flag, HttpServletRequest req) {
+        Map<String, String> params = new HashMap<>();
+        params.put("currentPage", page);
+        params.put("pageSize", pageSize);
+        params.put("teacherName", searchWord);
+        params.put("campusId", campusId);
+        params.put("flag",flag);
+        //初始化result
+        Result result = new Result("",0,"");
+        try {
+            result = HttpServiceUtil.userService("teacherByPage", params);
+        }
+        catch (Exception e) {
+            logger.error("查找用户失败：" + e);
+        }
+        Map map =new HashMap();
+        if (result.getValue()!=null){
+            //获取服务返回的value
+            map=(Map) result.getValue();
+        }
+        List items= (List) map.get("items");//获取map中属性
+        int pagesize= (int)map.get("pageSize");//获取map中属性
+        int currentPage = (int) map.get("currentPage");//获取map中属性
+        int size =(int) map.get("totalItems");//获取map中属性
+        // 生成分页显示对象
+        PageData  pageData = new PageData(currentPage,size,pagesize,items);
+        return pageData;
+    }
+
+
+
+    /**
+     * 添加用户的服务
+     */
+    public JSONObject teacherAdd(HttpServletRequest req,String teacherAvatar, String teacherName,String teacherNamePy, String employeeNo, String stage, String duty, String subject, String gender, String mobile, String email, String qq, String identity, String birthday, String shortMobile, String nation, String politics, String address,String startWork, String isWork, String qualification,String campusId) {
+
+        String path = req.getRealPath("/headImage");
+        File small = new File(path + File.separator + teacherAvatar);
+        String fileName ="";
+        if(small.exists()) {
+            fileName = HttpServiceUtil.uploadFile(small);
+        }
+        Date date = new Date();  //实例化日期类型
+        String today = date.toLocaleString(); //获取当前时间
+        int todayYear = Integer.parseInt(today.substring(0,4));
+        String wokrDates = "";
+        if(null!=startWork&&!"".equals(startWork)&&startWork.length()>=4) {
+             int startyear = Integer.parseInt(startWork.substring(0, 4));
+             wokrDates = String.valueOf((todayYear-startyear));
+        }
+        JSONObject json = new JSONObject();
+        Map<String, String> params = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
+        params.put("teacher_name", teacherName);
+        params.put("namepy", teacherNamePy);
+        params.put("employeeno", employeeNo);
+        params.put("stage_id", stage);
+        params.put("gender", gender);
+        params.put("mobile", mobile);
+        params.put("email", email);
+        params.put("qq", qq);
+        params.put("idcode", identity);
+        params.put("birthday", birthday);
+        params.put("short_num", shortMobile);
+        params.put("nation", nation);
+        params.put("political", politics);
+        params.put("address", address);
+        params.put("work_date", startWork);
+        params.put("teach_date", wokrDates);
+        params.put("is_job", isWork);
+        params.put("teacher_path", fileName);
+        params.put("professional_title",  qualification);
+        map.put("teacher",JSONObject.fromObject(params).toString());
+        map.put("campusId",campusId);
+        map.put("dutyTypeIds",duty);
+        map.put("subjectIds",subject);
+
+        try {
+            Result res = HttpServiceUtil.userService("teacherAdd", map);
+            if (res.getValue() != null) {
+                String result = res.getValue().toString();
+                int code = res.getCode();
+                json.put("result", result);
+                json.put("code", code);
+            }
+        } catch (Exception e) {
+            logger.error("添加教师失败：" + e);
+        }
+        return json;
+    }
+
+    /**
+     * 修改用户的服务
+     */
+    public JSONObject teacherUpdate(HttpServletRequest req,String teacherCode,String teacherNamePy, String teacherAvatar, String teacherName, String employeeNo, String stage, String duty, String subject, String gender, String mobile, String email, String qq, String identity, String birthday, String shortMobile, String nation, String politics, String address, String startWork, String isWork, String qualification,String campusIds) {
+
+
+        String path = req.getRealPath("/headImage");
+        File small = new File(path + File.separator + teacherAvatar);
+        String fileName ="";
+        if(small.exists()) {
+            fileName = HttpServiceUtil.uploadFile(small);
+        }
+        Date date = new Date();  //实例化日期类型
+        String today = date.toLocaleString(); //获取当前时间
+        int todayYear = Integer.parseInt(today.substring(0,4));
+        String wokrDates = "";
+        if(null!=startWork&&!"".equals(startWork)&&startWork.length()>=4) {
+            int startyear = Integer.parseInt(startWork.substring(0, 4));
+            wokrDates = String.valueOf((todayYear-startyear));
+        }
+        JSONObject json = new JSONObject();
+        Map<String, String> params = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
+        params.put("teacher_code", teacherCode);
+        params.put("teacher_name", teacherName);
+        params.put("namepy", teacherNamePy);
+        params.put("employeeno", employeeNo);
+        params.put("stage_id", stage);
+        params.put("gender", gender);
+        params.put("mobile", mobile);
+        params.put("email", email);
+        params.put("qq", qq);
+        params.put("idcode", identity);
+        params.put("birthday", birthday);
+        params.put("short_num", shortMobile);
+        params.put("nation", nation);
+        params.put("political", politics);
+        params.put("address", address);
+        params.put("work_date", startWork);
+        params.put("teach_date", wokrDates);
+        params.put("is_job", isWork);
+        params.put("teacher_path", fileName);
+        params.put("professional_title",  qualification);
+        map.put("teacher",JSONObject.fromObject(params).toString());
+        map.put("dutyTypeIds",duty);
+        map.put("subjectIds",subject);
+        map.put("campusIds",campusIds);
+        try {
+            Result res = HttpServiceUtil.userService("teacherUpdate", map);
+            if (res.getValue() != null) {
+                String code = String.valueOf(res.getValue());
+                json.put("code", code);
+            }
+        } catch (Exception e) {
+            logger.error("用户修改失败：" + e);
+        }
+        return json;
+    }
+
+    /**
+     * 教师详情
+     */
+    public JSONObject teacherDetails(String page,String pageSize,String teacherCode,String searchWord,String userId) {
+
+        JSONObject json = new JSONObject();
+        Map<String, String> params = new HashMap<>();
+        params.put("teacherCode", teacherCode);
+        params.put("currentPage", page);
+        params.put("pageSize", pageSize);
+        params.put("teacherName", searchWord);
+        params.put("userId", userId);
+        try {
+            Result ures = HttpServiceUtil.userService("teacherByPage", params);
+            Result rres = HttpServiceUtil.userService("roleSearch", params);
+            if (ures.getValue() != null) {
+                Map userMap = (Map) ures.getValue();
+                json.put("userInfo", userMap);
+            }
+            if (rres.getValue() != null) {
+                Map roleMap = (Map) rres.getValue();
+                json.put("roleInfo", roleMap);
+            }
+        } catch (Exception e) {
+            logger.error("用户详情查询失败：" + e);
+        }
+        return json;
+    }
+
+    /**
+     * 删除教师
+     *
+     * @param id 教师id
+     * @return
+     */
+    public Result deleteTeacher(String id) {
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        params.put("teacherCode", id);
+        Result result = new Result("", 0, "");//初始化result
+        try {
+            result = HttpServiceUtil.userService("teacherDelete", params);//请求服务并将结果返回
+
+        } catch (Exception e) {
+            logger.error("删除教师失败：" + e);
+        }
+        return result;
+    }
+
+    /**
+     * 批量删除教师
+     * @param userIds 用户id，多个用逗号隔开
+     * @return
+     * @throws Exception
+     */
+    public Result deleteTeachers(String userIds){
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        params.put("userIds", userIds);
+        Result result = new Result("", 0, "");//初始化result
+        try {
+            result = HttpServiceUtil.userService("teachersDelete", params);//请求服务并将结果返回
+
+        } catch (Exception e) {
+            logger.error("批量删除教师失败：" + e);
+        }
+        return result;
+    }
+    /**
+     * 获取所有职务
+     * @return List
+     */
+    public List getTeacherDuty(){
+        Map<String, String> params = new HashMap<>();
+        List userTypeList = new ArrayList();
+        try {
+            Result result = HttpServiceUtil.userService("teacherDuty", params);
+            if (result.getValue()!=null){
+                userTypeList = (List) result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("获取所有职务失败：",e);
+        }
+        return userTypeList;
+    }
+
+    /**
+     * 获取所有授课科目
+     * @return List
+     */
+    public List getTeacherSubject(String seasonId){
+        Map<String, String> params = new HashMap<>();
+        if (seasonId!=null){
+            params.put("seasonId",seasonId);
+        }
+        List userTypeList = new ArrayList();
+        try {
+            Result result = HttpServiceUtil.userService("teacherSubject", params);
+            if (result.getValue()!=null){
+                userTypeList = (List) result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("获取所有授课科目：",e);
+        }
+        return userTypeList;
+    }
+
+    /**
+     * 获取教师所授课学段
+     * @return
+     */
+    public Result getTeacherStage(){
+        Map<String,String> params = new HashMap<>();
+        Result result = new Result("",0,"");
+        try {
+            result = HttpServiceUtil.userService("teacherStage", params);
+        } catch (Exception e) {
+            logger.error("获取教师所授课学段失败",e);
+        }
+        return result;
+    }
+
+    /**
+     * 用户导入
+     */
+    public JSONObject teacherUpload(HttpServletRequest req, HttpServletResponse response) {
+        JSONObject json = new JSONObject();
+        ExcelTools et = new ExcelTools();
+        String msg = et.uploadFile("teacher", req, response);
+        json.put("result", msg);
+        return json;
+    }
+
+    /**
+     * 导入-下载用户模板
+     */
+    public void teacherDownloadMould(HttpServletRequest req, HttpServletResponse resp) {
+        String filePath = req.getRealPath("/") + "teacher_mould.xls";
+        ExcelTools et = new ExcelTools();
+        et.downExcel(filePath, true, resp);
+    }
+
+    /**
+     * 用户服务-用户模板导出失败
+     */
+    public void teacherDownloadFailed(HttpServletRequest req, HttpServletResponse resp) {
+        String filePath = req.getParameter("filePath");
+        ExcelTools et = new ExcelTools();
+        et.downExcel(filePath, false, resp);
+    }
+
+    /**
+     * 用户模板导出
+     */
+    public void teacherExportExcel(HttpServletRequest req, HttpServletResponse resp) {
+        Map<String, String> params = new HashMap<>();
+        String searchWord = req.getParameter("searchWord");
+        String campusId = req.getParameter("campusId");
+        if ("1".equals(campusId)){
+            campusId = "";
+        }
+        params.put("teacherName", searchWord);
+        params.put("campusId", campusId);
+        try {
+            Result res = HttpServiceUtil.userService("teacherExportExcel", params);
+            if (res.getValue() != null) {
+                List<Map<String, String>> list = (List<Map<String, String>>) res.getValue();
+                List<Map<String,String>> exportList = new ArrayList<>();
+                if (!"".equals(campusId)&&campusId!=null){
+                    for(Map<String,String> teacher:list){
+                        JSONObject user = JSONObject.fromObject(teacher.get("user"));
+                        JSONArray campusArray = (JSONArray) user.get("campuses");
+                        List campusList = (List) JsonUtil.jsonToList(campusArray);
+                        for (int i= 0;i<campusList.size();i++){
+                            Map<String,String> campus = (Map<String,String>) campusList.get(i);
+                            if (campusId.equals(campus.get("id"))){
+                                exportList.add(teacher);
+                                continue;
+                            }
+                        }
+                    }
+                }else{
+                    exportList = list;
+                }
+                exportExcel(exportList, resp);
+            }
+        } catch (Exception e) {
+            logger.error("教师模板导出失败" + e);
+        }
+    }
+
+    /**
+     * 生成excel文件，response不为空时，提供下载
+     *
+     * @param userList 用户列表
+     */
+    public String exportExcel(List<Map<String, String>> userList, HttpServletResponse response) {
+        ExcelTools excel = new ExcelTools();
+        // 生成表头
+        String[] headers = {"姓名", "姓名拼音", "编号", "手机", "邮箱", "性别", "生日", "地址", "身份证号", "民族", "政治面貌", "QQ号码", "机构编号", "是否在职", "工作时间", "从教时间", "职称", "学段", "职务", "学科"};
+        List<String[]> excelList = new ArrayList<>();
+        // 插入数据
+        for (int i = 0; i < userList.size(); i++) {
+            String[] strList = new String[20];
+            strList[0] = userList.get(i).get("teacher_name") == null ? "" : userList.get(i).get("teacher_name");
+            strList[1] = userList.get(i).get("namepy") == null ? "" : userList.get(i).get("namepy");
+            strList[2] = userList.get(i).get("employeeno") == null ? "" : userList.get(i).get("employeeno");
+            strList[3] = userList.get(i).get("mobile") == null ? "" : userList.get(i).get("mobile");
+            strList[4] = userList.get(i).get("email") == null ? "" : userList.get(i).get("email");
+            strList[5] = (userList.get(i).get("gender") == null ? "" : (userList.get(i).get("gender").equals("1") ? "男":(userList.get(i).get("gender") .equals("2") ? "女":"" )));
+            strList[6] = userList.get(i).get("birthday") == null ? "" : userList.get(i).get("birthday");
+            strList[7] = userList.get(i).get("address") == null ? "" : userList.get(i).get("address");
+            strList[8] = userList.get(i).get("idcode") == null ? "" : userList.get(i).get("idcode");
+            strList[9] = userList.get(i).get("nation") == null ? "" : userList.get(i).get("nation");
+            strList[10] = userList.get(i).get("political") == null ? "" : userList.get(i).get("political");
+            strList[11] = userList.get(i).get("qq") == null ? "" : userList.get(i).get("qq");
+            JSONObject user = JSONObject.fromObject(userList.get(i).get("user"));
+            JSONArray campus = (JSONArray) user.get("campuses");
+            StringBuffer name = new StringBuffer();
+            for (int j = 0; j<campus.size();j++) {
+                JSONObject campusName = (JSONObject) campus.get(j);
+                name.append(campusName.get("name")).append(",");
+            }
+            String campusname = name.toString();
+            if(null!=campusname&&!"".equals(campusname)) {
+                campusname = campusname.substring(0, campusname.length() - 1);
+            }
+            strList[12] = campusname;
+            strList[13] = (userList.get(i).get("is_job") == null ? "" : (userList.get(i).get("is_job").equals("1") ? "是":(userList.get(i).get("is_job").equals("0") ? "否":"" )));
+            strList[14] = userList.get(i).get("work_date") == null ? "" : userList.get(i).get("work_date");
+            strList[15] = userList.get(i).get("teach_date") == null ? "" : userList.get(i).get("teach_date");
+            strList[16] = (userList.get(i).get("professional_title") == null ? "" : (userList.get(i).get("professional_title").equals("1") ? "三级教师":(userList.get(i).get("professional_title").equals("2") ? "二级教师":(userList.get(i).get("professional_title").equals("3") ? "一级教师":(userList.get(i).get("professional_title").equals("4") ? "高级教师":(userList.get(i).get("professional_title").equals("5") ? "正高级教师":""))))));
+            strList[17] = (userList.get(i).get("stage_id") == null ? "" : (userList.get(i).get("stage_id").equals("1") ? "小学":(userList.get(i).get("stage_id").equals("2") ? "初中":(userList.get(i).get("stage_id").equals("3") ? "高中":(userList.get(i).get("professional_title").equals("4") ? "院系":"")))));
+            JSONArray duty = JSONArray.fromObject(userList.get(i).get("teacherDutyTypes"));
+            StringBuffer name2 = new StringBuffer();
+            for (int j = 0; j<duty.size();j++) {
+                JSONObject dutyName = (JSONObject) duty.get(j);
+                name2.append(dutyName.get("type_name")).append(",");
+            }
+            String dutyname = name2.toString();
+            if(null!=dutyname&&!"".equals(dutyname)) {
+                dutyname = dutyname.substring(0, dutyname.length() - 1);
+            }
+            strList[18] = dutyname;
+            JSONArray subject = JSONArray.fromObject(userList.get(i).get("subject"));
+            StringBuffer name3 = new StringBuffer();
+            for (int j = 0; j<subject.size();j++) {
+                JSONObject subjectName = (JSONObject) subject.get(j);
+                name3.append(subjectName.get("name")).append(",");
+            }
+            String subjectname = name3.toString();
+            if(null!=subjectname&&!"".equals(subjectname)) {
+                subjectname = subjectname.substring(0, subjectname.length() - 1);
+            }
+            strList[19] = subjectname;
+            excelList.add(strList);
+        }
+        String filePath = "";
+        try {
+            filePath = excel.exportTableByFile("教师列表", headers, excelList, "./", "tempDownExcel")[0];
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 如果response为空，只生成excel文件
+        // response不为空时，提供下载
+        if (response == null) {
+            return filePath;
+        }
+        ExcelTools et = new ExcelTools();
+        et.downExcel(filePath, false, response);
+        return null;
+    }
+
+    /**
+     * 图片导入
+     */
+    public JSONObject imageUpload(HttpServletRequest req, int x, int y, int w, int h,String extension) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
+        Date date = new Date();
+        String time = sdf.format(date);
+        JSONObject json = new JSONObject();
+        AvatarUtil ava = new AvatarUtil();
+        File file = ava.uploadImage(req);
+        String path = req.getRealPath("/headImage");
+        File dir = new File(path);
+        if(!dir.exists()){
+            dir.mkdir();
+        }
+        File small = new File(path + File.separator + time + "."+extension+"");
+
+        try {
+            // 上传的原图
+            Image image = ImageIO.read(file);
+            BufferedImage bf = (BufferedImage)image;
+            double height =  bf.getHeight();
+            double width = bf.getWidth();
+            // 页面展示图片的大小
+            double webHeigth = 300;
+            double webWidth = 300;
+            // 根据比例计算截取图片的坐标，宽，高
+            x = (int)(x * (width / webWidth));
+            y = (int)(y * (height / webHeigth));
+            w = (int)(w * (width / webWidth));
+            h = (int)(h * (height / webHeigth));
+            // 截图图片
+            Iterator iterator = ImageIO.getImageReadersByFormatName(""+extension+"");
+
+            ImageReader reader = (ImageReader) iterator.next();
+            InputStream in = new FileInputStream(file);
+            ImageInputStream iis = ImageIO.createImageInputStream(in);
+            reader.setInput(iis, true);
+
+            ImageReadParam param = reader.getDefaultReadParam();
+            Rectangle rect = new Rectangle(x,y,w,h);
+            param.setSourceRegion(rect);
+            BufferedImage bi = reader.read(0, param);
+            // 写出图片
+            ImageIO.write(bi, ""+extension+"", small);
+            file.delete();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        json.put("result", "success");
+        json.put("filename", time);
+        return json;
+    }
+
+    public JSONObject teacherImageCheck(HttpServletRequest req) {
+        AvatarUtil ava = new AvatarUtil();
+        File file = ava.uploadImage(req);
+        long size = file.length()/1024;
+        JSONObject json = new JSONObject();
+        json.put("result", size);
+        return json;
+
+    }
+}

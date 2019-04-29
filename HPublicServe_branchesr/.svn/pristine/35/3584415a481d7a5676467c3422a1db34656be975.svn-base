@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceEventfieldMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.DeviceEventfield" >
+    <id column="field_id" property="fieldId" jdbcType="INTEGER" />
+    <result column="field_belong" property="fieldBelong" jdbcType="INTEGER" />
+    <result column="field_name" property="fieldName" jdbcType="VARCHAR" />
+    <result column="field_content" property="fieldContent" jdbcType="VARCHAR" />
+    <result column="field_remark" property="fieldRemark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    field_id, field_belong, field_name, field_content, field_remark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from device_eventfield
+    where field_id = #{fieldId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from device_eventfield
+    where field_id = #{fieldId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.honghe.deviceNew.entity.DeviceEventfield" >
+    insert into device_eventfield (field_id, field_belong, field_name, 
+      field_content, field_remark)
+    values (#{fieldId,jdbcType=INTEGER}, #{fieldBelong,jdbcType=INTEGER}, #{fieldName,jdbcType=VARCHAR}, 
+      #{fieldContent,jdbcType=VARCHAR}, #{fieldRemark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.honghe.deviceNew.entity.DeviceEventfield" >
+    insert into device_eventfield
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fieldId != null" >
+        field_id,
+      </if>
+      <if test="fieldBelong != null" >
+        field_belong,
+      </if>
+      <if test="fieldName != null" >
+        field_name,
+      </if>
+      <if test="fieldContent != null" >
+        field_content,
+      </if>
+      <if test="fieldRemark != null" >
+        field_remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fieldId != null" >
+        #{fieldId,jdbcType=INTEGER},
+      </if>
+      <if test="fieldBelong != null" >
+        #{fieldBelong,jdbcType=INTEGER},
+      </if>
+      <if test="fieldName != null" >
+        #{fieldName,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldContent != null" >
+        #{fieldContent,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldRemark != null" >
+        #{fieldRemark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.honghe.deviceNew.entity.DeviceEventfield" >
+    update device_eventfield
+    <set >
+      <if test="fieldBelong != null" >
+        field_belong = #{fieldBelong,jdbcType=INTEGER},
+      </if>
+      <if test="fieldName != null" >
+        field_name = #{fieldName,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldContent != null" >
+        field_content = #{fieldContent,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldRemark != null" >
+        field_remark = #{fieldRemark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where field_id = #{fieldId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceEventfield" >
+    update device_eventfield
+    set field_belong = #{fieldBelong,jdbcType=INTEGER},
+      field_name = #{fieldName,jdbcType=VARCHAR},
+      field_content = #{fieldContent,jdbcType=VARCHAR},
+      field_remark = #{fieldRemark,jdbcType=VARCHAR}
+    where field_id = #{fieldId,jdbcType=INTEGER}
+  </update>
+</mapper>

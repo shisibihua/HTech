@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.sybase:sybase:1.0.3">
+    <CLASSES>
+      <root url="jar://G:/apache-maven-3.2.2-dss/repository/com/sybase/sybase/1.0.3/sybase-1.0.3.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://G:/apache-maven-3.2.2-dss/repository/com/sybase/sybase/1.0.3/sybase-1.0.3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://G:/apache-maven-3.2.2-dss/repository/com/sybase/sybase/1.0.3/sybase-1.0.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceDevstateMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.DeviceDevstate" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="CENTERID" property="centerid" jdbcType="INTEGER" />
+    <result column="DEVICEID" property="deviceid" jdbcType="INTEGER" />
+    <result column="STATUS" property="status" jdbcType="INTEGER" />
+    <result column="STATUSTIME" property="statustime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, CENTERID, DEVICEID, STATUS, STATUSTIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from device_devstate
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from device_devstate
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.honghe.deviceNew.entity.DeviceDevstate" >
+    insert into device_devstate (ID, CENTERID, DEVICEID, 
+      STATUS, STATUSTIME)
+    values (#{id,jdbcType=VARCHAR}, #{centerid,jdbcType=INTEGER}, #{deviceid,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{statustime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.honghe.deviceNew.entity.DeviceDevstate" >
+    insert into device_devstate
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="centerid != null" >
+        CENTERID,
+      </if>
+      <if test="deviceid != null" >
+        DEVICEID,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="statustime != null" >
+        STATUSTIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="centerid != null" >
+        #{centerid,jdbcType=INTEGER},
+      </if>
+      <if test="deviceid != null" >
+        #{deviceid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="statustime != null" >
+        #{statustime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.honghe.deviceNew.entity.DeviceDevstate" >
+    update device_devstate
+    <set >
+      <if test="centerid != null" >
+        CENTERID = #{centerid,jdbcType=INTEGER},
+      </if>
+      <if test="deviceid != null" >
+        DEVICEID = #{deviceid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="statustime != null" >
+        STATUSTIME = #{statustime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceDevstate" >
+    update device_devstate
+    set CENTERID = #{centerid,jdbcType=INTEGER},
+      DEVICEID = #{deviceid,jdbcType=INTEGER},
+      STATUS = #{status,jdbcType=INTEGER},
+      STATUSTIME = #{statustime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

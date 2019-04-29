@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.Device" >
+    <id column="device_id" property="deviceId" jdbcType="INTEGER" />
+    <result column="device_name" property="deviceName" jdbcType="VARCHAR" />
+    <result column="device_maintoken" property="deviceMaintoken" jdbcType="VARCHAR" />
+    <result column="device_subtoken" property="deviceSubtoken" jdbcType="VARCHAR" />
+    <result column="host_id" property="hostId" jdbcType="INTEGER" />
+    <result column="device_mainstream" property="deviceMainstream" jdbcType="VARCHAR" />
+    <result column="device_substream" property="deviceSubstream" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    device_id, device_name, device_maintoken, device_subtoken, host_id, device_mainstream, 
+    device_substream
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from device
+    where device_id = #{deviceId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from device
+    where device_id = #{deviceId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.honghe.deviceNew.entity.Device" >
+    insert into device (device_id, device_name, device_maintoken, 
+      device_subtoken, host_id, device_mainstream, 
+      device_substream)
+    values (#{deviceId,jdbcType=INTEGER}, #{deviceName,jdbcType=VARCHAR}, #{deviceMaintoken,jdbcType=VARCHAR}, 
+      #{deviceSubtoken,jdbcType=VARCHAR}, #{hostId,jdbcType=INTEGER}, #{deviceMainstream,jdbcType=VARCHAR}, 
+      #{deviceSubstream,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertDevices" parameterType="java.util.List" >
+    insert into device (device_id, device_name, device_maintoken,
+      device_subtoken, host_id, device_mainstream,
+      device_substream)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.deviceId,jdbcType=INTEGER}, #{item.deviceName,jdbcType=VARCHAR}, #{item.deviceMaintoken,jdbcType=VARCHAR},
+      #{item.deviceSubtoken,jdbcType=VARCHAR}, #{item.hostId,jdbcType=INTEGER}, #{item.deviceMainstream,jdbcType=VARCHAR},
+      #{item.deviceSubstream,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.honghe.deviceNew.entity.Device" >
+    insert into device
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        device_id,
+      </if>
+      <if test="deviceName != null" >
+        device_name,
+      </if>
+      <if test="deviceMaintoken != null" >
+        device_maintoken,
+      </if>
+      <if test="deviceSubtoken != null" >
+        device_subtoken,
+      </if>
+      <if test="hostId != null" >
+        host_id,
+      </if>
+      <if test="deviceMainstream != null" >
+        device_mainstream,
+      </if>
+      <if test="deviceSubstream != null" >
+        device_substream,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=INTEGER},
+      </if>
+      <if test="deviceName != null" >
+        #{deviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceMaintoken != null" >
+        #{deviceMaintoken,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSubtoken != null" >
+        #{deviceSubtoken,jdbcType=VARCHAR},
+      </if>
+      <if test="hostId != null" >
+        #{hostId,jdbcType=INTEGER},
+      </if>
+      <if test="deviceMainstream != null" >
+        #{deviceMainstream,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSubstream != null" >
+        #{deviceSubstream,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.honghe.deviceNew.entity.Device" >
+    update device
+    <set >
+      <if test="deviceName != null" >
+        device_name = #{deviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceMaintoken != null" >
+        device_maintoken = #{deviceMaintoken,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSubtoken != null" >
+        device_subtoken = #{deviceSubtoken,jdbcType=VARCHAR},
+      </if>
+      <if test="hostId != null" >
+        host_id = #{hostId,jdbcType=INTEGER},
+      </if>
+      <if test="deviceMainstream != null" >
+        device_mainstream = #{deviceMainstream,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceSubstream != null" >
+        device_substream = #{deviceSubstream,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where device_id = #{deviceId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.Device" >
+    update device
+    set device_name = #{deviceName,jdbcType=VARCHAR},
+      device_maintoken = #{deviceMaintoken,jdbcType=VARCHAR},
+      device_subtoken = #{deviceSubtoken,jdbcType=VARCHAR},
+      host_id = #{hostId,jdbcType=INTEGER},
+      device_mainstream = #{deviceMainstream,jdbcType=VARCHAR},
+      device_substream = #{deviceSubstream,jdbcType=VARCHAR}
+    where device_id = #{deviceId,jdbcType=INTEGER}
+  </update>
+
+
+    <insert id="addDeviceToken" parameterType="com.honghe.deviceNew.entity.Device" >
+        insert into device_lens (name, main_lens_name, child_lens_name, device_host_id, main_lens_stream, child_lens_stream)
+        values (#{deviceName,jdbcType=VARCHAR}, #{deviceMaintoken,jdbcType=VARCHAR},
+        #{deviceSubtoken,jdbcType=VARCHAR}, #{hostId,jdbcType=INTEGER}, #{deviceMainstream,jdbcType=VARCHAR},
+        #{deviceSubstream,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="delDeviceToken" parameterType="java.lang.Integer" >
+        delete from device
+        where device_host_id  = #{hostId,jdbcType=INTEGER}
+    </delete>
+    <select id="getDeviceInfo" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from device
+        where device_host_id = #{deviceId,jdbcType=INTEGER}
+    </select>
+    <update id="updateTboxDeviceName">
+        update device_lens
+        set name = #{channelName},
+        where device_host_id = #{hostId} AND (main_lens_name= #{token} or child_lens_name= #{token})
+    </update>
+</mapper>

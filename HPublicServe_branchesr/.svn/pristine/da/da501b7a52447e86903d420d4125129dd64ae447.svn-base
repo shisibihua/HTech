@@ -1,0 +1,95 @@
+package com.honghe.deviceNew.util;
+
+import com.honghe.net.OKHttpUtil;
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONString;
+import okhttp3.*;
+import org.apache.log4j.Logger;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+public class DeviceConnectUtil {
+    static Logger logger = Logger.getLogger("device");
+    public static String serviceFlag = "connection";
+    //互动
+    public static String techServiceFlag = "techConnection";
+    private static String connectionUrl = "http://localhost:7072/";
+    private static String classpath = "";
+
+    static {
+        Properties p = new Properties();
+        classpath = DeviceConnectUtil.class.getResource("/").getPath();
+        try {
+            FileReader fr = new FileReader(classpath+"config/deviceConnection.properties");
+            if (fr!=null){
+                p.load(fr);
+                fr.close();
+                serviceFlag = p.getProperty("serviceName");
+            }
+        } catch (FileNotFoundException e) {
+            logger.error("配置文件未找到",e);
+        } catch (IOException e) {
+            logger.error("流读取异常",e);
+        }
+    }
+
+
+    /**
+     * 获取设备连接服务的url
+     * @return
+     */
+    public static String getServiceConnect(String serviceFlag){
+        serviceFlag = serviceFlag+"Url";
+        Properties p = new Properties();
+        try {
+            FileReader fr = new FileReader(classpath+"config/deviceConnection.properties");
+            if (fr!=null){
+                p.load(fr);
+                fr.close();
+                connectionUrl = p.getProperty(serviceFlag);
+            }
+        } catch (FileNotFoundException e) {
+            logger.error("配置文件未找到",e);
+        } catch (IOException e) {
+            logger.error("流读取异常",e);
+        }
+        return connectionUrl;
+    }
+
+    /**
+     * 请求连接服务接口
+     * @param url 链接url
+     * @param params 请求参数
+     * @return
+     */
+    public static JSONObject sendRequestCommand(String url, Object params){
+        JSONObject re_value =null;
+        OkHttpClient okClient = OKHttpUtil.getOKHttpClient();
+        RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8")
+                , com.alibaba.fastjson.JSON.toJSONString(params));
+        Request build = new Request.Builder().url(url).post(requestBody).build();
+        Call call = okClient.newCall(build);
+        Response response = null;
+        try {
+            response = call.execute();
+            if (response.isSuccessful()) {
+                ResponseBody response1 = response.body();
+                String str = response1.string();
+                re_value = JSONObject.fromObject(str);
+                logger.debug("请求连接服务连接成功，url为："+url);
+            }else{
+                logger.error("请求连接服务失败，url为："+url);
+            }
+        } catch (IOException e) {
+            logger.error("请求连接服务异常,url为："+url,e);
+        }
+        return re_value;
+    }
+}

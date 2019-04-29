@@ -1,0 +1,830 @@
+package com.honghe.area.dao.areaDao;
+
+import com.honghe.ad.campus.dao.CampusDao;
+import com.honghe.ad.excetion.ParamException;
+import com.honghe.ad.util.JdbcTemplateUtil;
+import com.honghe.area.dao.BasicDao;
+import com.honghe.area.dao.picture.Picture;
+import com.honghe.area.dao.tree.Node;
+import com.honghe.area.dao.tree.StrNode;
+import com.honghe.area.dao.tree.TreeNode;
+import com.honghe.area.reflect.ParameterValue;
+import com.honghe.area.util.AreaTypeUtil;
+import com.honghe.area.util.SerialNumUtil;
+import jodd.util.StringUtil;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import java.util.*;
+
+
+/**
+ * 地点类
+ * @author LC
+ * @date 2017/3/8
+ */
+public class AreaDao extends BasicDao {
+
+    /**
+     * 删除成功
+     */
+    private static final String SUCCESS = "1";
+    /**
+     * 删除失败
+     */
+    private static final String ERROR = "0";
+    /**
+     * 该地点下存在子节点
+     */
+    private static final String SONAREA_EXISTTING = "3";
+    /**
+     * 地点下挂着设备
+     */
+    private static final String AREA_DEVICE = "4";
+    /**
+     * 班级和地点有关联关系
+     */
+    private static final String AREA_CLASS = "5";
+    private final String TAG = "AR";
+
+    public final static AreaDao INSTANCE = new AreaDao();
+    /**
+     * 根据id获取地点的详细信息,多个id","分割，如"1,2,3"
+     * @param id 地点的id
+     * @return
+     * @author caoqian---update
+     */
+    public List<Map<String, String>> areainfo(@ParameterValue("id") String id) {
+        String sql = "select a.id as area_id,a.name AS areaname, " +
+                " a.type_id,a.roomtype_id,a.p_id,t.p_id AS type_pid,t.name AS typename," +
+                " a.number,a.isselect,a.remark " +
+                " FROM ad_area a LEFT JOIN ad_area_type t ON " +
+                "a.type_id = t.id left join ad_school_zone as z on a.campus=z.id where a.id";
+        StringBuffer sb = new StringBuffer();
+        if(id.contains(",")){
+            String[] temp = id.split(",");
+            for(String s : temp){
+                sb.append("'" + s + "',");
+            }
+            String ids = sb.toString();
+            ids = ids.substring(0,ids.length()-1);
+            sql = sql + " in(" + ids + ")";
+        }else{
+            sql = sql + "='" + id + "'";
+        }
+        List<Map<String, String>> allList = JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+        List<Map<String, String>> list = new ArrayList<>();
+        if(allList!=null && !allList.isEmpty()) {
+            for(Map<String,String> map:allList) {
+                String pname = pname(id);
+                map.put("p_name", pname);
+                list.add(map);
+            }
+        }
+        return list;
+    }
+
+
+    /**
+     * 通过id获取父级名称
+     *
+     * @param id
+     * @return
+     * @author caoqian---update
+     */
+    public String pname(String id) {
+        String pname="";
+        String sql = "SELECT name AS p_name FROM ad_area WHERE id = (SELECT p_id FROM ad_area WHERE id ";
+        if(sql.indexOf(",")>-1){
+            sql+="in("+id+")";
+        }else{
+            sql+="="+id+")";
+        }
+        Map<String,String> pnameMap=JdbcTemplateUtil.getJdbcTemplate().find(sql);
+        if(pnameMap!=null && !pnameMap.isEmpty()){
+            pname=pnameMap.get("p_name");
+        }
+        return pname;
+    }
+
+    /**
+     * 根据父节点id获取父节点下面的列表
+     * @param pId 父节点id
+     * @return list
+     * @author caoqian----update
+     */
+    public List<Map<String, String>> arealist(@ParameterValue("p_id") String pId) throws ParamException {
+        if (pId == null || "".equals(pId)) {
+            System.out.println("--------------p_id=" + pId);
+            throw new ParamException();
+        } else {
+            StrNode strNode = new StrNode();
+            String areaIds = strNode.strNode(Integer.parseInt(pId));
+            String sql = "SELECT a.id, a.NAME AS area_name, t.NAME AS type_name, a.number, a.isselect," +
+                    "a.remark FROM ad_area a left join ad_area_type t on a.type_id = t.id WHERE a.type_id <> " +
+                    AreaTypeUtil.AREATYPE_CLASS + " AND a.p_id in " + areaIds +
+                    " UNION SELECT a.id,a. NAME AS area_name, t. NAME AS type_name, a.number,a.isselect, a.remark FROM ad_area a " +
+                    "left join ad_area_type t on a.roomtype_id = t.id " +
+                    "where a.type_id = " + AreaTypeUtil.AREATYPE_CLASS + " AND a.p_id in " + areaIds;
+            List<Map<String, String>> allList = JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+            return allList;
+        }
+    }
+
+    /**
+     * 根据父节点id获取父节点下面的列表
+     *
+     * @param pId 父节点id
+     * @param name 地点名称
+     * @param page 当前页
+     * @param pageSize 每页条数
+     * @return list
+     * @author caoqian
+     */
+    public Map<String, Object> arealistByPage(@ParameterValue("p_id") String pId,@ParameterValue("name")String name,
+                                              @ParameterValue("page") String page,@ParameterValue("pageSize") String pageSize) throws ParamException {
+        if(pId==null || "".equals(pId) || page==null || "".equals(page) || pageSize==null || "".equals(pageSize) || name==null){
+            throw new ParamException();
+        }else {
+            StrNode strNode = new StrNode();
+            String areaIds=strNode.strNode(Integer.parseInt(pId));
+            String sqlStr = "SELECT a.id, a.NAME AS area_name, t.NAME AS type_name, a.type_id ,a.number, a.isselect," +
+                    "a.remark FROM ad_area a left join ad_area_type t on a.type_id = t.id WHERE a.type_id <> " +
+                    AreaTypeUtil.AREATYPE_CLASS + " AND a.p_id in " + areaIds +
+                    " AND a.name like '%"+name+"%' UNION SELECT a.id,a. NAME AS area_name, t. NAME AS type_name,a.type_id , a.number,a.isselect, a.remark FROM ad_area a " +
+                    "left join ad_area_type t on a.roomtype_id = t.id where a.type_id = "
+                    + AreaTypeUtil.AREATYPE_CLASS + " AND a.p_id in " + areaIds+" AND a.name like '%"+name+"%'";
+            String sql ="select * from ("+sqlStr+") as new_area";
+            int firstResult=(Integer.parseInt(page)-1)*Integer.parseInt(pageSize);
+            String sqlAll =sql;
+            sql+=" limit "+firstResult+","+pageSize;
+            List<Map<String, String>> allList = JdbcTemplateUtil.getJdbcTemplate().findList(sqlAll);
+            Map<String,Object> result=new HashMap<>();
+            if(allList!=null && !allList.isEmpty()){
+                result.put("total",allList.size());
+                List<Map<String,String>> resultList=JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+                result.put("data",resultList);
+            }else{
+                result.put("total","");
+                result.put("data","");
+            }
+            result.put("page",page);
+            result.put("pageSize",pageSize);
+            return result;
+        }
+    }
+
+    /**
+     * 在当前级搜索
+     * @param pId 父节点id
+     * @return
+     */
+    public List<Map<String, String>> areaseach(@ParameterValue("p_id") String pId, @ParameterValue("name") String name) {
+        String selectSql = "select a.id, a.name as area_name, t.name as type_name, a.number, a.isselect," +
+                "a.remark from ad_area a left join ad_area_type t ";
+        String whereSql = " and a.p_id = " + pId + " and a.name like '%" + name + "%' ";
+        String sql = selectSql + "on a.type_id = t.id where a.type_id <> " + AreaTypeUtil.AREATYPE_CLASS + whereSql +
+                "union " + selectSql + "on a.roomtype_id = t.id where a.type_id = " + AreaTypeUtil.AREATYPE_CLASS + whereSql;
+        List<Map<String, String>> seachList = JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+        return seachList;
+    }
+
+
+    /**
+     * 添加地点
+     *
+     * @param name     地点名称
+     * @param pId     父节点id
+     * @param typeId  类型id
+     * @param number   容纳人数
+     * @param isselect 是否支持选课，0不支持，1支持
+     * @param remark   备注
+     * @return
+     */
+    public boolean areaadd(@ParameterValue("p_id") String pId, @ParameterValue("name") String name, @ParameterValue("type_id") String typeId, @ParameterValue("roomtype_id") String roomtypeId,
+                           @ParameterValue("number") String number, @ParameterValue("isselect") String isselect, @ParameterValue("remark") String remark,
+                           @ParameterValue("creenIP") String creenIP, @ParameterValue("depart_ids") String departIds, @ParameterValue("pic_url") String picUrls) {
+        String areaNumber = "";
+        if ("".equals(number)) {
+            number = null;
+        }
+        if (StringUtil.isEmpty(roomtypeId) && AreaTypeUtil.AREATYPE_CLASS.equals(typeId)) {
+            roomtypeId = AreaTypeUtil.AREATYPE_DEFAULT;
+        } else if (StringUtil.isEmpty(roomtypeId) && !AreaTypeUtil.AREATYPE_CLASS.equals(typeId)) {
+            roomtypeId = AreaTypeUtil.AREATYPE_UNKNOWN;
+        }
+
+        if (!repeat(name, pId, "")) {
+
+            areaNumber = SerialNumUtil.getNumber(TAG, getMaxClassCode());
+            /*String sql = "INSERT INTO ad_area(name,p_id,type_id,roomtype_id,number,isselect,remark,room_ip,department_id,area_code) VALUES ('" +
+                    name + "'," + p_id + "," + type_id + "," + roomtype_id + "," + number + "," + isselect + ",'" + remark + "','" + creenIP + "','" + depart_ids + "','" + areaNumber + "')";*/
+            String sql = "INSERT INTO ad_area(name,p_id,type_id,roomtype_id,number,isselect,remark) VALUES ('" +
+                    name + "'," + pId + "," + typeId + "," + roomtypeId + "," + number + "," + isselect + ",'" + remark + "')";
+            long lg = JdbcTemplateUtil.getJdbcTemplate().add(sql);
+            if (lg > 0) {
+                if (!"".equals(picUrls) && picUrls != null) {
+                    String[] picUrl = picUrls.split("\\|");
+                    for (int i = 0; i < picUrl.length; i++) {
+                        //通过存储服务获取图片的地址
+                        String imgUrl = new Picture().imagePath(picUrl[i]);
+                        if (imgUrl == null || "".equals(imgUrl)) {
+                            continue;
+                        }
+                        String sql2 = "INSERT INTO ad_area2picture(area_id,pic_url) VALUES(" + lg + ",'" + imgUrl + "')";
+                        JdbcTemplateUtil.getJdbcTemplate().add(sql2);
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 根据id修改地点
+     *
+     * @param name     地点名称
+     * @param typeId  类型id
+     * @param number   容纳人数
+     * @param isselect 是否支持选课，0不支持，1支持
+     * @param remark   备注
+     * @return
+     */
+    public boolean areaupdate(@ParameterValue("p_id") String pId, @ParameterValue("id") String id, @ParameterValue("name") String name, @ParameterValue("type_id") String typeId,
+                              @ParameterValue("roomtype_id") String roomtypeId, @ParameterValue("number") String number, @ParameterValue("isselect") String isselect, @ParameterValue("remark") String remark,
+                              @ParameterValue("creenIP") String creenIP, @ParameterValue("depart_ids") String departIds, @ParameterValue("pic_url") String picUrls) {
+        if ("".equals(number)) {
+            number = null;
+        }
+        if (StringUtil.isEmpty(roomtypeId) && AreaTypeUtil.AREATYPE_CLASS.equals(typeId)) {
+            //如果教室类型为空，则默认为普通教室类型
+            roomtypeId = AreaTypeUtil.AREATYPE_DEFAULT;
+        }
+        if (!repeat(name, pId, " AND id <>" + id)) {
+            String sql = "UPDATE ad_area SET name = '" + name + "',type_id=" + typeId + ",roomtype_id=" + roomtypeId + ",number=" + number + "," +
+                    "isselect=" + isselect + ",remark='" + remark + "',room_ip = '" + creenIP + "',department_id = '" + departIds + "' WHERE id = " + id;
+            boolean bl = JdbcTemplateUtil.getJdbcTemplate().update(sql);
+            if (bl) {
+                if (!"".equals(picUrls) && picUrls != null && !"null".equals(picUrls)) {
+                    JdbcTemplateUtil.getJdbcTemplate().delete("DELETE FROM ad_area2picture WHERE area_id = " + id);
+                    String[] picUrl = picUrls.split("\\|");
+                    for (int i = 0; i < picUrl.length; i++) {
+                        //通过存储服务获取图片的地址
+                        String imgUrl = new Picture().imagePath(picUrl[i]);
+                        if (imgUrl == null || "".equals(imgUrl)) {
+                            continue;
+                        }
+                        String sql2 = "INSERT INTO ad_area2picture(area_id,pic_url) VALUES(" + id + ",'" + imgUrl + "')";
+                        JdbcTemplateUtil.getJdbcTemplate().add(sql2);
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+    /**
+     * 根据id修改地点
+     *
+     * @param name     地点名称
+     * @param typeId  类型id
+     * @param number   容纳人数
+     * @param isselect 是否支持选课，0不支持，1支持
+     * @param remark   备注
+     * @return
+     * @author caoqian
+     */
+    public boolean areaupdateById(@ParameterValue("p_id") String pId, @ParameterValue("id") String id, @ParameterValue("name") String name, @ParameterValue("type_id") String typeId,
+                              @ParameterValue("roomtype_id") String roomtypeId, @ParameterValue("number") String number, @ParameterValue("isselect") String isselect, @ParameterValue("remark") String remark) {
+        if ("".equals(number)) {
+            number = "0";
+        }
+        if(roomtypeId==null || "".equals(roomtypeId)){
+            roomtypeId="0";
+        }
+        if (StringUtil.isEmpty(roomtypeId) && AreaTypeUtil.AREATYPE_CLASS.equals(typeId)) {
+            //如果教室类型为空，则默认为普通教室类型
+            roomtypeId = AreaTypeUtil.AREATYPE_DEFAULT;
+        }
+        if (!repeat(name, pId, " AND id <>" + id)) {
+            String sql = "UPDATE ad_area SET name = '" + name + "',type_id=" + typeId + ",roomtype_id=" + roomtypeId + ",number=" + number + "," +
+                    "isselect=" + isselect + ",remark='" + remark + "' WHERE id = " + id;
+            return JdbcTemplateUtil.getJdbcTemplate().update(sql);
+        } else {
+            return false;
+        }
+    }
+    /**
+     * 删除地点
+     *
+     * @param id 地点的id
+     * @return
+     * @author caoqian----update
+     */
+    public String areadelete(@ParameterValue("id") String id) {
+        String reValue = "";
+        long sonAreaCount = JdbcTemplateUtil.getJdbcTemplate().count("select count(*) from ad_area where p_id=" + id);
+        /*String badgeSql = "select distinct aa.name,aa.p_id,md.areaid from ad_area aa,m_device md where " +
+                "aa.id=md.areaId and aa.id=" + id;
+        List badgeResult = JdbcTemplateUtil.getJdbcTemplate().findList(badgeSql);
+        String deviceSql = "select distinct aa.name,aa.p_id,aad.area_id,aad.device_id from ad_area aa left join " +
+                "ad_area2device aad on aa.id=aad.area_id where aa.id=" + id;
+        List deviceResult = JdbcTemplateUtil.getJdbcTemplate().findList(deviceSql);
+       String classSql = "select aa.name,aa.p_id, bds.classroomid from ad_area aa,base_dept_student bds where " +
+                "aa.id=bds.classroomid and aa.id=" + id;
+        List classResult = JdbcTemplateUtil.getJdbcTemplate().findList(classSql);*/
+        String deviceSql = "select distinct aad.device_id from ad_area aa left join " +
+                "ad_area2device aad on aa.id=aad.area_id where aa.id=" + id;
+         Map<String,String> deviceResult=JdbcTemplateUtil.getJdbcTemplate().find(deviceSql);
+        if (sonAreaCount > 0) {
+            reValue = SONAREA_EXISTTING;
+        }else if (deviceResult.size() > 0 && deviceResult.get("device_id")!=null && !"".equals(String.valueOf(deviceResult.get("device_id")))) {
+            reValue = AREA_DEVICE;
+        }
+        /*else if (deviceResult.size() > 0 || badgeResult.size() > 0) {
+            re_value = AREA_DEVICE;
+        }*/
+       /* else if (classResult.size() > 0) {
+            re_value = AREA_CLASS;
+        }*/
+        else {
+            //获取该节点下面所有子节点的字符串
+            String idStrs = new StrNode().strNode(Integer.valueOf(id));
+            boolean bl = JdbcTemplateUtil.getJdbcTemplate().delete("DELETE FROM ad_area WHERE id in " + idStrs);
+            if (bl) {
+                reValue = SUCCESS;
+            } else {
+                reValue = ERROR;
+            }
+        }
+        return reValue;
+    }
+
+    /**
+     * 获取地点类型的数据
+     *
+     * @return
+     */
+    public List<Map<String, String>> typelist() {
+        String sql = "SELECT id,name FROM ad_area_type WHERE p_id = 0 and id>="+AreaTypeUtil.AREA_TYPE;
+        return JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+    }
+
+    /**
+     * 查重处理
+     *
+     * @param name   名称
+     * @param sqlstr sql语句
+     */
+    public boolean repeat(String name, String pId, String sqlstr) {
+        String sql = "SELECT * FROM ad_area  WHERE name = '" + name + "' AND p_id = " + pId + " " + sqlstr;
+        List<Map<String, String>> list = JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+        if (list.size() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 获取地点及父级地点
+     *
+     * @param
+     * @return
+     */
+    public List<Map<String, String>> list() {
+        String sql = "SELECT a.id,a.name as name,a.p_id,(SELECT name FROM ad_area WHERE id = a.p_id) as p_name,a.number,a.remark" +
+                    " FROM ad_area a LEFT JOIN ad_area_type t ON a.type_id = t.id";
+        List<Map<String, String>> allList = JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+        return allList;
+    }
+
+    /**
+     * 获取地点的树形结构
+     *
+     * @return
+     * @author  caoqian----update
+     */
+    public JSONObject tree(@ParameterValue("userId") String userId) throws ParamException {
+        JSONObject resultTree=new JSONObject();
+        if(userId==null || "".equals(userId)){
+            throw new ParamException();
+        }else {
+            //根据用户id查询该用户所在的组织机构id
+            Map<String,String> campus=CampusDao.INSTANCE.findCampusByUserId(userId);
+            int areaId=0;
+            if(campus!=null && !campus.isEmpty()){
+                areaId=getPid(campus.get("id"));
+                if(areaId!=0){
+                    List<Node> list = new ArrayList<>();
+                    List<Map<String, String>> allList = this.list();
+                    Node menu;
+                    for (int i = 0; i < allList.size(); i++) {
+                        menu = new Node();
+                        Map<String, String> map = allList.get(i);
+                        menu.setId(Integer.valueOf(map.get("id").toString()));
+                        menu.setName(map.get("name").toString());
+                        menu.setpId(Integer.valueOf(map.get("p_id").toString()));
+                        menu.setNumber(String.valueOf(map.get("number")));
+                        menu.setRemark(String.valueOf(map.get("remark").toString()));
+                        menu.setTpye(String.valueOf(map.get("roomtype_id")));
+                        list.add(menu);
+                    }
+                    TreeNode tnb = new TreeNode(list);
+                    //调取获得树形结构的方法
+                    Node treeNode = tnb.generateTreeNode(areaId);
+                    //将取得的数据转化为jsonArray
+                    JSONArray jsonArray = JSONArray.fromObject(treeNode);
+                    resultTree=JSONObject.fromObject(jsonArray.get(0));
+                    return resultTree;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 添加树形结构的分支
+     *
+     * @return
+     */
+    public boolean treeadd(@ParameterValue("p_id") String pId, @ParameterValue("name") String name) {
+        String sql = "INSERT INTO ad_area(name,p_id) VALUES('" + name + "'," + pId + ")";
+        long lg = JdbcTemplateUtil.getJdbcTemplate().add(sql);
+        if (lg > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 获取树形结构的某一个地点信息
+     *
+     * @return
+     */
+    public List<Map<String, String>> treeinfo(@ParameterValue("id") String id) {
+        String sql = "SELECT id,name FROM ad_area WHERE id=" + id;
+        return JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+    }
+
+    /**
+     * 编辑地点的树形结构
+     *
+     * @return
+     */
+    public boolean treeupdate(@ParameterValue("id") String id, @ParameterValue("name") String name) {
+        String sql = "UPDATE ad_area SET name='" + name + "' WHERE id=" + id;
+        return JdbcTemplateUtil.getJdbcTemplate().update(sql);
+    }
+
+    /**
+     * 删除树形结构的某一个地点信息
+     *
+     * @return
+     * @author caoqian---update
+     */
+    public boolean treedelete(@ParameterValue("id") String id) throws ParamException {
+        if(id==null || "".equals(id)){
+            throw new ParamException();
+        }else {
+            String idStrs="";
+            //id串，批量删除
+            if(id.indexOf(",")>-1){
+                String[] idsArr=id.split(",");
+                List<String> idsList=new ArrayList<>();
+                StrNode strNode=new StrNode();
+                for(String idStr:idsArr){
+                    idsList.add(strNode.strNode(Integer.valueOf(idStr)));
+                }
+                if(!idsList.isEmpty()){
+                    //获取所有id串
+                    idStrs=idsList.get(idsList.size()-1);
+                }
+            }else {
+                //获取该节点下面所有子节点的字符串
+                idStrs = new StrNode().strNode(Integer.valueOf(id));
+            }
+            return JdbcTemplateUtil.getJdbcTemplate().delete("DELETE FROM ad_area WHERE id in " + idStrs);
+        }
+    }
+
+    /**
+     * 获取当前数据库系统编号的最大值
+     *
+     * @return
+     */
+    private String getMaxClassCode() {
+        String reValue = "";
+        List maxCodeList = JdbcTemplateUtil.getJdbcTemplate().findList("select max(a.area_code)as areaCode from ad_area as a");
+        if (maxCodeList.size() > 0) {
+            Map classCode = (Map) maxCodeList.get(0);
+            reValue = classCode.get("areaCode").toString();
+
+        }
+        return reValue;
+    }
+
+    /**
+     * 同步组织结构树形结构，保存到地点表
+     * @param name       组织机构名称
+     * @param orgId     组织结构id
+     * @param orgPid    组织结构父级id
+     * @return boolean   true:保存成功；false：保存失败
+     * @throws ParamException
+     * @author caoqian
+     */
+    public boolean syntreeadd(@ParameterValue("name")String name,@ParameterValue("org_id")String orgId,
+                                       @ParameterValue("org_pid")String orgPid) throws ParamException {
+        boolean result=false;
+        if(name==null || orgId==null){
+            throw new ParamException();
+        }else{
+            int pid=getPid(orgPid);
+            //地点类型
+            String typeId="";
+            try {
+                Map<String,String> campusType=CampusDao.INSTANCE.getCampusType(orgId);
+                if(campusType!=null && !campusType.isEmpty()){
+                    typeId=campusType.get("id");
+                    String sql="insert into ad_area(name,p_id,org_id,isselect,type_id,roomtype_id,number) values(?,?,?,?,?,?,?)";
+                    //默认不选课,roomtype_id=0
+                    result=JdbcTemplateUtil.getJdbcTemplate().add(sql,new Object[]{name,pid,orgId,0,typeId,0,0});
+                }else{
+                    result= false;
+                }
+            } catch (ParamException e) {
+                result=false;
+                System.out.println("根据组织id获取组织类型信息异常，组织id="+orgId);
+            }
+        }
+        return result;
+    }
+    /**
+     * 同步组织结构树形结构，批量保存到地点表
+     * @param orgImport   组织机构数据，json格式,"[{"name":"","id":"","pId":""},{"name":"","id":"","pId":""}]"
+     * @return boolean   true:保存成功；false：保存失败
+     * @throws ParamException
+     * @author caoqian
+     */
+    public boolean syntreeimport(@ParameterValue("orgImport")List<Map<String,String>> orgImport) throws ParamException {
+        boolean result=false;
+        if(orgImport==null || orgImport.isEmpty()){
+            throw new ParamException();
+        }else{
+            JSONArray orgArray=JSONArray.fromObject(orgImport);
+            String areaSql="";
+            for(Object org:orgArray){
+                JSONObject campus=JSONObject.fromObject(org);
+                String orgPid="";
+                if(campus.containsKey("pId") && !"".equals(campus.get("pId"))) {
+                    orgPid = String.valueOf(campus.get("pId"));
+                    int pid=getPid(orgPid);
+                    String orgId=String.valueOf(campus.get("id"));
+                    Map<String,String> campusType=CampusDao.INSTANCE.getCampusType(orgId);
+                    String name=campus.get("name").toString();
+                    String typeId="";
+                    if(campusType!=null && !campusType.isEmpty()){
+                        typeId=campusType.get("id");
+                        areaSql="insert into ad_area(name,p_id,org_id,isselect,type_id,roomtype_id,number) values('"+name+"',"+pid+",'"+orgId+"',0,"+typeId+",0,0)";
+                        result=JdbcTemplateUtil.getJdbcTemplate().execute(areaSql);
+                    }
+                }else{
+                    continue;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 获取地点父级id  add by caoqian
+     * @param orgPid
+     * @return
+     */
+    private int getPid(String orgPid){
+        int pid=0;
+        //获取地点的父级id
+        if(orgPid==null || "".equals(orgPid) || "0".equals(orgPid) ){
+            pid=0;
+        }else{
+            Map<String,String> areaMap=JdbcTemplateUtil.getJdbcTemplate().find("select area.id as id from ad_area area  left join ad_campus camp on area.org_id=camp.id where area.org_id='"+orgPid+"'");
+            if(areaMap!=null && !areaMap.isEmpty() && !"".equals(areaMap.get("id"))){
+                pid=Integer.parseInt(areaMap.get("id"));
+            }
+        }
+        return pid;
+    }
+
+    /**
+     * 保存地点类型  add by caoqian
+     * @param campusType
+     * @return
+     */
+    private boolean saveCampusTypeName(Map<String,String> campusType){
+        String typeId="";
+        String typeName="";
+        String pid="0";
+        if(campusType!=null && !campusType.isEmpty()){
+            typeId=campusType.get("id");
+            typeName=campusType.get("name");
+        }
+        return JdbcTemplateUtil.getJdbcTemplate().add("insert into ad_area_type(id,name,p_id) values(?,?,?)",new Object[]{typeId,typeName,pid});
+    }
+
+    /**
+     * 修改组织机构，同步地点树形结构数据
+     * @param name      组织结构名称
+     * @param orgId    组织机构id
+     * @return boolean  true：修改成功;false:修改失败
+     * @throws ParamException
+     * @author caoqian
+     */
+    public boolean syntreeupdate(@ParameterValue("name")String name,@ParameterValue("org_id")String orgId) throws ParamException {
+        boolean result=false;
+        if(name==null || "".equals(name) || orgId==null || "".equals(orgId)){
+            throw new ParamException();
+        }else{
+            result=JdbcTemplateUtil.getJdbcTemplate().update("update ad_area area set area.name='"+name+"' where area.org_id='"+orgId+"'");
+        }
+        return result;
+    }
+
+    /**
+     * 删除地点
+     * 删除组织机构前需要查询对应的地点下是否有子级地点，如果有则不删除该地点，否则删除
+     * @param orgId  组织结构id
+     * @return boolean true:删除成功;false:删除失败
+     * @throws ParamException
+     * @author caoqian
+     */
+    public String syntreedelete(@ParameterValue("org_id")String orgId) throws ParamException {
+        String result="";
+        if(orgId==null || "".equals(orgId)){
+            throw new ParamException();
+        }else{
+            long count=JdbcTemplateUtil.getJdbcTemplate().count("select count(*) from ad_area where p_id=(select area.id from ad_area area " +
+                    "left join ad_campus camp on area.org_id=camp.id where area.org_id='"+orgId+"')");
+            if(count>0){
+                //该节点下存在子节点，不能删除
+                result=SONAREA_EXISTTING;
+            }else{
+                boolean countDel=JdbcTemplateUtil.getJdbcTemplate().delete("delete from ad_area where org_id='"+orgId+"'");
+                if(countDel){
+                    result=SUCCESS;
+                }else{
+                    result=ERROR;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 根据设备id查询设备所在教室信息
+     * @param hostId   设备id
+     * @return map
+     * @throws ParamException
+     * @author caoqian
+     */
+    public Map<String,String> getRoomByHostId(@ParameterValue("hostId")String hostId) throws ParamException {
+        if(hostId==null || "".equals(hostId)){
+            throw new ParamException();
+        }else{
+            String sql="select * from ad_area area left join ad_area2device area2d on area.id=area2d.area_id " +
+                    "where area2d.device_id="+hostId;
+            return JdbcTemplateUtil.getJdbcTemplate().find(sql);
+        }
+    }
+
+
+    /**
+     * 根据设备ip查询设备所在教室信息
+     * @param hostIp
+     * @return
+     * @throws ParamException
+     */
+    public Map<String,String> getRoomByHostIp(@ParameterValue("hostIp")String hostIp) throws ParamException {
+        Map<String,String> room=new HashMap<>();
+        if(hostIp==null || "".equals(hostIp)){
+            throw new ParamException();
+        }else{
+            String hostId="";
+            Map<String,String> device=JdbcTemplateUtil.getJdbcTemplate().find("select * from device_host device left join ad_area2device area2d on area2d.device_id=device.host_id " +
+                    "where device.host_ipaddr='"+hostIp+"'");
+            if(device!=null && !device.isEmpty()){
+                hostId=device.get("host_id");
+                room=getRoomByHostId(hostId);
+            }
+            return room;
+        }
+    }
+    /**
+     * 根据设备编码查询设备所在教室信息
+     * @param mcuCode
+     * @return
+     * @throws ParamException
+     */
+    public Map<String,String> getRoomByCode(@ParameterValue("mcuCode")String mcuCode) throws ParamException {
+        Map<String,String> room=new HashMap<>();
+        if(mcuCode==null || "".equals(mcuCode)){
+            throw new ParamException();
+        }else{
+            String hostId="";
+            Map<String,String> device=JdbcTemplateUtil.getJdbcTemplate().find("select * from device_host device left join ad_area2device area2d on area2d.device_id=device.host_id " +
+                    "where device.mcu_code='"+mcuCode+"'");
+            if(device!=null && !device.isEmpty()){
+                hostId=device.get("host_id");
+                room=getRoomByHostId(hostId);
+            }
+            return room;
+        }
+    }
+    /**
+     * 根据教室id、终端类型查询设备信息
+     * @param roomId       教室id
+     * @param dtypeName    终端类型，互动类型：hhtmcu
+     * @return map
+     * @throws ParamException
+     * @author caoqian
+     */
+    public Map<String,String>  getHostByRoomId(@ParameterValue("roomId")String roomId,@ParameterValue("dtypeName")String dtypeName) throws ParamException {
+
+        if(roomId==null || "".equals(roomId) || dtypeName==null || "".equals(dtypeName)){
+            throw new ParamException();
+        }else{
+            List<Map<String,String>> deviceIdList=JdbcTemplateUtil.getJdbcTemplate().findList("select a2d.device_id as deviceId from ad_area area left join ad_area2device a2d on area.id=a2d.area_id where area.id="+roomId);
+            String deviceId="";
+            if(deviceIdList!=null && !deviceIdList.isEmpty()){
+                deviceId=deviceIdList.get(0).get("deviceId");
+                if(!"".equals(deviceId)) {
+                    Map<String, String> device = JdbcTemplateUtil.getJdbcTemplate().find("select * from device_host host left join device_specification ds on ds.dspec_id=host.dspec_id " +
+                            "left join device_type type on type.dtype_id=ds.dtype_id where type.dtype_desc='" + dtypeName + "' and host.host_id=" + deviceId);
+                    return device;
+                }else{
+                    return null;
+                }
+            }else{
+                return null;
+            }
+        }
+    }
+    /**
+     * 获取所有教室ids，多个","隔开
+     * @return String
+     * @author caoqian
+     */
+    public String getAllAreaIds(){
+        String areaIds="";
+        Map<String,String> result=JdbcTemplateUtil.getJdbcTemplate().
+                find("select group_concat(area.id) as ids from ad_area area left join ad_area_type t " +
+                        "on area.type_id=t.id where t.id="+AreaTypeUtil.AREATYPE_CLASS);
+        if(result!=null && !result.isEmpty()){
+            areaIds=String.valueOf(result.get("ids"));
+        }
+        return areaIds;
+    }
+
+    /**
+     * 获取根目录地点id
+     * @return String
+     * @author caoqian
+     */
+    public String getRootAreaId(){
+        String areaId="1";
+        Map<String,String> result=JdbcTemplateUtil.getJdbcTemplate().
+                find("select id from ad_area where p_id=0");
+        if(result!=null && !result.isEmpty()){
+            areaId=String.valueOf(result.get("id"));
+        }
+        return areaId;
+    }
+
+    /**
+     * 直连互动教学数据库
+     * 验证地点是否作为主讲教室或接收教室，如果正在被使用，则不允许修改地点信息
+     * @param areaId   地点id
+     * @return boolean
+     */
+    public boolean getUserAreaId(@ParameterValue("areaId") String areaId){
+        boolean result=false;
+        if(areaId==null || "".equals(areaId)){
+            return result;
+        }else {
+            String sql = "select distinct ac.activity_id as id from meeting.tech_activity ac " +
+                    "left join meeting.tech_assteach_r_activity ass on ac.uuid=ass.uuid " +
+                    "where (ac.room_id=" + areaId + " or ass.accept_room_id=" + areaId + ") and now() between ac.start_time and ac.end_time and ac.is_del=0 ";
+            Map<String,String> activity=JdbcTemplateUtil.getJdbcTemplate().find(sql);
+            if(activity!=null && !activity.isEmpty()){
+                result=true;
+            }else{
+                result=false;
+            }
+            return result;
+        }
+    }
+}

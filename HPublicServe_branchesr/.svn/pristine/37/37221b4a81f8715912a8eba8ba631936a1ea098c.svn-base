@@ -1,0 +1,292 @@
+package com.honghe.user.dao.impl;/**
+ * Created by lyx on 2017-01-11 0011.
+ */
+
+import com.honghe.communication.ioc.Command;
+import com.honghe.communication.ioc.CommandFactory;
+import com.honghe.communication.ioc.Response;
+import com.honghe.role.dao.RoleDao;
+import com.honghe.user.dao.BaseUserDao;
+import com.honghe.user.dao.IUserEntityDao;
+import com.honghe.user.dao.UserDao;
+import com.honghe.user.dao.entity.User;
+import com.honghe.user.util.JdbcTemplateUtil;
+import com.honghe.user.util.StringUtil;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 用户
+ *
+ * @author lyx
+ * @create 2017-01-11 14:54
+ **/
+public class UserEntityUserDao extends BaseUserDao implements IUserEntityDao {
+
+    private Command storageCommand;
+
+    public UserEntityUserDao() {
+        storageCommand = CommandFactory.getInstance("storage");
+    }
+
+    /**
+     * 依据系统编号返回用户Id
+     *
+     * @param code 系统编号
+     * @rn
+     */
+    @Override
+    public User getIdByCode(final String code) {
+        String sql = "SELECT * FROM user WHERE user_code = '" + code + "'";
+        List<Map<String, String>> list = JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+        User user = null;
+        if (!list.isEmpty()) {
+            user = createUser(list.get(0));
+        }
+        return user;
+        //<editor-fold desc="oldcode">
+        //        User re_value = new User();
+//        re_value = this.getHibernateTemplate().execute(new HibernateCallback<User>() {
+//            @Override
+//            public User doInHibernate(Session session) throws HibernateException {
+//                String sql = "FROM User WHERE user_code = '" + code + "'";
+//                Query query = session.createQuery(sql);
+//                List<User> list = query.list();
+//                return list == null ? null : list.get(0);
+//            }
+//        });
+//        return re_value;
+        //</editor-fold>
+    }
+
+    /**
+     * 判断用户是否已存在
+     *
+     * @param userName   用户名
+     * @param userMobile 用户手机号
+     * @param userEmail  用户邮箱
+     * @param userNum    用户编号
+     * @return
+     */
+    @Override
+    public Boolean isHas(final String userName, final String userMobile, final String userEmail, final String userNum, final String updateCode) {
+        StringBuilder strb = new StringBuilder();
+        boolean flag = false;
+        if (!StringUtil.isEmpty(userName)) {
+            strb.append((flag ? " or " : "") + " U.user_name='" + userName + "'");
+            flag = true;
+        }
+        if (!StringUtil.isEmpty(userMobile)) {
+            strb.append((flag ? " or " : "") + " U.user_mobile='" + userMobile + "'");
+            flag = true;
+        }
+        if (!StringUtil.isEmpty(userEmail)) {
+            strb.append((flag ? " or " : "") + " U.user_email='" + userEmail + "'");
+            flag = true;
+        }
+
+        if (!StringUtil.isEmpty(userNum)) {
+            strb.append((flag ? " or " : "") + " U.user_num='" + userNum + "'");
+            flag = true;
+        }
+        String sql = "SELECT count(*) FROM user  AS U WHERE (" + strb.toString() + ")";
+        if (!StringUtil.isEmpty(updateCode)) {
+            sql += " and user_code <> '" + updateCode + "'";
+        }
+        List<String> value = JdbcTemplateUtil.getJdbcTemplate().findValue(sql);
+        if (!value.isEmpty()) {
+            return Integer.parseInt(value.get(0)) > 0;
+        }else {
+            return false;
+        }
+        //<editor-fold desc="oldcode">
+        //        Boolean re_value = false;
+//        re_value = this.getHibernateTemplate().execute(new HibernateCallback<Boolean>() {
+//            @Override
+//            public Boolean doInHibernate(Session session) throws HibernateException {
+//                StringBuilder strb = new StringBuilder();
+//                boolean flag = false;
+//                if (!StringUtil.isEmpty(userName)) {
+//                    strb.append((flag ? " or " : "") + " U.user_name='" + userName + "'");
+//                    flag = true;
+//                }
+//                if (!StringUtil.isEmpty(userMobile)) {
+//                    strb.append((flag ? " or " : "") + " U.user_mobile='" + userMobile + "'");
+//                    flag = true;
+//                }
+//                if (!StringUtil.isEmpty(userEmail)) {
+//                    strb.append((flag ? " or " : "") + " U.user_email='" + userEmail + "'");
+//                    flag = true;
+//                }
+//
+//                if (!StringUtil.isEmpty(userNum)) {
+//                    strb.append((flag ? " or " : "") + " U.user_num='" + userNum + "'");
+//                    flag = true;
+//                }
+//                String sql = "SELECT count(*) FROM User  AS U WHERE (" + strb.toString() + ")";
+//                if (!StringUtil.isEmpty(updateCode)) {
+//                    sql += " and user_code <> '" + updateCode + "'";
+//                }
+//                Query query = session.createQuery(sql);
+//                long count = (long) query.uniqueResult();
+//                return count > 0;
+//            }
+//        });
+//
+//        return re_value;
+        //</editor-fold>
+    }
+
+    /**
+     * 判断用户是否已存在,获取用户信息
+     *
+     * @param userName   用户名
+     * @param userMobile 用户手机号
+     * @param userEmail  用户邮箱
+     * @param userNum    用户编号
+     * @return
+     * @author caoqian
+     */
+    @Override
+    public User checkUser(final String userName, final String userMobile, final String userEmail, final String userNum, final String updateCode) {
+        StringBuilder strb = new StringBuilder();
+        boolean flag = false;
+        if (!StringUtil.isEmpty(userName)) {
+            strb.append((flag ? " or " : "") + " U.user_name='" + userName + "'");
+            flag = true;
+        }
+        if (!StringUtil.isEmpty(userMobile)) {
+            strb.append((flag ? " or " : "") + " U.user_mobile='" + userMobile + "'");
+            flag = true;
+        }
+        if (!StringUtil.isEmpty(userEmail)) {
+            strb.append((flag ? " or " : "") + " U.user_email='" + userEmail + "'");
+            flag = true;
+        }
+
+        if (!StringUtil.isEmpty(userNum)) {
+            strb.append((flag ? " or " : "") + " U.user_num='" + userNum + "'");
+            flag = true;
+        }
+        String sql = "SELECT * FROM user  AS U WHERE (" + strb.toString() + ")";
+        if (!StringUtil.isEmpty(updateCode)) {
+            sql += " and user_code <> '" + updateCode + "'";
+        }
+        List<Map<String, String>> list1 = JdbcTemplateUtil.getJdbcTemplate().findList(sql);
+        User user = null;
+        if (!list1.isEmpty()){
+            user = createUser(list1.get(0));
+        }
+        return user;
+//        User user = null;
+        //<editor-fold desc="oldcode">
+        //        user = this.getHibernateTemplate().execute(new HibernateCallback<User>() {
+//            @Override
+//            public User doInHibernate(Session session) throws HibernateException {
+//                StringBuilder strb = new StringBuilder();
+//                boolean flag = false;
+//                if (!StringUtil.isEmpty(userName)) {
+//                    strb.append((flag ? " or " : "") + " U.user_name='" + userName + "'");
+//                    flag = true;
+//                }
+//                if (!StringUtil.isEmpty(userMobile)) {
+//                    strb.append((flag ? " or " : "") + " U.user_mobile='" + userMobile + "'");
+//                    flag = true;
+//                }
+//                if (!StringUtil.isEmpty(userEmail)) {
+//                    strb.append((flag ? " or " : "") + " U.user_email='" + userEmail + "'");
+//                    flag = true;
+//                }
+//
+//                if (!StringUtil.isEmpty(userNum)) {
+//                    strb.append((flag ? " or " : "") + " U.user_num='" + userNum + "'");
+//                    flag = true;
+//                }
+//                String sql = "FROM User  AS U WHERE (" + strb.toString() + ")";
+//                if (!StringUtil.isEmpty(updateCode)) {
+//                    sql += " and user_code <> '" + updateCode + "'";
+//                }
+//                Query query = session.createQuery(sql);
+//                List<User> list = query.list();
+//                return list.size() == 0 ? null : list.get(0);
+//            }
+//        });
+//
+//        return user;
+        //</editor-fold>
+    }
+
+    public String generateImagePath(String img_name) {//对字节数组字符串进行Base64解码并生成图片
+        String imgPath = "";
+        String uploadFilePath = getWebRoot() + "upload_dir" + File.separator + img_name;
+        String path = "";
+        if (storageCommand != null) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("cmd_op", "save");
+            params.put("path", uploadFilePath);
+            Response storageResponse = storageCommand.execute(null, params);
+            if (storageResponse.getCode() == 0) {
+                path = storageResponse.getResult().toString();
+                if (!"".equals(path)) {
+                    imgPath = path.replaceAll("\\\\", "/") + " ";
+                }
+            }
+            try {
+                FileUtils.forceDelete(new File(uploadFilePath));
+            } catch (Exception e) {
+
+            }
+        }
+        return imgPath;
+    }
+
+    private final String getWebRoot() {
+        String path = this.getClass().getResource("/").getPath();
+        int n = path.indexOf("WEB-INF/classes/");
+        if (n == -1) {
+            return "";
+        } else {
+            path = path.substring(0, n);
+            path = path.replaceAll("%20", " ");
+            return path;
+        }
+    }
+
+    public void makeUser2roleByType(String userType, String userId) {
+        //添加新的用户角色关系表内容
+        List<Map<String, String>> roleList = RoleDao.INSTANCE.getRoleUserTypeRelationDao().findByUserType(userType);
+        if (roleList.size() > 0) {
+            String roleIds = "";
+            for (Map map : roleList) {
+                roleIds += map.get("roleId") + ",";
+            }
+            UserDao.INSTANCE.getUserRoleRelationDao().deleteByUserId(userId);
+            List<Long> id = UserDao.INSTANCE.getUserRoleRelationDao().add(userId, roleIds.toString().split(","));
+        }
+
+    }
+
+    /**
+     * Excel中的机构ID是否存在
+     *
+     * @param campusId 机构ID
+     * @return boolean
+     */
+    public boolean hasCampus(List<Map<String, String>> campusList, String campusId) {
+        if ("".equals(campusId)) {
+            return false;
+        }
+        for (int i = 0; i < campusList.size(); i++) {
+            if (campusList.get(i).get("id").equals(campusId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+}

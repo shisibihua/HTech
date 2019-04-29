@@ -1,0 +1,17 @@
+.m-search {
+    display: inline-block;
+    width: 240px;
+    height: 28px;
+}
+
+.m-search input {
+    width: 185px;
+    height: 28px;
+    float: left;
+    border: 1px solid #dbdbdb;
+}
+
+.m-search .btn-search {width: 28px;
+    height: 30px;
+    border: 1px solid #dbdbdb;
+    border-left: none;background-repeat: no-repeat;}.m-search .btn-search{background-position:6px 6px}.m-search .btn-search{background-image: url(../images/search_z.png)}

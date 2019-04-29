@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceHostMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.DeviceHost" >
+    <id column="host_id" property="hostId" jdbcType="INTEGER" />
+    <result column="host_name" property="hostName" jdbcType="VARCHAR" />
+    <result column="host_ipaddr" property="hostIpaddr" jdbcType="VARCHAR" />
+    <result column="host_serialno" property="hostSerialno" jdbcType="VARCHAR" />
+    <result column="dspec_id" property="dspecId" jdbcType="INTEGER" />
+    <result column="host_desc" property="hostDesc" jdbcType="VARCHAR" />
+    <result column="host_username" property="hostUsername" jdbcType="VARCHAR" />
+    <result column="host_password" property="hostPassword" jdbcType="VARCHAR" />
+    <result column="host_mac" property="hostMac" jdbcType="VARCHAR" />
+    <result column="host_hhtcmac" property="hostHhtcmac" jdbcType="VARCHAR" />
+    <result column="host_factory" property="hostFactory" jdbcType="VARCHAR" />
+    <result column="host_port" property="hostPort" jdbcType="VARCHAR" />
+    <result column="host_channel" property="hostChannel" jdbcType="VARCHAR" />
+    <result column="isTour" property="istour" jdbcType="INTEGER" />
+    <result column="host_systype" property="hostSystype" jdbcType="VARCHAR" />
+    <result column="mcu_code" property="mcuCode" jdbcType="VARCHAR" />
+    <result column="host_token" property="hostToken" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="areaRDeviceMap" type="com.honghe.deviceNew.entity.Device2Area">
+    <result column="host_ipaddr" property="hostCode" />
+    <result column="host_name" property="hostName" />
+    <result column="dtype_name_cn" property="deviceType" />
+    <result column="name" property="areaName"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    host_id, host_name, host_ipaddr, host_serialno, dspec_id, host_desc, host_username,
+    host_password, host_mac, host_hhtcmac, host_factory, host_port, host_channel, isTour,
+    host_systype,mcu_code
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from device_host
+    where host_id = #{hostId,jdbcType=INTEGER}
+  </select>
+  <select id="isHas" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from device_host
+    where host_name = #{hostName,jdbcType=INTEGER}
+  </select>
+  <select id="getDeviceByHostIp" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from device_host
+    where host_ipaddr = #{hostIpaddr,jdbcType=INTEGER}
+  </select>
+  <select id="getDeviceInfoByIp" resultType="java.util.Map" parameterType="java.lang.String" >
+    select h.host_id,h.host_name,h.host_systype,h.host_mac,t.dtype_name,h.mcu_code
+    from device_host h
+    left join device_specification s on h.dspec_id = s.dspec_id
+    left join device_type t on s.dtype_id = t.dtype_id
+    where host_ipaddr = #{hostIpaddr,jdbcType=VARCHAR}
+  </select>
+  <select id="getDeviceInfoById" resultType="java.util.Map" parameterType="java.lang.String" >
+    select h.host_id,h.host_name,h.host_ipaddr,h.host_serialno,h.host_desc,h.host_username,
+            h.host_password,h.dspec_id,h.host_factory,d.dtype_id,t.dtype_name,h.host_mac,
+            h.host_port,h.host_systype,h.host_channel,h.mcu_code
+    from device_host h
+    left join device_specification d on h.dspec_id = d.dspec_id
+    left join device_type t on t.dtype_id = d.dtype_id
+    where host_id = #{hostId}
+  </select>
+  <select id="getExistingTypeList" resultType="java.util.Map" >
+    select distinct(t.dtype_id),t.dtype_name,t.dtype_desc,t.dtype_name_cn
+    from device_type t
+    left join device_specification d on t.dtype_id = d.dtype_id
+    where d.dspec_id in (select dspec_id from device_host)
+ </select>
+  <select id="getHostInfoByMcuCode" parameterType="java.lang.String" resultType="java.util.Map">
+    select h.host_id,h.host_name,h.host_ipaddr,h.host_serialno,h.host_desc,h.host_username,h.host_password,h.dspec_id,h.host_factory,d.dtype_id,t.dtype_name,h.host_mac ,h.host_hhtcmac,h.host_port,h.host_channel,h.host_systype,h.mcu_code
+    from device_host h
+    left join device_specification d on h.dspec_id = d.dspec_id
+    left join device_type t on t.dtype_id = d.dtype_id
+    where h.mcu_code=#{mcuCode,jdbcType=VARCHAR}
+  </select>
+  <select id="getDeviceInfo" parameterType="java.lang.String" resultMap="areaRDeviceMap">
+    select h.host_ipaddr,h.host_name,t.dtype_name_cn,a.name
+    from device_host h
+    left join device_specification s on h.dspec_id = s.dspec_id
+    left join device_type t on s.dtype_id = t.dtype_id
+    left join ad_area2device ad on h.host_id = ad.device_id
+    left join ad_area a on a.id = ad.area_id
+    where 1=1
+    <if test='deviceType!=null and deviceType!=""'>
+      and t.dtype_name = #{deviceType,jdbcType=VARCHAR}
+    </if>
+  </select>
+  <select id="getDeviceHostList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from device_host
+    where 1=1
+  </select>
+  <select id="getAreaDevice" resultType="java.util.HashMap">
+    select id,area_id,device_id
+    from ad_area2device where device_id=#{hostId,jdbcType=INTEGER}
+  </select>
+  <select id="getHostCountByType" resultType="java.lang.Integer">
+    select count(h.host_id)
+    from device_host h
+    left join device_specification d on h.dspec_id = d.dspec_id
+    left join device_type t on t.dtype_id = d.dtype_id
+    where 1=1
+    <if test='deviceType!=null and deviceType!=""'>
+      <choose>
+        <when test='deviceType =="HHREC"'>
+          and t.dtype_name IN ('NVR','IPC','AREC')
+        </when>
+        <otherwise>
+          and t.dtype_name = #{deviceType,jdbcType=VARCHAR}
+        </otherwise>
+      </choose>
+    </if>
+  </select>
+  <select id="getHostInfo" resultType="java.util.HashMap">
+     select h.host_id as hostId,h.host_name as hostName,h.host_ipaddr as hostIp,h.host_serialno as hostSerialno,h.host_factory as hostFactory,
+    h.host_desc as hostDesc,h.host_username as hostUserName,h.host_password as hostPassword,h.dspec_id as dspecId,h.host_systype as hostSysType,h.host_mac as hostMac,
+    h.host_hhtcmac as hostHHTCMac,d.dtype_id as dtypeId,t.dtype_name as dtypeName,h.host_port as hostPort,h.host_channel as hostChannel,h.mcu_code as mcuCode,h.isTour from device_host h
+    left join device_specification d on h.dspec_id = d.dspec_id
+    left join device_type t on t.dtype_id = d.dtype_id
+    where 1=1
+  </select>
+
+  <select id="getMcuHostInfo" resultType="java.util.HashMap">
+    select
+    h.host_id,
+	h.host_name,
+	h.host_ipaddr,
+	h.host_serialno,
+	h.dspec_id,
+	h.host_desc,
+	h.host_username,
+	h.host_password,
+	h.host_mac,
+	h.host_hhtcmac,
+	h.host_factory,
+	h.host_port,
+	h.host_channel,
+	h.isTour,
+	h.host_systype,
+	h.mcu_code
+    from device_host h
+    left join device_specification d on h.dspec_id = d.dspec_id
+    left join device_type t on t.dtype_id = d.dtype_id
+    where h.host_factory='HiteTech-IFreeComm'
+  </select>
+  <select id="getConditionsHostListByPage" resultType="java.util.HashMap">
+    select h.host_id,h.host_ipaddr,h.host_name,h.mcu_code,t.dtype_name,
+    t.dtype_name_cn,r.name from device_host h
+    left join device_specification d on h.dspec_id = d.dspec_id
+    left join device_type t on t.dtype_id = d.dtype_id
+    left join ad_area2device a on a.device_id = h.host_id
+    left join ad_area r on r.id = a.area_id
+    where 1=1
+    <if test='areaId!=null and areaId!=""'>
+      <choose>
+        <when test='areaId =="-1"'>
+          and h.host_id not in (SELECT device_id FROM ad_area2device)
+        </when>
+        <otherwise>
+          and h.host_id in (SELECT device_id FROM ad_area2device WHERE  a.area_id = #{areaId,jdbcType=VARCHAR})
+        </otherwise>
+      </choose>
+    </if>
+    <if test='deviceType!=null and deviceType!=""'>
+      <choose>
+        <when test='deviceType =="HHREC"'>
+          and t.dtype_name IN ('NVR','IPC','AREC')
+        </when>
+        <otherwise>
+          and t.dtype_name = #{deviceType,jdbcType=VARCHAR}
+        </otherwise>
+      </choose>
+    </if>
+    <if test='conditions!=null and conditions!=""'>
+      and h.host_name LIKE CONCAT(CONCAT('%', #{conditions}), '%') OR h.host_ipaddr LIKE CONCAT(CONCAT('%', #{conditions}), '%')
+    </if>
+    order by h.host_id
+    <if test="start>=0 and end>0">
+      limit #{start},#{end}
+    </if>
+
+  </select>
+  <select id="getHostInfoByPage" resultType="java.util.HashMap">
+    select h.host_id,h.host_name,h.host_ipaddr,h.host_serialno,
+    h.host_desc,h.host_username,h.host_password,h.dspec_id,
+    d.dtype_id,t.dtype_name,h.host_port,h.host_channel,h.mcu_code,r.name,t.dtype_name_cn from device_host h
+    left join device_specification d on h.dspec_id = d.dspec_id
+    left join device_type t on t.dtype_id = d.dtype_id
+    left join ad_area2device a on a.device_id = h.host_id
+    left join ad_area r on a.area_id = r.id
+    where 1=1
+    <if test='deviceType!=null and deviceType!=""'>
+      <choose>
+        <when test='deviceType =="HHREC"'>
+          and t.dtype_name IN ('NVR','IPC','AREC')
+        </when>
+        <otherwise>
+          and t.dtype_name = #{deviceType,jdbcType=VARCHAR}
+        </otherwise>
+      </choose>
+    </if>
+    <if test="hostIdStr!=null and hostIdStr.length>0 ">
+      and
+      host_id in
+      <foreach item="item" collection="hostIdStr" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+    <if test="start>=0 and end>0">
+      limit #{start},#{end}
+    </if>
+
+  </select>
+
+  <delete id="deleteAreaDevice" parameterType="java.lang.Integer">
+    delete from ad_area2device
+    where device_id=#{hostId,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from device_host
+    where host_id = #{hostId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteDevices" parameterType="java.lang.Integer">
+    delete from device_host where 1=1
+    AND
+    device_id in
+    <foreach item="item" collection="array" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="hostId" parameterType="com.honghe.deviceNew.entity.DeviceHost" >
+    insert into device_host (host_id, host_name, host_ipaddr,
+    host_serialno, dspec_id, host_desc,
+    host_username, host_password, host_mac,
+    host_hhtcmac, host_factory, host_port,
+    host_channel, isTour, host_systype,mcu_code
+    )
+    values (#{hostId,jdbcType=INTEGER}, #{hostName,jdbcType=VARCHAR},
+    #{hostIpaddr,jdbcType=VARCHAR}, #{hostSerialno,jdbcType=VARCHAR}, #{dspecId,jdbcType=INTEGER},
+    #{hostDesc,jdbcType=VARCHAR}, #{hostUsername,jdbcType=VARCHAR}, #{hostPassword,jdbcType=VARCHAR},
+    #{hostMac,jdbcType=VARCHAR},#{hostHhtcmac,jdbcType=VARCHAR}, #{hostFactory,jdbcType=VARCHAR},
+    #{hostPort,jdbcType=VARCHAR},#{hostChannel,jdbcType=VARCHAR}, #{istour,jdbcType=INTEGER},
+    #{hostSystype,jdbcType=VARCHAR},#{mcuCode,jdbcType=VARCHAR}
+    )
+  </insert>
+  <insert id="insertSelective"  useGeneratedKeys="true" keyProperty="hostId" parameterType="com.honghe.deviceNew.entity.DeviceHost" >
+    insert into device_host
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="hostId != null" >
+        host_id,
+      </if>
+      <if test="hostName != null" >
+        host_name,
+      </if>
+      <if test="hostIpaddr != null" >
+        host_ipaddr,
+      </if>
+      <if test="hostSerialno != null" >
+        host_serialno,
+      </if>
+      <if test="dspecId != null" >
+        dspec_id,
+      </if>
+      <if test="hostDesc != null" >
+        host_desc,
+      </if>
+      <if test="hostUsername != null" >
+        host_username,
+      </if>
+      <if test="hostPassword != null" >
+        host_password,
+      </if>
+      <if test="hostMac != null" >
+        host_mac,
+      </if>
+      <if test="hostHhtcmac != null" >
+        host_hhtcmac,
+      </if>
+      <if test="hostFactory != null" >
+        host_factory,
+      </if>
+      <if test="hostPort != null" >
+        host_port,
+      </if>
+      <if test="hostChannel != null" >
+        host_channel,
+      </if>
+      <if test="istour != null" >
+        isTour,
+      </if>
+      <if test="hostSystype != null" >
+        host_systype,
+      </if>
+      <if test="mcuCode != null" >
+        mcu_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="hostId != null" >
+        #{hostId,jdbcType=INTEGER},
+      </if>
+      <if test="hostName != null" >
+        #{hostName,jdbcType=VARCHAR},
+      </if>
+      <if test="hostIpaddr != null" >
+        #{hostIpaddr,jdbcType=VARCHAR},
+      </if>
+      <if test="hostSerialno != null" >
+        #{hostSerialno,jdbcType=VARCHAR},
+      </if>
+      <if test="dspecId != null" >
+        #{dspecId,jdbcType=INTEGER},
+      </if>
+      <if test="hostDesc != null" >
+        #{hostDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="hostUsername != null" >
+        #{hostUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="hostPassword != null" >
+        #{hostPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="hostMac != null" >
+        #{hostMac,jdbcType=VARCHAR},
+      </if>
+      <if test="hostHhtcmac != null" >
+        #{hostHhtcmac,jdbcType=VARCHAR},
+      </if>
+      <if test="hostFactory != null" >
+        #{hostFactory,jdbcType=VARCHAR},
+      </if>
+      <if test="hostPort != null" >
+        #{hostPort,jdbcType=VARCHAR},
+      </if>
+      <if test="hostChannel != null" >
+        #{hostChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="istour != null" >
+        #{istour,jdbcType=INTEGER},
+      </if>
+      <if test="hostSystype != null" >
+        #{hostSystype,jdbcType=VARCHAR},
+      </if>
+      <if test="mcuCode != null" >
+        #{mcuCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateBatchHostNames" parameterType="java.util.List" >
+    update device_host
+      <trim prefix="set" suffixOverrides=",">
+        <trim prefix="host_name =case" suffix="end,">
+          <foreach collection="list" item="host" index="index">
+            <if test="host.hostName !=null">
+              when host_id=#{host.hostId} then #{host.hostName}
+            </if>
+          </foreach>
+        </trim>
+      </trim>
+      where host_id in
+      <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+        #{item.hostId,jdbcType=INTEGER}
+      </foreach>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.honghe.deviceNew.entity.DeviceHost" >
+    update device_host
+    <set >
+      <if test="hostName != null" >
+        host_name = #{hostName,jdbcType=VARCHAR},
+      </if>
+      <if test="hostIpaddr != null" >
+        host_ipaddr = #{hostIpaddr,jdbcType=VARCHAR},
+      </if>
+      <if test="hostSerialno != null" >
+        host_serialno = #{hostSerialno,jdbcType=VARCHAR},
+      </if>
+      <if test="dspecId != null" >
+        dspec_id = #{dspecId,jdbcType=INTEGER},
+      </if>
+      <if test="hostDesc != null" >
+        host_desc = #{hostDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="hostUsername != null" >
+        host_username = #{hostUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="hostPassword != null" >
+        host_password = #{hostPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="hostMac != null" >
+        host_mac = #{hostMac,jdbcType=VARCHAR},
+      </if>
+      <if test="hostHhtcmac != null" >
+        host_hhtcmac = #{hostHhtcmac,jdbcType=VARCHAR},
+      </if>
+      <if test="hostFactory != null" >
+        host_factory = #{hostFactory,jdbcType=VARCHAR},
+      </if>
+      <if test="hostPort != null" >
+        host_port = #{hostPort,jdbcType=VARCHAR},
+      </if>
+      <if test="hostChannel != null" >
+        host_channel = #{hostChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="istour != null" >
+        isTour = #{istour,jdbcType=INTEGER},
+      </if>
+      <if test="hostSystype != null" >
+        host_systype = #{hostSystype,jdbcType=VARCHAR},
+      </if>
+      <if test="hostToken != null" >
+        host_token = #{hostToken,jdbcType=VARCHAR} ,
+      </if>
+      <if test="mcuCode != null" >
+        mcu_code = #{mcuCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where host_id = #{hostId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceHost" >
+    update device_host
+    set host_name = #{hostName,jdbcType=VARCHAR},
+      host_ipaddr = #{hostIpaddr,jdbcType=VARCHAR},
+      host_serialno = #{hostSerialno,jdbcType=VARCHAR},
+      dspec_id = #{dspecId,jdbcType=INTEGER},
+      host_desc = #{hostDesc,jdbcType=VARCHAR},
+      host_username = #{hostUsername,jdbcType=VARCHAR},
+      host_password = #{hostPassword,jdbcType=VARCHAR},
+      host_mac = #{hostMac,jdbcType=VARCHAR},
+      host_hhtcmac = #{hostHhtcmac,jdbcType=VARCHAR},
+      host_factory = #{hostFactory,jdbcType=VARCHAR},
+      host_port = #{hostPort,jdbcType=VARCHAR},
+      host_channel = #{hostChannel,jdbcType=VARCHAR},
+      isTour = #{istour,jdbcType=INTEGER},
+      host_token = #{hostToken,jdbcType=VARCHAR},
+      host_systype = #{hostSystype,jdbcType=VARCHAR}
+      mcu_code = #{mcuCode,jdbcType=VARCHAR}
+    where host_id = #{hostId,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,88 @@
+package com.honghe.service.client;
+
+
+
+import net.sf.json.JSONObject;
+import org.jsoup.Connection;
+import java.util.Map;
+
+/**
+ * Created by zhanghongbin on 2015/6/8.
+ */
+@Deprecated
+public class ServiceClient {
+
+    private String url;
+    private String uploadUrl;
+
+    public ServiceClient() {
+        this("localhost");
+    }
+
+    public ServiceClient(String ip,int port) {
+        this.url = "http://" + ip + ":" + port +"/service/cloud/httpCommandService";
+        this.uploadUrl = "http://" + ip + ":" + port +"/service/cloud/httpUploadService";
+    }
+    public ServiceClient(String ip) {
+        this(ip,7070);
+    }
+
+
+
+    public final Result execute(String cmd, Enum method, Map<String, String> params) {
+        return this.execute(cmd, method, params, 90 * 1000);
+    }
+
+    public final Result execute(String cmd, Enum method, Map<String, String> params, int timeout) {
+        params.put("cmd", cmd);
+        params.put("cmd_op", method.toString());
+        Connection connection = org.jsoup.Jsoup.connect(url).method(Connection.Method.POST).timeout(timeout).followRedirects(true);
+        connection.data(params).ignoreContentType(true);
+        Connection.Response response;
+        try {
+            response = connection.execute();
+            String result = response.body().trim();
+            JSONObject jsonObject = JSONObject.fromObject(result);
+            return new Result(method.toString(), Integer.parseInt(jsonObject.getString("code")), jsonObject.get("result"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(method.toString(), 404, "");
+        }
+    }
+
+//    public final Result upload(String cmd, Enum method, Map<String, String> params) {
+//        HttpRequest httpRequest = HttpRequest.post(uploadUrl)
+//                .form(
+//                        "mimeType", "application/txt",
+//                        "file", new File(params.get("filePath")),
+//                        "cmd", cmd,
+//                        "cmd_op", method.toString()
+//                );
+//        try {
+//            httpRequest.charset("UTF-8");
+//            HttpResponse httpResponse = httpRequest.send();
+//            httpResponse.charset("UTF-8");
+//            String result = httpResponse.bodyText().trim();
+//            JSONObject jsonObject = JSONObject.fromObject(result);
+//            return new Result(method.toString(), Integer.parseInt(jsonObject.getString("code")), jsonObject.get("result"));
+//        } catch (Exception e) {
+//            return new Result(method.toString(), 404, "");
+//        }
+//
+//
+//    }
+//
+//    public static void main(String[] args) throws Exception{
+//
+//        HttpRequest httpRequest = HttpRequest.post("http://192.168.16.172:7070/service/cloud/httpUploadService")
+//                .form(
+//                        "file", new File("C:\\Users\\zhanghongbin\\Desktop\\统计思维：程序员数学之概率统计.pdf")
+//                );
+//        httpRequest.charset("UTF-8");
+//        HttpResponse httpResponse = httpRequest.send();
+//        String result = httpResponse.bodyText().trim();
+//        System.out.println(result);
+//    }
+
+
+}

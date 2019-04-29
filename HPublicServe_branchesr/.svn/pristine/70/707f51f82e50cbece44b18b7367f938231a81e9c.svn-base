@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceHosteventMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.DeviceHostevent" >
+    <id column="event_id" property="eventId" jdbcType="INTEGER" />
+    <result column="event_name" property="eventName" jdbcType="VARCHAR" />
+    <result column="event_content" property="eventContent" jdbcType="VARCHAR" />
+    <result column="event_type" property="eventType" jdbcType="VARCHAR" />
+    <result column="event_topic" property="eventTopic" jdbcType="VARCHAR" />
+    <result column="event_desc" property="eventDesc" jdbcType="VARCHAR" />
+    <result column="event_remark" property="eventRemark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    event_id, event_name, event_content, event_type, event_topic, event_desc, event_remark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from device_hostevent
+    where event_id = #{eventId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from device_hostevent
+    where event_id = #{eventId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.honghe.deviceNew.entity.DeviceHostevent" >
+    insert into device_hostevent (event_id, event_name, event_content, 
+      event_type, event_topic, event_desc, 
+      event_remark)
+    values (#{eventId,jdbcType=INTEGER}, #{eventName,jdbcType=VARCHAR}, #{eventContent,jdbcType=VARCHAR}, 
+      #{eventType,jdbcType=VARCHAR}, #{eventTopic,jdbcType=VARCHAR}, #{eventDesc,jdbcType=VARCHAR}, 
+      #{eventRemark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.honghe.deviceNew.entity.DeviceHostevent" >
+    insert into device_hostevent
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="eventId != null" >
+        event_id,
+      </if>
+      <if test="eventName != null" >
+        event_name,
+      </if>
+      <if test="eventContent != null" >
+        event_content,
+      </if>
+      <if test="eventType != null" >
+        event_type,
+      </if>
+      <if test="eventTopic != null" >
+        event_topic,
+      </if>
+      <if test="eventDesc != null" >
+        event_desc,
+      </if>
+      <if test="eventRemark != null" >
+        event_remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="eventId != null" >
+        #{eventId,jdbcType=INTEGER},
+      </if>
+      <if test="eventName != null" >
+        #{eventName,jdbcType=VARCHAR},
+      </if>
+      <if test="eventContent != null" >
+        #{eventContent,jdbcType=VARCHAR},
+      </if>
+      <if test="eventType != null" >
+        #{eventType,jdbcType=VARCHAR},
+      </if>
+      <if test="eventTopic != null" >
+        #{eventTopic,jdbcType=VARCHAR},
+      </if>
+      <if test="eventDesc != null" >
+        #{eventDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="eventRemark != null" >
+        #{eventRemark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.honghe.deviceNew.entity.DeviceHostevent" >
+    update device_hostevent
+    <set >
+      <if test="eventName != null" >
+        event_name = #{eventName,jdbcType=VARCHAR},
+      </if>
+      <if test="eventContent != null" >
+        event_content = #{eventContent,jdbcType=VARCHAR},
+      </if>
+      <if test="eventType != null" >
+        event_type = #{eventType,jdbcType=VARCHAR},
+      </if>
+      <if test="eventTopic != null" >
+        event_topic = #{eventTopic,jdbcType=VARCHAR},
+      </if>
+      <if test="eventDesc != null" >
+        event_desc = #{eventDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="eventRemark != null" >
+        event_remark = #{eventRemark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where event_id = #{eventId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceHostevent" >
+    update device_hostevent
+    set event_name = #{eventName,jdbcType=VARCHAR},
+      event_content = #{eventContent,jdbcType=VARCHAR},
+      event_type = #{eventType,jdbcType=VARCHAR},
+      event_topic = #{eventTopic,jdbcType=VARCHAR},
+      event_desc = #{eventDesc,jdbcType=VARCHAR},
+      event_remark = #{eventRemark,jdbcType=VARCHAR}
+    where event_id = #{eventId,jdbcType=INTEGER}
+  </update>
+</mapper>

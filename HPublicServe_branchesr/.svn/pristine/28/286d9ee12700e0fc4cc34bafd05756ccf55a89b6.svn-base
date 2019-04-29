@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceDevdetailMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.DeviceDevdetail" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="AREAID" property="areaid" jdbcType="INTEGER" />
+    <result column="BLACKID" property="blackid" jdbcType="BIGINT" />
+    <result column="CLIENTID" property="clientid" jdbcType="INTEGER" />
+    <result column="COLLECTTYPE" property="collecttype" jdbcType="INTEGER" />
+    <result column="COMPORT" property="comport" jdbcType="VARCHAR" />
+    <result column="COMTYPE" property="comtype" jdbcType="INTEGER" />
+    <result column="CTLTYPE" property="ctltype" jdbcType="INTEGER" />
+    <result column="DEVICEADDRESS" property="deviceaddress" jdbcType="INTEGER" />
+    <result column="DEVICEID" property="deviceid" jdbcType="INTEGER" />
+    <result column="DEVICEMODEL" property="devicemodel" jdbcType="INTEGER" />
+    <result column="DEVICENAME" property="devicename" jdbcType="VARCHAR" />
+    <result column="DEVICENO" property="deviceno" jdbcType="VARCHAR" />
+    <result column="DEVICESTATUS" property="devicestatus" jdbcType="INTEGER" />
+    <result column="DEVICETYPE" property="devicetype" jdbcType="INTEGER" />
+    <result column="DEVICEUSE" property="deviceuse" jdbcType="VARCHAR" />
+    <result column="doorno" property="doorno" jdbcType="INTEGER" />
+    <result column="FIRMID" property="firmid" jdbcType="VARCHAR" />
+    <result column="GATEWAY" property="gateway" jdbcType="VARCHAR" />
+    <result column="IOTYPE" property="iotype" jdbcType="VARCHAR" />
+    <result column="IPADDRESS" property="ipaddress" jdbcType="VARCHAR" />
+    <result column="ISPASS" property="ispass" jdbcType="INTEGER" />
+    <result column="lastrecordid" property="lastrecordid" jdbcType="INTEGER" />
+    <result column="MACADDRESS" property="macaddress" jdbcType="VARCHAR" />
+    <result column="MARKETID" property="marketid" jdbcType="INTEGER" />
+    <result column="NETMASK" property="netmask" jdbcType="VARCHAR" />
+    <result column="OCCURTIME" property="occurtime" jdbcType="TIMESTAMP" />
+    <result column="OPERATETYPE" property="operatetype" jdbcType="VARCHAR" />
+    <result column="OPERATOR" property="operator" jdbcType="VARCHAR" />
+    <result column="SERVERIP" property="serverip" jdbcType="VARCHAR" />
+    <result column="WHITEID" property="whiteid" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, AREAID, BLACKID, CLIENTID, COLLECTTYPE, COMPORT, COMTYPE, CTLTYPE, DEVICEADDRESS, 
+    DEVICEID, DEVICEMODEL, DEVICENAME, DEVICENO, DEVICESTATUS, DEVICETYPE, DEVICEUSE, 
+    doorno, FIRMID, GATEWAY, IOTYPE, IPADDRESS, ISPASS, lastrecordid, MACADDRESS, MARKETID, 
+    NETMASK, OCCURTIME, OPERATETYPE, OPERATOR, SERVERIP, WHITEID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from device_devdetail
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from device_devdetail
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.honghe.deviceNew.entity.DeviceDevdetail" >
+    insert into device_devdetail (ID, AREAID, BLACKID, 
+      CLIENTID, COLLECTTYPE, COMPORT, 
+      COMTYPE, CTLTYPE, DEVICEADDRESS, 
+      DEVICEID, DEVICEMODEL, DEVICENAME, 
+      DEVICENO, DEVICESTATUS, DEVICETYPE, 
+      DEVICEUSE, doorno, FIRMID, 
+      GATEWAY, IOTYPE, IPADDRESS, 
+      ISPASS, lastrecordid, MACADDRESS, 
+      MARKETID, NETMASK, OCCURTIME, 
+      OPERATETYPE, OPERATOR, SERVERIP, 
+      WHITEID)
+    values (#{id,jdbcType=INTEGER}, #{areaid,jdbcType=INTEGER}, #{blackid,jdbcType=BIGINT}, 
+      #{clientid,jdbcType=INTEGER}, #{collecttype,jdbcType=INTEGER}, #{comport,jdbcType=VARCHAR}, 
+      #{comtype,jdbcType=INTEGER}, #{ctltype,jdbcType=INTEGER}, #{deviceaddress,jdbcType=INTEGER}, 
+      #{deviceid,jdbcType=INTEGER}, #{devicemodel,jdbcType=INTEGER}, #{devicename,jdbcType=VARCHAR}, 
+      #{deviceno,jdbcType=VARCHAR}, #{devicestatus,jdbcType=INTEGER}, #{devicetype,jdbcType=INTEGER}, 
+      #{deviceuse,jdbcType=VARCHAR}, #{doorno,jdbcType=INTEGER}, #{firmid,jdbcType=VARCHAR}, 
+      #{gateway,jdbcType=VARCHAR}, #{iotype,jdbcType=VARCHAR}, #{ipaddress,jdbcType=VARCHAR}, 
+      #{ispass,jdbcType=INTEGER}, #{lastrecordid,jdbcType=INTEGER}, #{macaddress,jdbcType=VARCHAR}, 
+      #{marketid,jdbcType=INTEGER}, #{netmask,jdbcType=VARCHAR}, #{occurtime,jdbcType=TIMESTAMP}, 
+      #{operatetype,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, #{serverip,jdbcType=VARCHAR}, 
+      #{whiteid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.honghe.deviceNew.entity.DeviceDevdetail" >
+    insert into device_devdetail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="areaid != null" >
+        AREAID,
+      </if>
+      <if test="blackid != null" >
+        BLACKID,
+      </if>
+      <if test="clientid != null" >
+        CLIENTID,
+      </if>
+      <if test="collecttype != null" >
+        COLLECTTYPE,
+      </if>
+      <if test="comport != null" >
+        COMPORT,
+      </if>
+      <if test="comtype != null" >
+        COMTYPE,
+      </if>
+      <if test="ctltype != null" >
+        CTLTYPE,
+      </if>
+      <if test="deviceaddress != null" >
+        DEVICEADDRESS,
+      </if>
+      <if test="deviceid != null" >
+        DEVICEID,
+      </if>
+      <if test="devicemodel != null" >
+        DEVICEMODEL,
+      </if>
+      <if test="devicename != null" >
+        DEVICENAME,
+      </if>
+      <if test="deviceno != null" >
+        DEVICENO,
+      </if>
+      <if test="devicestatus != null" >
+        DEVICESTATUS,
+      </if>
+      <if test="devicetype != null" >
+        DEVICETYPE,
+      </if>
+      <if test="deviceuse != null" >
+        DEVICEUSE,
+      </if>
+      <if test="doorno != null" >
+        doorno,
+      </if>
+      <if test="firmid != null" >
+        FIRMID,
+      </if>
+      <if test="gateway != null" >
+        GATEWAY,
+      </if>
+      <if test="iotype != null" >
+        IOTYPE,
+      </if>
+      <if test="ipaddress != null" >
+        IPADDRESS,
+      </if>
+      <if test="ispass != null" >
+        ISPASS,
+      </if>
+      <if test="lastrecordid != null" >
+        lastrecordid,
+      </if>
+      <if test="macaddress != null" >
+        MACADDRESS,
+      </if>
+      <if test="marketid != null" >
+        MARKETID,
+      </if>
+      <if test="netmask != null" >
+        NETMASK,
+      </if>
+      <if test="occurtime != null" >
+        OCCURTIME,
+      </if>
+      <if test="operatetype != null" >
+        OPERATETYPE,
+      </if>
+      <if test="operator != null" >
+        OPERATOR,
+      </if>
+      <if test="serverip != null" >
+        SERVERIP,
+      </if>
+      <if test="whiteid != null" >
+        WHITEID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="areaid != null" >
+        #{areaid,jdbcType=INTEGER},
+      </if>
+      <if test="blackid != null" >
+        #{blackid,jdbcType=BIGINT},
+      </if>
+      <if test="clientid != null" >
+        #{clientid,jdbcType=INTEGER},
+      </if>
+      <if test="collecttype != null" >
+        #{collecttype,jdbcType=INTEGER},
+      </if>
+      <if test="comport != null" >
+        #{comport,jdbcType=VARCHAR},
+      </if>
+      <if test="comtype != null" >
+        #{comtype,jdbcType=INTEGER},
+      </if>
+      <if test="ctltype != null" >
+        #{ctltype,jdbcType=INTEGER},
+      </if>
+      <if test="deviceaddress != null" >
+        #{deviceaddress,jdbcType=INTEGER},
+      </if>
+      <if test="deviceid != null" >
+        #{deviceid,jdbcType=INTEGER},
+      </if>
+      <if test="devicemodel != null" >
+        #{devicemodel,jdbcType=INTEGER},
+      </if>
+      <if test="devicename != null" >
+        #{devicename,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceno != null" >
+        #{deviceno,jdbcType=VARCHAR},
+      </if>
+      <if test="devicestatus != null" >
+        #{devicestatus,jdbcType=INTEGER},
+      </if>
+      <if test="devicetype != null" >
+        #{devicetype,jdbcType=INTEGER},
+      </if>
+      <if test="deviceuse != null" >
+        #{deviceuse,jdbcType=VARCHAR},
+      </if>
+      <if test="doorno != null" >
+        #{doorno,jdbcType=INTEGER},
+      </if>
+      <if test="firmid != null" >
+        #{firmid,jdbcType=VARCHAR},
+      </if>
+      <if test="gateway != null" >
+        #{gateway,jdbcType=VARCHAR},
+      </if>
+      <if test="iotype != null" >
+        #{iotype,jdbcType=VARCHAR},
+      </if>
+      <if test="ipaddress != null" >
+        #{ipaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="ispass != null" >
+        #{ispass,jdbcType=INTEGER},
+      </if>
+      <if test="lastrecordid != null" >
+        #{lastrecordid,jdbcType=INTEGER},
+      </if>
+      <if test="macaddress != null" >
+        #{macaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="marketid != null" >
+        #{marketid,jdbcType=INTEGER},
+      </if>
+      <if test="netmask != null" >
+        #{netmask,jdbcType=VARCHAR},
+      </if>
+      <if test="occurtime != null" >
+        #{occurtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operatetype != null" >
+        #{operatetype,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="serverip != null" >
+        #{serverip,jdbcType=VARCHAR},
+      </if>
+      <if test="whiteid != null" >
+        #{whiteid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.honghe.deviceNew.entity.DeviceDevdetail" >
+    update device_devdetail
+    <set >
+      <if test="areaid != null" >
+        AREAID = #{areaid,jdbcType=INTEGER},
+      </if>
+      <if test="blackid != null" >
+        BLACKID = #{blackid,jdbcType=BIGINT},
+      </if>
+      <if test="clientid != null" >
+        CLIENTID = #{clientid,jdbcType=INTEGER},
+      </if>
+      <if test="collecttype != null" >
+        COLLECTTYPE = #{collecttype,jdbcType=INTEGER},
+      </if>
+      <if test="comport != null" >
+        COMPORT = #{comport,jdbcType=VARCHAR},
+      </if>
+      <if test="comtype != null" >
+        COMTYPE = #{comtype,jdbcType=INTEGER},
+      </if>
+      <if test="ctltype != null" >
+        CTLTYPE = #{ctltype,jdbcType=INTEGER},
+      </if>
+      <if test="deviceaddress != null" >
+        DEVICEADDRESS = #{deviceaddress,jdbcType=INTEGER},
+      </if>
+      <if test="deviceid != null" >
+        DEVICEID = #{deviceid,jdbcType=INTEGER},
+      </if>
+      <if test="devicemodel != null" >
+        DEVICEMODEL = #{devicemodel,jdbcType=INTEGER},
+      </if>
+      <if test="devicename != null" >
+        DEVICENAME = #{devicename,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceno != null" >
+        DEVICENO = #{deviceno,jdbcType=VARCHAR},
+      </if>
+      <if test="devicestatus != null" >
+        DEVICESTATUS = #{devicestatus,jdbcType=INTEGER},
+      </if>
+      <if test="devicetype != null" >
+        DEVICETYPE = #{devicetype,jdbcType=INTEGER},
+      </if>
+      <if test="deviceuse != null" >
+        DEVICEUSE = #{deviceuse,jdbcType=VARCHAR},
+      </if>
+      <if test="doorno != null" >
+        doorno = #{doorno,jdbcType=INTEGER},
+      </if>
+      <if test="firmid != null" >
+        FIRMID = #{firmid,jdbcType=VARCHAR},
+      </if>
+      <if test="gateway != null" >
+        GATEWAY = #{gateway,jdbcType=VARCHAR},
+      </if>
+      <if test="iotype != null" >
+        IOTYPE = #{iotype,jdbcType=VARCHAR},
+      </if>
+      <if test="ipaddress != null" >
+        IPADDRESS = #{ipaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="ispass != null" >
+        ISPASS = #{ispass,jdbcType=INTEGER},
+      </if>
+      <if test="lastrecordid != null" >
+        lastrecordid = #{lastrecordid,jdbcType=INTEGER},
+      </if>
+      <if test="macaddress != null" >
+        MACADDRESS = #{macaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="marketid != null" >
+        MARKETID = #{marketid,jdbcType=INTEGER},
+      </if>
+      <if test="netmask != null" >
+        NETMASK = #{netmask,jdbcType=VARCHAR},
+      </if>
+      <if test="occurtime != null" >
+        OCCURTIME = #{occurtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operatetype != null" >
+        OPERATETYPE = #{operatetype,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null" >
+        OPERATOR = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="serverip != null" >
+        SERVERIP = #{serverip,jdbcType=VARCHAR},
+      </if>
+      <if test="whiteid != null" >
+        WHITEID = #{whiteid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceDevdetail" >
+    update device_devdetail
+    set AREAID = #{areaid,jdbcType=INTEGER},
+      BLACKID = #{blackid,jdbcType=BIGINT},
+      CLIENTID = #{clientid,jdbcType=INTEGER},
+      COLLECTTYPE = #{collecttype,jdbcType=INTEGER},
+      COMPORT = #{comport,jdbcType=VARCHAR},
+      COMTYPE = #{comtype,jdbcType=INTEGER},
+      CTLTYPE = #{ctltype,jdbcType=INTEGER},
+      DEVICEADDRESS = #{deviceaddress,jdbcType=INTEGER},
+      DEVICEID = #{deviceid,jdbcType=INTEGER},
+      DEVICEMODEL = #{devicemodel,jdbcType=INTEGER},
+      DEVICENAME = #{devicename,jdbcType=VARCHAR},
+      DEVICENO = #{deviceno,jdbcType=VARCHAR},
+      DEVICESTATUS = #{devicestatus,jdbcType=INTEGER},
+      DEVICETYPE = #{devicetype,jdbcType=INTEGER},
+      DEVICEUSE = #{deviceuse,jdbcType=VARCHAR},
+      doorno = #{doorno,jdbcType=INTEGER},
+      FIRMID = #{firmid,jdbcType=VARCHAR},
+      GATEWAY = #{gateway,jdbcType=VARCHAR},
+      IOTYPE = #{iotype,jdbcType=VARCHAR},
+      IPADDRESS = #{ipaddress,jdbcType=VARCHAR},
+      ISPASS = #{ispass,jdbcType=INTEGER},
+      lastrecordid = #{lastrecordid,jdbcType=INTEGER},
+      MACADDRESS = #{macaddress,jdbcType=VARCHAR},
+      MARKETID = #{marketid,jdbcType=INTEGER},
+      NETMASK = #{netmask,jdbcType=VARCHAR},
+      OCCURTIME = #{occurtime,jdbcType=TIMESTAMP},
+      OPERATETYPE = #{operatetype,jdbcType=VARCHAR},
+      OPERATOR = #{operator,jdbcType=VARCHAR},
+      SERVERIP = #{serverip,jdbcType=VARCHAR},
+      WHITEID = #{whiteid,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

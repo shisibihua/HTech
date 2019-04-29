@@ -1,0 +1,148 @@
+.main-catalog-left {
+    border-color: #d7dbe5;
+    background: #fff;
+    float: left;
+    width: 260px;
+    min-height: 700px;
+    border-left: 1px solid #d7dbe5;
+    border-right: 1px solid #d7dbe5;
+    margin-bottom: -10000px;
+    padding-bottom: 10000px;
+}
+.main-catalog-top {
+    width: 100%;
+    height: 50px;
+    font-size: 14px;
+    border-bottom: 1px solid #d7dbe5;
+}
+
+.main-catalog-top h1 {
+	height: 50px;
+	line-height: 50px;
+    display: inline-block;
+    text-indent: 10px;
+}
+.main-catalog-o-s{
+	float: left;
+	margin: 10px 0 10px 15px;
+}
+.n-line-icon{
+	display: block;
+	float: left;
+	width: 20px;
+}
+.n-line-icon > span{
+	display: block;
+	float: left;
+	background: url(../images/deive-mu-icon.png) no-repeat 0 0;
+	width: 10px;
+	margin-left: 5px;
+	height: 50px;
+}
+.main-catalog-right {
+    float: left;
+    width: 635px;
+    background: #fff;
+    min-height: 680px;
+    border-left: 1px solid #d7dbe5;
+    border-right: 1px solid #d7dbe5;
+    margin-bottom: -10000px;
+    padding-bottom: 10000px;
+}
+.main-catalog-right-search{
+	width: 635px;
+    margin: 10px 0;
+    min-height: 30px;
+}
+.main-catalog-right-search > button{
+	float: right;
+	margin-right: 15px;
+}
+
+.catalog-list{
+	height: 680px;
+    float: left;
+    width: 100%;
+}
+.catalog-list-title{
+    background: #eaedf1;
+}
+.catalog-list-main{
+    cursor: pointer;
+    border-bottom: 1px solid #eaedf1;
+}
+.catalog-list-main-z{
+    float: left;
+    width: 100%;
+}
+.catalog-list-title,.catalog-list-main{
+    height: 40px;
+    width: 96%;
+    margin-left: 2%;
+    float: left;
+}
+.catalog-list-title > div,.catalog-list-main > div{
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    margin-left: 10px;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
+}
+.catalog-name{
+    width: 120px;
+}
+.catalog-lei{
+    width: 80px;
+}
+.catalog-ip{
+    width: 120px;
+}
+.catalog-dev{
+    width: 110px;
+}
+.catalog-cz{
+    width: 80px;
+}
+.catalog-cz > a{
+    margin-top: 13px;
+    margin-left: 5px;
+}
+.catalog-delete{
+    margin-top: 13px;
+    margin-left: 5px;
+}
+.main-catalog-info-p{
+	float: left;
+	width: 100%;
+}
+.main-catalog-info-p a{
+	float: left;
+	width: 100%;
+	height: 30px;
+	text-indent: 1em;	
+	line-height: 30px;
+	display: block;
+}
+.main-catalog-info-p a:hover{
+	background: #eaedf1;
+	float: left;
+	height: 30px;
+	text-indent: 1em;	
+	line-height: 30px;
+	display: block;
+}
+.main-catalog-info-p a.back-mi{
+	background: #eaedf1;
+	float: left;
+	height: 30px;
+	text-indent: 1em;	
+	line-height: 30px;
+	display: block;
+}
+.user_a{
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
+}

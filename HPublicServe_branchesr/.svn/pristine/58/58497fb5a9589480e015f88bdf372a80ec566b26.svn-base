@@ -1,0 +1,88 @@
+package com.honghe.service.client.http;
+
+import com.honghe.service.client.Result;
+import jodd.http.HttpRequest;
+import jodd.http.HttpResponse;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+import org.jsoup.Connection;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * <p>Description:</p>
+ * <p>Copyright: Copyright (c) 2005</p>
+ * <p>Company: 北京鸿合盛视数字媒体技术有限公司</p>
+ *
+ * @author zhanghongbin
+ * @date 2015/11/9
+ */
+public class HttpServiceClient {
+
+    private String url;
+
+    private int timeout;
+
+    public HttpServiceClient() {
+        this("localhost", 8770);
+    }
+
+    public HttpServiceClient(String ip, int port) {
+        this(ip, port, 90 * 1000);
+    }
+
+    public HttpServiceClient(String ip) {
+        this(ip, 8770);
+    }
+
+    public HttpServiceClient(String ip, int port, int timeout) {
+        this.timeout = timeout;
+        this.url = "http://" + ip + ":" + port + "/service/cloud/httpCommandService";
+    }
+
+    public HttpServiceClient(String url, String timeout) {
+        this.timeout = Integer.parseInt(timeout);
+        this.url = url;
+    }
+
+    public Result execute(String cmd, String method, Map<String, String> params) {
+        params.put("cmd", cmd);
+        params.put("cmd_op", method);
+        Connection connection = org.jsoup.Jsoup.connect(url).method(Connection.Method.POST).timeout(timeout).followRedirects(true);
+        connection.data(params).ignoreContentType(true);
+        Connection.Response response;
+        try {
+            response = connection.execute();
+            String result = response.body().trim();
+            JSONObject jsonObject = JSONObject.fromObject(result);
+            return new Result(method.toString(), Integer.parseInt(jsonObject.getString("code")), jsonObject.get("result"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(method.toString(), 404, "");
+        }
+    }
+
+    public Result execute(Map<String, String> params) {
+        if (!params.containsKey("cmd") || !params.containsKey("cmd_op")) {
+            return new Result("", 404, "");
+        }
+        return this.execute(params.get("cmd"), params.get("cmd_op"), params);
+    }
+
+    public Result executeToJson(Map<String, String> params) {
+        String data = JSONSerializer.toJSON(params).toString();
+        try {
+            HttpResponse response = HttpRequest.post(this.url).bodyText(data, "application/json", "GBK").timeout(this.timeout).send();
+            JSONObject jsonObject = JSONObject.fromObject(response.body());
+            return new Result(params.get("type"), Integer.parseInt(jsonObject.getString("code")), jsonObject.get("result"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(params.get("type"), 404, "");
+        }
+    }
+
+    public static void main(String[] args) {
+
+    }
+}

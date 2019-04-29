@@ -1,0 +1,145 @@
+package com.honghe.user.dao;
+
+import com.honghe.AbstractUserDao;
+import com.honghe.user.dao.entity.Campus;
+import com.honghe.user.dao.entity.Subject;
+import com.honghe.user.dao.entity.User;
+import com.honghe.user.util.JdbcTemplateUtil;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Update by HOUJT on 2018/5/21.
+ * 提供了一些公用的方法，例如构造某些实体，这些方法在频繁用户从dao到servcie，故继承AbstractUserDao以便拓展
+ * 其他dao视情况选择继承对象，如不需要以下的方法可以选择直接继承AbstractUserDao，如需要则可继承本类。
+ */
+public abstract class BaseUserDao extends AbstractUserDao {
+
+    protected User createUser(Map<String, String> map) {
+        User user = new User();
+        user.setUser_address(map.get("user_address") == null ? "" : map.get("user_address").trim());
+        user.setUser_avatar(map.get("user_avatar") == null ? "" : map.get("user_avatar").trim());
+        user.setUser_birthday(map.get("user_birthday") == null ? "" : map.get("user_birthday").trim());
+        user.setUser_code(map.get("user_code") == null ? "" : map.get("user_code").trim());
+        user.setUser_email(map.get("user_email") == null ? "" : map.get("user_email").trim());
+        user.setUser_gender(map.get("user_gender") == null ? "" : map.get("user_gender").trim());
+        user.setUser_hres(map.get("user_hres") == null ? "" : map.get("user_hres").trim());
+        user.setUser_id(Integer.parseInt(map.get("user_id") == null ? "" : map.get("user_id").trim()));
+        user.setUser_isAdmin(map.get("user_isAdmin") == null ? "" : map.get("user_isAdmin").trim());
+        user.setUser_mobile(map.get("user_mobile") == null ? "" : map.get("user_mobile").trim());
+        user.setUser_name(map.get("user_name") == null ? "" : map.get("user_name").trim());
+        user.setUser_num(map.get("user_num") == null ? "" : map.get("user_num").trim());
+        user.setUser_path(map.get("user_path") == null ? "" : map.get("user_path").trim());
+        user.setUser_pwd(map.get("user_pwd") == null ? "" : map.get("user_pwd").trim());
+        user.setUser_realname(map.get("user_realname") == null ? "" : map.get("user_realname").trim());
+        user.setUser_regdate(map.get("user_regdate") == null ? "" : map.get("user_regdate").trim());
+        user.setUser_salt(map.get("user_salt") == null ? "" : map.get("user_salt").trim());
+        user.setUser_status(map.get("user_status") == null ? "" : map.get("user_status").trim());
+        user.setUser_syn_cloud(map.get("user_syn_cloud") == null ? "" : map.get("user_syn_cloud").trim());
+        user.setUser_type(map.get("user_type") == null ? "" : map.get("user_type").trim());
+        return user;
+    }
+
+    protected List<Map<String, String>> getUserListByUserCode(String code) {
+        String userSql = "select * from user where user_code = '" + code + "'";
+        return JdbcTemplateUtil.getJdbcTemplate().findList(userSql);
+    }
+
+    protected Campus createCampus(Map<String, String> list) {
+        Campus campus = new Campus();
+        campus.setId(list.get("id") == null ? "" : list.get("id").trim());
+        campus.setName(list.get("name") == null ? "" : list.get("name").trim());
+        campus.setNumber(list.get("number") == null ? "" : list.get("number").trim());
+        campus.setP_id(list.get("p_id") == null ? "" : list.get("p_id").trim());
+        campus.setRemark(list.get("remark") == null ? "" : list.get("remark").trim());
+        campus.setSchoolyear(list.get("schoolyear") == null ? "" : list.get("schoolyear").trim());
+        campus.setStages_id(list.get("stages_id") == null ? "" : list.get("stages_id").trim());
+        campus.setType_id(Integer.parseInt(list.get("type_id") == null ? "" : list.get("type_id").trim()));
+        return campus;
+    }
+
+    protected User getUserById(List<Map<String, String>> userList) {
+        String userId = userList.get(0).get("user_id");
+        User user = createUser(userList.get(0));
+
+        String campusSql = "SELECT " +
+                "	a.* " +
+                "FROM " +
+                "	ad_campus a " +
+                "JOIN ad_campus2user b ON a.id = b.campus_id " +
+                "WHERE " +
+                "	b.user_id = '" + userId + "'";
+        List<Map<String, String>> campustList = JdbcTemplateUtil.getJdbcTemplate().findList(campusSql);
+        if (!campustList.isEmpty()) {
+
+            Set<Campus> campusSet = new HashSet<>();
+            for (Map<String, String> map : campustList) {
+                Campus campus = createCampus(map);
+                campusSet.add(campus);
+            }
+            user.setCampuses(campusSet);
+
+        }
+        return user;
+    }
+
+    protected Subject createSubject(Map<String, String> map) {
+        Subject subject = new Subject();
+        subject.setDescription(map.get("description") == null ? "" : map.get("description").trim());
+        subject.setId(Integer.parseInt(map.get("id") == null ? "" : map.get("id").trim()));
+        subject.setIs_show(Integer.parseInt(map.get("is_show") == null ? "" : map.get("is_show").trim()));
+        subject.setName(map.get("name") == null ? "" : map.get("name").trim());
+        subject.setOrder_num(map.get("order_num") == null ? "" : map.get("order_num").trim());
+        subject.setSeason_id(map.get("season_id") == null ? "" : map.get("season_id").trim());
+        return subject;
+    }
+
+    protected String getSaveUserSql(User user) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO user ( "+
+                " user_code, "+
+                " user_name, "+
+                " user_pwd, "+
+                " user_salt, "+
+                " user_type, "+
+                " user_path, "+
+                " user_avatar, "+
+                " user_gender, "+
+                " user_birthday, "+
+                " user_mobile, "+
+                " user_email, "+
+                " user_address, "+
+                " user_num, "+
+                " user_regdate, "+
+                " user_status, "+
+                " user_syn_cloud, "+
+                " user_isAdmin, "+
+                " user_hres,"+
+                " user_realname"+
+                ") VALUES (")
+                .append("'").append(user.getUser_code().trim()).append("',")
+                .append(user.getUser_name() == null ? null      +","       :      "'" + user.getUser_name()       +"',"  )
+                .append(user.getUser_pwd() == null ? null       +","      :       "'" + user.getUser_pwd()        +"',"  )
+                .append(user.getUser_salt() == null ? null      +","       :      "'" + user.getUser_salt()       +"',"  )
+                .append(user.getUser_type() == null ? null      +","       :       "'" + user.getUser_type()      +"',"  )
+                .append(user.getUser_path() == null ? null      +","       :      "'" + user.getUser_path()       +"',"  )
+                .append(user.getUser_avatar() == null ? null    +","         :    "'" + user.getUser_avatar()     +"',"  )
+                .append(user.getUser_gender() == null ? null    +","         :     "'" + user.getUser_gender()    +"',"  )
+                .append(user.getUser_birthday() == null ? null  +","           :  "'" + user.getUser_birthday()   +"',"  )
+                .append(user.getUser_mobile() == null ? null    +","         :    "'" + user.getUser_mobile()     +"',"  )
+                .append(user.getUser_email() == null ? null     +","        :     "'" + user.getUser_email()      +"',"  )
+                .append(user.getUser_address() == null ? null   +","          :   "'" + user.getUser_address()    +"',"  )
+                .append(user.getUser_num() == null ? null       +","         :       "'" + user.getUser_num()     +"',"  )
+                .append(user.getUser_regdate() == null ? null   +","          :   "'" + user.getUser_regdate()    +"',"  )
+                .append(user.getUser_status() == null ? null    +","         :    "'" + user.getUser_status()     +"',"  )
+                .append(user.getUser_syn_cloud() == null ? null +","            :  "'" + user.getUser_syn_cloud() +"',"  )
+                .append(user.getUser_isAdmin() == null ? null   +","          :    "'" + user.getUser_isAdmin()   +"',"  )
+                .append(user.getUser_hres() == null ? null      +","       :      "'" + user.getUser_hres()       +"',"  )
+                .append("'").append(user.getUser_realname().trim()).append("'").append(");");
+
+        return sb.toString();
+    }
+}

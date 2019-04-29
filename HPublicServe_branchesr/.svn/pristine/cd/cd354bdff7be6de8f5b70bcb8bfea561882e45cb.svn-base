@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.ow2.asm:asm-analysis:6.1.1">
+    <CLASSES>
+      <root url="jar://E:/apache-maven-3.2.2/repository/org/ow2/asm/asm-analysis/6.1.1/asm-analysis-6.1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://E:/apache-maven-3.2.2/repository/org/ow2/asm/asm-analysis/6.1.1/asm-analysis-6.1.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://E:/apache-maven-3.2.2/repository/org/ow2/asm/asm-analysis/6.1.1/asm-analysis-6.1.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

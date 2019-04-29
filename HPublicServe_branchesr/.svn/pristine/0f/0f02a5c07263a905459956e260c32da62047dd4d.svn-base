@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: honghe:hcommon_util:2.1-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/honghe/hcommon_util/2.1-SNAPSHOT/hcommon_util-2.1-20180525.130518-21.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/honghe/hcommon_util/2.1-SNAPSHOT/hcommon_util-2.1-20180525.130518-21-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/honghe/hcommon_util/2.1-SNAPSHOT/hcommon_util-2.1-20180525.130518-21-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

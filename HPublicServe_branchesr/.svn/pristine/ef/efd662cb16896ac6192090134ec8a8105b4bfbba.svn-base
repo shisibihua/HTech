@@ -1,0 +1,9 @@
+#
+#Fri Jun 08 15:01:24 CST 2018
+com.honghe.deviceNew.command.deviceConnectionCommand=org.springframework.stereotype.Component,com.honghe.spring.Command
+com.honghe.deviceNew.service.impl.DeviceServiceImpl=org.springframework.stereotype.Component
+com.honghe.deviceNew.service.impl.DeviceSpecServiceImpl=org.springframework.stereotype.Component
+com.honghe.deviceNew.service.impl.DeviceMaxCodeServiceImpl=org.springframework.stereotype.Component
+com.honghe.deviceNew.util.CommandNewUtil=org.springframework.stereotype.Component
+com.honghe.deviceNew.service.impl.DeviceHostServiceImpl=org.springframework.stereotype.Component
+com.honghe.deviceNew.service.impl.DeviceCommandCodeServiceImpl=org.springframework.stereotype.Component

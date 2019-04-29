@@ -1,0 +1,115 @@
+package com.honghe.web.device.util;
+
+/**
+ * Created by lyx on 2016-06-22.
+ */
+public class DeviceNameUtil {
+    public final static int DEVICE_NORMALIZATION_RECOURD = 0; //常态化录播主机
+    public final static int DEVICE_FINE_RECOURD = 1; //服务器架构精品
+    public static final int DEVICE_EMBEDDED_RECOURD = 2;//嵌入式精品录播主机(ZJ0500)
+    public final static int DEVIC_SCREEN = 3;  //大屏设备
+    public final static int DEVICE_TBOX_RECOURD = 4; //TBOX
+    public final static int DEVICE_PROJECTOR = 5; //投影机
+    public final static int DEVICE_CLASSROOMMONITOR = 6; //教室监控
+    public final static int DEVICE_WHITEBOARD = 7; //白板一体机
+    public final static int DEVICE_DIGSIGNBOARD = 8; //数字班牌
+    public final static int  DEVICE_POSITIONANTENNA = 9; //定位天线
+    public final static int  DEVICE_AUDIOEQUIPMENT = 10; //音频设备
+    public final static int  DEVICE_SECURITYEQUIPMENT = 11; //安防设备
+    public final static int  DEVICE_RECOURD = 12; //录播设备
+    public final static int  DEVICE_CONFERENCETERMINAL = 13; //会议终端设备
+    public final static int  DEVICE_CENTERCONTROL = 14; //中控设备
+    public final static int  DEVICE_VIDEO_CONFERENCING = 21; //视频会议设备
+    public final static int  DEVICE_VIDEO_NJXD = 15; //鸿合互动MCU
+    public final static int  DEVICE_VIDEO_CISCO = 16; //CiscoMCU
+    public final static int  DEVICE_WBOX_RECOURD = 20; //常态化录播主机（ZF0100)
+    public final static int  DEVICE_VIDEO_VHD = 22; //威海德mcu
+    public final static int  DEVICE_OPS_RECOURD = 23; //ops录播主机
+    public final static int  DEVICE_VIDEO_IFREECOMM = 24; //捷视飞通MCU
+
+
+    /**
+     * 根据设备编号 获取厂家
+     *
+     * @param typeInt 设备编号
+     * @return
+     */
+    public static String getFactoryByTypeInt(String typeInt) {
+        String re_value = "";
+            re_value = "HiteTech";
+            if (String.valueOf(DEVICE_EMBEDDED_RECOURD).equals(typeInt) ) { //Arec 设备
+                re_value = "Arec";
+            } else if (String.valueOf(DEVICE_TBOX_RECOURD).equals(typeInt)) { //TBOX设备
+                re_value = "Touch";
+            } else if (String.valueOf(DEVICE_WBOX_RECOURD).equals(typeInt)) {//wbox设备
+               re_value = "honghe-wbox";
+            } else if (String.valueOf(DEVICE_OPS_RECOURD).equals(typeInt)) {//wbox设备
+                re_value = "honghe-ops";
+            }  else if (String.valueOf(DEVICE_CLASSROOMMONITOR).equals(typeInt)) { //教室监控
+                re_value = "Virtual";
+            } else if (String.valueOf(DEVIC_SCREEN).equals(typeInt)) { //大屏设备
+                re_value = "Screen";
+            } else if (String.valueOf(DEVICE_PROJECTOR).equals(typeInt)) {  //投影机设备
+                re_value = "HiteTech-Projector";
+            } else if (String.valueOf(DEVICE_WHITEBOARD).equals(typeInt)) { //白板一体机
+                re_value = "HiteTech-WhiteBoard";
+            } else if (String.valueOf(DEVICE_DIGSIGNBOARD).equals(typeInt)) { //数字班牌
+                re_value = "HiteTech-DigSignBoard";
+            } else if (String.valueOf(DEVICE_POSITIONANTENNA).equals(typeInt)) { //定位天线
+                re_value = "HiteTech-PositioningAntenna";
+            } else if (String.valueOf(DEVICE_AUDIOEQUIPMENT).equals(typeInt)) { //音频设备
+                re_value = "HiteTech-HHTAU";
+            } else if (String.valueOf(DEVICE_SECURITYEQUIPMENT).equals(typeInt)) { //安防设备
+                re_value = "HiteTech-HHTSE";
+            } else if (String.valueOf(DEVICE_CENTERCONTROL).equals(typeInt)) {//中控设备
+                re_value = "HiteTech-Control";
+            }else if (String.valueOf(DEVICE_CONFERENCETERMINAL).equals(typeInt)) {//会议终端设备
+                re_value = "HiteTech-Terminal";
+            }else if(String.valueOf(DEVICE_VIDEO_IFREECOMM).equals(typeInt)){//捷视飞通mcu设备
+                re_value = "HiteTech-IFreeComm";
+            }else if (String.valueOf(DEVICE_VIDEO_CISCO).equals(typeInt)){//思科mcu设备
+                re_value = "HiteTech-Cisco";
+            }else if (String.valueOf(DEVICE_VIDEO_VHD).equals(typeInt)){ //威海德设备
+                re_value = "HiteTech-vhd";
+            }else if (String.valueOf(DEVICE_VIDEO_NJXD).equals(typeInt)){  //南京旭顶mcu
+                re_value = "HiteTech-Njxd";
+            }
+        return re_value;
+    }
+    /**
+     * 获取设备对应的类型
+     *
+     * @param typeInt 具体设备编号
+     * @return
+     */
+    public static String getDeviceType(String typeInt) {
+        String re_value = DeviceTypeNameUtil.DEVICE_TYPE_UNKNOWN;
+
+        if (String.valueOf(DEVICE_RECOURD).equals(typeInt)) { //录播设备
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_RECOURD;
+        } else if (String.valueOf(DEVIC_SCREEN).equals(typeInt)) { //大屏设备
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_SCREEN;
+        } else if (String.valueOf(DEVICE_PROJECTOR).equals(typeInt)) {  //投影机设备
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_PROJECTOR;
+        } else if (String.valueOf(DEVICE_WHITEBOARD).equals(typeInt)) {//白板一体机
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_WHITEBOARD;
+        } else if (String.valueOf(DEVICE_POSITIONANTENNA).equals(typeInt)) {//定位天线
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_POSITIONINGANTENNA;
+        } else if (String.valueOf(DEVICE_DIGSIGNBOARD).equals(typeInt)) {//数字班牌
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_DigitalClass;
+        } else if (String.valueOf(DEVICE_AUDIOEQUIPMENT).equals(typeInt)) {//音频设备
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_AudioEquipment;
+        } else if (String.valueOf(DEVICE_SECURITYEQUIPMENT).equals(typeInt)) {//安防设备
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_SECURITYEQUIPMENT;
+        } else if (String.valueOf(DEVICE_CENTERCONTROL).equals(typeInt)) { //中控设备
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_CENTERCONTROL;
+        } else if (String.valueOf(DEVICE_CONFERENCETERMINAL).equals(typeInt)) { //会议终端设备
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_CONFERENCETERMINAL;
+        } else if (String.valueOf(DEVICE_VIDEO_CONFERENCING).equals(typeInt)) { //视频会议设备
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_VIDEOCONFERENCING;
+        } else if (String.valueOf(DEVICE_VIDEO_VHD).equals(typeInt)){
+            re_value = DeviceTypeNameUtil.DEVICE_TYPE_VIDEOCONFERENCING;
+        }
+        return re_value;
+    }
+}

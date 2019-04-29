@@ -1,0 +1,16 @@
+html, body, :global(#root) {
+  height: 100%;
+  background: #ececec;
+}
+/* 设置全局表格高度为40*/
+:global(.ant-table-thead > tr > th) {
+  padding-top:0;
+  padding-bottom: 0;
+  height: 40px;
+}
+
+:global(.ant-table-tbody > .ant-table-row > td) {
+  padding-top:0;
+  padding-bottom: 0;
+  height: 40px;
+}

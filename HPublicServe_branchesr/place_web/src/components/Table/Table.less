@@ -1,0 +1,22 @@
+@import '../theme.less';
+
+
+.tablelist {
+  padding: 10px 5px;
+
+  :global(ul.ant-table-pagination.ant-pagination) {
+    float: none;
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0);
+  } 
+}
+// 表格内容居中
+:global(.ant-table-thead > tr > th) {
+  text-align: center;
+}
+
+:global(.ant-table-tbody > .ant-table-row > td) {
+  text-align: center;
+}

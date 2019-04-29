@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>honghe</groupId>
+    <artifactId>hcampus_service_plugin</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>honghe</groupId>
+            <artifactId>hcommon_communication</artifactId>
+            <version>2.0.3</version>
+            <!--构建的时候放开下面一句话-->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>honghe</groupId>
+            <artifactId>hservice_proxy_sdk</artifactId>
+            <version>2.0.3-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>honghe</groupId>
+            <artifactId>hcommon_dao</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <excludeScope>provided</excludeScope>
+                            <!--<excludeArtifactIds>-->
+                                <!--hcommon_communication,json-lib,commons-io,-->
+                                <!--slf4j-api,slf4j-jdk14,commons-fileupload,-->
+                                <!--commons-beanutils,commons-collections,commons-lang,-->
+                                <!--commons-logging,ezmorph,jconsole,tools,cors-filter,-->
+                                <!--java-property-utils-->
+                            <!--</excludeArtifactIds>-->
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <excludeTransitive>false</excludeTransitive>
+                            <stripVersion>false</stripVersion>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--把打包出来的jar拷贝到cas/WEB-INF/lib目录中-->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
+                                      tofile="${project.build.directory}/lib/${project.artifactId}-${project.version}.jar"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>honghe-s</id>
+            <name>honghe-s</name>
+            <url>http://192.168.16.172:8081/nexus/content/repositories/honghe-s/</url>
+        </snapshotRepository>
+    </distributionManagement>
+</project>

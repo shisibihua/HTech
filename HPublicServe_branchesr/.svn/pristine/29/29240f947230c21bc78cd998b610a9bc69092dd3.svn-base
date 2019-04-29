@@ -1,0 +1,809 @@
+package com.honghe.web.user.service.campus;
+
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.honghe.service.client.Result;
+import com.honghe.web.user.util.ExcelTools;
+import com.honghe.web.user.util.HttpServiceUtil;
+import com.honghe.web.user.util.JsonUtil;
+import com.honghe.web.user.util.Node;
+import jodd.joy.page.PageData;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+
+
+/**
+ * Created by sunchao on 2016/9/27.
+ */
+@Service
+public class CampusService {
+
+    private Logger logger = Logger.getLogger(CampusService.class);
+    private static final String SCHOOL_PID = "1";
+    private static final String TOP_PID = "0";//
+    String res = "";
+
+    /**
+     * 删除组织机构成员
+     *
+     * @param campusId
+     * @param userId   用户Id
+     * @return
+     */
+    public Result deleteUser(String campusId, String userId) {
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        params.put("campusId", campusId);//存储参数
+        params.put("userId", userId);//存储参数
+        Result result = new Result("", 0, "");//初始化result
+        try {
+            result = HttpServiceUtil.adService("campus2UserDelete", params); //请求服务并将结果返回
+        } catch (Exception e) {
+            logger.error("删除组织机构成员失败：" + e);
+        }
+        return result;
+    }
+    /**
+     * 添加组织机构
+     *
+     * @param pId  组织机构id
+     * @param name 组织机构名称
+     * @return
+     */
+    public Result addCampus(String provinceId, String cityId, String areaId,String name, String pId, String number, String typeId, String stagesId, String schoolYear, String remark,String url) {
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        params.put("pId", pId == null? "0" : pId);
+        params.put("provinceId", provinceId);
+        params.put("cityId", cityId);
+        params.put("areaId", areaId);
+        params.put("name", name);
+        params.put("number", number);
+        params.put("typeId", typeId);
+        params.put("stagesId", stagesId);
+        params.put("schoolYear", schoolYear);
+        params.put("remark", remark);
+        params.put("url",url);
+        Result result = new Result("", 0, "");//初始化result
+        try {
+            result = HttpServiceUtil.adService("campusAdd", params);//请求服务并将结果返回
+            if (result != null && result.getCode() == 0) {
+                Map<String, String> areaParams = new HashMap<>();//用于存储参数
+                areaParams.put("name", name);
+                areaParams.put("org_id", result.getValue().toString());
+                areaParams.put("org_pid", pId==null?"0":pId);
+                Result areaResult = HttpServiceUtil.areaService("area_syntreeadd", areaParams);// 同步数据到地点服务 add mz
+                if (areaResult == null || areaResult.getCode() != 0) {
+                    logger.error("添加组织机构时, 同步到地点服务失败");
+                }
+            }
+        } catch (Exception e) {
+
+            logger.error("添加组织机构失败：" + e);
+        }
+        return result;
+    }
+
+    /**
+     * 修改组织机构名称
+     *
+     * @param id   组织机构id
+     * @param name 组织机构名称
+     * @return
+     */
+    public Result updateCampus(String id, String name, String pId, String number, String typeId, String stagesId, String schoolYear, String remark,String url) {
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        params.put("id", id);
+        params.put("pId", pId);
+        params.put("name", name);
+        params.put("number", number);
+        params.put("typeId", typeId);
+        params.put("stagesId", stagesId);
+        params.put("schoolYear", schoolYear);
+        params.put("remark", remark);
+        params.put("url",url);
+        Result result = new Result("", 0, "");//初始化result
+        try {
+            result = HttpServiceUtil.adService("campusUpdate", params);//请求服务并将结果返回
+            // 同步更新地点组织树 add mz
+            if (result != null && (Boolean) result.getValue()) {
+                Map<String, String> adParams = new HashMap<>();//用于存储参数
+                adParams.put("name", name);
+                adParams.put("org_id", id);
+                result = HttpServiceUtil.areaService("area_syntreeupdate", adParams);
+                if (result == null || ((result.getCode()==0) && !(Boolean) result.getValue())) {
+                    logger.error("同步更新地点组织树失败");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("修改组织机构失败：" + e);
+        }
+        return result;
+    }
+
+    /**
+     * 删除组织机构
+     *
+     * @param id 组织机构id
+     * @return
+     */
+    public Result deleteCampus(String id) {
+        Map<String, String> params = new HashMap<>();
+        params.put("id", id);
+        Result result = new Result("", 0, "");
+        try {
+            result = HttpServiceUtil.adService("campusDelete", params);
+
+        } catch (Exception e) {
+            logger.error("删除组织机构失败：" + e);
+        }
+        return result;
+    }
+
+    /**
+     * 分配人员到组织机构
+     *
+     * @param campusId 组织机构id
+     * @param userId   用户id
+     */
+    public Result allocateUser(String campusId, String userId) {
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        params.put("campusId", campusId);
+        params.put("userId", userId);
+        Result result = new Result("", 0, "");//初始化result
+        try {
+            result = HttpServiceUtil.adService("campus2UserAdd", params);//请求服务并将结果返回
+
+        } catch (Exception e) {
+            logger.error("分配人员失败：" + e);
+        }
+        return result;
+    }
+
+    /**
+     * 获取用户详细信息
+     *
+     * @param userId 用户id
+     * @return
+     */
+    public Map loadUsers(String userId) {
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        Map userInfo = new HashMap();
+        params.put("userId", userId);
+        Result result = new Result("", 0, "");//初始化result
+        try {
+            result = HttpServiceUtil.userService("userSearch", params);//请求服务并将结果返回
+
+        } catch (Exception e) {
+            logger.error("查看信息失败：" + e);
+        }
+        if (result.getValue() != null) {
+            userInfo = (Map<String, String>) result.getValue(); //获取服务返回的value
+        }
+        return userInfo;
+    }
+
+    /**
+     * 获取用户详细列表
+     * @param page 当前页
+     * @param pageSize 总页数
+     * @param searchName  姓名关键词
+     * @param campusType 选择的机构类型
+     * @param tsFlag 学生 教师标识 (TE:教师；ST:学生)
+     * @return
+     */
+    public PageData loadCampus(String page,String pageSize,String searchName,String campusType,String tsFlag,String campusId, String stageId)
+    {
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        params.put("page", page);
+        params.put("pageSize", pageSize);
+        params.put("searchName", searchName);
+        params.put("campusType", campusType);
+        params.put("campusId", campusId);
+        params.put("stageId", stageId);
+        params.put("tsFlag", tsFlag);
+
+        Result result = new Result("",0,"");//初始化result
+        try {
+            result = HttpServiceUtil.adService("userTSnoCampusSearch", params);//请求服务并将结果返回
+        }
+        catch (Exception e) {
+            logger.error("获取列表失败：" + e);
+        }
+        Map map =new HashMap();
+        if (result.getValue()!=null){
+            map=(Map) result.getValue();//获取服务返回的value
+        }
+        List items= (List) map.get("items");//获取map中属性
+        int pagesize= (int)map.get("pageSize");//获取map中属性
+        int currentPage = (int) map.get("currentPage");//获取value中属性
+        int size =(int) map.get("totalItems");//获取map中属性
+        // 生成分页显示对象
+        PageData  pageData = new PageData(currentPage,size,pagesize,items);
+        return pageData;
+    }
+
+    /**
+     * 点击机构获取用户表格
+     *
+     * @param page       当前页
+     * @param pageSize   总页数
+     * @param campusId   组织机构id
+     * @param searchWord 搜索词
+     * @return
+     */
+    public PageData searchUsers(String page, String pageSize, String campusId, String searchWord) {
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        params.put("campusId", campusId);//存储参数
+        params.put("page", page);//存储参数
+        params.put("pageSize", pageSize);//存储参数
+        params.put("loginName", searchWord);//存储参数
+        Result result = new Result("", 0, "");//初始化result
+        try {
+            result = HttpServiceUtil.adService("campus2UserSearchByPage", params);//请求服务并将结果返回
+        } catch (Exception e) {
+            logger.error("查找用户失败：" + e);
+        }
+        Map map = new HashMap();
+        if (result.getValue() != null) {
+            map = (Map) result.getValue();//获取服务返回的value
+        }
+        List items = (List) map.get("items");//获取map中属性
+        int pagesize = (int) map.get("pageSize");//获取map中属性
+        int currentPage = (int) map.get("currentPage");//获取map中属性
+        int size = (int) map.get("totalItems");//获取map中属性
+        // 生成分页显示对象
+        PageData pageData = new PageData(currentPage, size, pagesize, items);
+        return pageData;
+    }
+
+    /**
+     * 获取组织结构左侧树
+     * @param userId 登陆用户的id
+     * @return
+     */
+    public String searchCampus(String userId) {
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        Object obj = new Object();//用于类型转化
+        Map<String,String> userInfo = new HashMap<>();//存储该登陆用户的用户信息
+        String isAdmin = "";//是否是管理员
+        Result result = new Result("",0,"");//初始化result
+        JSONObject resultValue = new JSONObject();
+        Directory campusTree = null;
+        StringBuilder sb = new StringBuilder(); //声明字符串变量对象
+        boolean isContain = true;
+        int count = 1;
+        if (userId==null||"".equals(userId)){
+            return "无效用户";
+        }
+        try {
+            String campusIds = "";
+            //判断该用户是不是admin（特殊的管理员）
+            if (!"1".equals(userId)){
+                //获取该用户所在机构信息
+                Map<String,String> param = new HashMap<>();
+                param.put("userId",userId);
+                Result userResult = HttpServiceUtil.userService("userGetCampusById", param);
+                Map<String,Object> userInfoMap = (Map) userResult.getValue();
+                List<Map<String,String>> campusList = (List<Map<String, String>>) userInfoMap.get("userCampus");
+                userInfo = (Map<String, String>) userInfoMap.get("userInfo");
+                isAdmin= userInfo.get("userIsAdmin")==null?"0":userInfo.get("userIsAdmin");
+                List pIdList = new ArrayList();
+                //遍历该用户的机构信息，并保存机构的父级机构id
+                if (campusList!=null&&campusList.size()>0){
+                    for (Map campus:campusList){
+                        String pId = campus.get("p_id").toString();
+                        campusIds += campus.get("id").toString()+",";
+                        pIdList.add(pId);
+                    }
+                    if (!"".equals(campusIds)&&campusIds.endsWith(",")){
+                        campusIds = campusIds.substring(0,campusIds.lastIndexOf(","));
+                    }
+                    isContain = pIdList.contains(TOP_PID);
+                }
+            }else{
+                isAdmin = "1";
+            }
+
+            //判断是否是区级的用户，如果不是区级的用户则只能
+            if (!isContain){
+            params.put("campusIds",campusIds);
+             result = HttpServiceUtil.adService("campusPartSearch",params);
+             //将获取到的组织机构类型转换成树形组织机构数据
+                resultValue = (JSONObject) result.getValue();//将value转化成JSON
+                campusTree = toDirectory(resultValue,result,obj,campusTree);
+             this.recursive(campusTree.getDirectories(), sb, count,isAdmin,isContain);
+            } else {
+                result = HttpServiceUtil.adService("campusSearch", params); //请求服务并将结果返回
+                resultValue = (JSONObject) result.getValue();//将value转化成JSON
+                campusTree = toDirectory(resultValue,result,obj,campusTree);
+                String typeId = (String) resultValue.get("typeId");
+                String stagesId = (String) resultValue.get("stagesId");
+                //拼接组织机构树添加名称和按钮
+                sb.append("<ul id='left_nav_ul'>");
+                sb.append("<li>");
+                sb.append("<a href='javascript:void(0)' id='" + campusTree.getId() + "' typeId='" + typeId + "' stagesId='" + stagesId + "'><i count='" + count + "'></i><h6>" + campusTree.getName() +
+                        "</h6>" +
+                        "<div class='menu-btns'>");
+                String addStr = "<span class='a-btn a-btn-add btn-add-org' title='添加'></span>\n";
+                String editStr = "<span class='a-btn a-btn-edit btn-edit-org' title='编辑'></span>\n";
+                //当用户是区级但不是管理员，用户不是特殊管理员（userid为1），机构类型为学校的情况下不能添加机构
+                if (SCHOOL_PID.equals(resultValue.get("pId").toString())||(isContain&&!"1".equals(isAdmin)&&!"1".equals(userId))){
+                    addStr = "";
+                }
+                sb.append(addStr);
+                if (!"1".equals(isAdmin)){
+                    editStr = "";
+                }
+                sb.append(editStr);
+                sb.append("</div>" +
+                        "</a>");
+                this.recursive(campusTree.getDirectories(), sb, count,isAdmin,isContain);
+                sb.append("</li>" +
+                        "</ul>");
+            }
+
+            res = sb.toString();//接受拼接的字符串并传递给controller
+        } catch (Exception e) {
+            logger.error("初始化失败：" + e);
+        }
+        return res;
+
+    }
+
+    /**
+     * 将获取到的机构树进行类型转换
+     * @param resultValue 中间变量
+     * @param result 获取到的组织机构数据
+     * @param obj 中间变量
+     * @param campusTree 最终转换的树型组织机构数据
+     */
+    private Directory toDirectory(JSONObject resultValue,Result result,Object obj,Directory campusTree){
+        if (result.getValue() != null) {
+            obj = JsonUtil.toJavaBean(new Directory(), resultValue);//将Json转化成JavaBean 因为value与directory类型不符
+        }
+        if (obj instanceof Directory) {
+            campusTree = (Directory) obj;//生成组织机构树
+        } else {
+            campusTree = new Directory("-1", "");//创建组织机构树根节点
+        }
+        return campusTree;
+    }
+
+    /**
+     * 获取组织机构数据
+     * @param userId
+     * @return
+     */
+    public String campusTree(String userId){
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        Result result = null; //请求服务并将结果返回
+        JSONObject resultValue = new JSONObject();
+        boolean isNotContain = true;
+        String campusIds = "";
+
+        try {
+            if (!"1".equals(userId)){
+                Map<String,String> param = new HashMap<>();
+                param.put("userId",userId);
+                Result userResult = HttpServiceUtil.userService("userGetCampusById", param);
+                Map<String,Object> campusMap = (Map<String,Object>) userResult.getValue();
+                List pIdList = new ArrayList();
+                List<Map<String,String>> campusList = new ArrayList();
+                campusList = (List<Map<String,String>>) campusMap.get("userCampus");
+                for (Map campus:campusList){
+                    String pId = campus.get("p_id").toString();
+                    campusIds += campus.get("id").toString()+",";
+                    pIdList.add(pId);
+                }
+
+                if (!"".equals(campusIds)&&campusIds.endsWith(",")){
+                    campusIds = campusIds.substring(0,campusIds.lastIndexOf(","));
+                }
+                isNotContain = pIdList.contains(TOP_PID);
+            }
+
+            if (!isNotContain){
+                params.put("campusIds",campusIds);
+                result = HttpServiceUtil.adService("campusPartSearch",params);
+
+            } else {
+                result = HttpServiceUtil.adService("campusSearch", params); //请求服务并将结果返回
+
+
+            }
+            //将获取到的组织机构类型转换成树形组织机构数据
+            resultValue = (JSONObject) result.getValue();//将value转化成JSON
+            return resultValue.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+    /**
+     * 获取左侧树
+     *
+     * @param directoryList 用户列表
+     * @param sb            拼接字符串
+     */
+    private void recursive(List directoryList, StringBuilder sb, int count,String isAdmin,boolean isContain) {
+        count++;
+        String editStr = "";
+        String delStr = "";
+        String leftStr ="";
+        if (!isContain){
+            leftStr = " id='left_nav_ul'";
+        }
+        if (!directoryList.isEmpty()) {
+            sb.append("<ul"+leftStr+">");
+        }
+
+        //如果是管理员则可以显示编辑按钮
+        if ("1".equals(isAdmin)){
+            editStr = "<span class='a-btn a-btn-edit  btn-edit-org ' title='编辑'></span>\n";
+            //如果该管理员是区级管理员，则可以显示删除按钮
+            if (isContain){
+                delStr = "<span class='a-btn a-btn-delete  btn-delete-org ' title='删除'></span>\n";
+            }
+        }
+        for (Object directory : directoryList) {
+            Directory obj = (Directory) JsonUtil.toJavaBean(new Directory(), (JSONObject) directory);//Json转化成Javabean
+            String name = obj.getName();//获取名称
+            String id = obj.getId();//获取id
+            String typeId = (String) ((JSONObject) directory).get("typeId");
+            String stagesId = (String) ((JSONObject) directory).get("stagesId");
+            //拼接左侧机构树
+            sb.append("<li>");
+            sb.append("<a href='javascript:void(0)' id='" + id + "' typeId='" + typeId + "' stagesId ='" + stagesId +"'><i count='" + count + "'></i><h6>" + name + "</h6><div class='menu-btns'>\n");
+            String addStr = "<span class='a-btn a-btn-add btn-add-org' title='添加'></span>\n";
+            if (SCHOOL_PID.equals(((JSONObject) directory).get("pId").toString())||!"1".equals(isAdmin)){
+                addStr = "";
+            }
+            sb.append(addStr);
+            sb.append(editStr +delStr+ "</div></a>");
+            if (obj.getDirectories().isEmpty()) {
+                sb.append("</li>");
+            }
+            //递归调用，为每一个机构添加子机构
+            recursive(obj.getDirectories(), sb, count,isAdmin,isContain);
+        }
+        if (!directoryList.isEmpty()) {
+            sb.append("</ul>");
+        }
+    }
+
+    /**
+     * 组织机构导入
+     */
+    public JSONObject campusUpload(HttpServletRequest req, HttpServletResponse response) {
+        JSONObject json = new JSONObject();
+        ExcelTools et = new ExcelTools();
+        String msg = et.uploadFile("campus", req, response);
+        json.put("result", msg);
+        return json;
+    }
+
+
+    /**
+     * 下载组织机构模板
+     */
+    public void campusDownloadMould(HttpServletRequest req, HttpServletResponse response) {
+        String filePath = req.getRealPath("/") + "campusMould.xls";
+        ExcelTools et = new ExcelTools();
+        et.downExcel(filePath, true, response);
+    }
+
+    /**
+     * 获取学段列表，添加机构时用
+     *
+     * @return result
+     */
+    public Result getStages() {
+        Map<String, String> params = new HashMap<>();
+        Result result = new Result("", 0, "");
+        try {
+            result = HttpServiceUtil.adService("dataGetStages", params);
+        } catch (Exception e) {
+            logger.error("获取学段失败", e);
+        }
+        return result;
+    }
+
+    /**
+     * 获取组织机构类型，添加机构时用
+     *
+     * @param level 组织机构的级别
+     * @return
+     */
+    public Result getCampusType(String level) {
+        Map<String, String> params = new HashMap<>();
+        params.put("level", level);
+        Result result = new Result("", 0, "");
+        try {
+            result = HttpServiceUtil.adService("dataGetCampusTypes", params);
+        } catch (Exception e) {
+            logger.error("获取机构类型失败", e);
+        }
+        return result;
+    }
+
+    /**
+     * 获取组织机构类型，添加机构时用
+     *
+     * @param campusId 组织机构的级别
+     * @return
+     */
+    public Result getCampusInfo(String campusId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("campusId", campusId);
+        Result result = new Result("", 0, "");
+        try {
+            result = HttpServiceUtil.adService("campusSearch", params);
+        } catch (Exception e) {
+            logger.error("获取机构类型失败", e);
+        }
+        return result;
+    }
+
+    /**
+     * 获取所有学校机构列表
+     * @return
+     */
+    public Result getSchoolList(){
+        Map<String,String> params = new HashMap<>();
+        Result result = new Result("",0,"");
+        try {
+            result = HttpServiceUtil.adService("campusGetSchoolList",params);
+        } catch (Exception e) {
+            logger.error("获取所有学校机构列表异常",e);
+        }
+        return result;
+    }
+    public List getCampusInfoByIp(String ip){
+        Map<String,String> params = new HashMap<>();
+        List campusInfo = new ArrayList();
+        Result result = new Result("",0,"");
+        try {
+            result = HttpServiceUtil.userService("agencyGetInfoByIp",params);
+            if (result.getValue()!=null){
+                campusInfo = (List) result.getValue();
+            }
+        } catch (Exception e) {
+            logger.error("通过ip获取机构信息异常",e);
+        }
+        return campusInfo;
+    }
+
+    // TODO: 2018/3/2 新增区域化用户服务 add mz ************************************start******************************************
+
+    /**
+     * 获取省/市/县列表
+     * @return
+     */
+    public List<Map<String, String>> getAreaList(String userId){
+        Map<String,String> params = new HashMap<>();
+        Result result = new Result("",0,"");
+        try {
+            params.put("userId", userId);
+            result = HttpServiceUtil.adService("campusGetAreaList",params);
+            if (result != null && result.getCode() == 0) {
+                return (List<Map<String,String>>) result.getValue();
+            } else {
+                logger.error("获取省/市/县列表异常: " + result.getCode());
+            }
+        } catch (Exception e) {
+            logger.error("获取省/市/县列表异常: ",e);
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * 获取省/市/县列表
+     * @return
+     */
+    public List<Map<String, String>> getAreaList(String userId, String campusId){
+        Map<String,String> params = new HashMap<>();
+        Result result = new Result("",0,"");
+        try {
+            params.put("userId", userId);
+            params.put("campusId", campusId);
+            result = HttpServiceUtil.adService("campusGetAreas",params);
+            if (result != null && result.getCode() == 0) {
+                return (List<Map<String,String>>) result.getValue();
+            } else {
+                logger.error("获取省/市/县列表异常: " + result.getCode());
+            }
+        } catch (Exception e) {
+            logger.error("获取省/市/县列表异常: ",e);
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+
+
+    public List<Map<String, String>> getCityList(String provinceId){
+        Map<String,String> params = new HashMap<>();
+        Result result = new Result("",0,"");
+        try {
+            params.put("provinceId", provinceId);
+            result = HttpServiceUtil.adService("campusGetCityList",params);
+            if (result != null && result.getCode() == 0) {
+                return (List<Map<String,String>>) result.getValue();
+            } else {
+                logger.error("获取市列表异常: " + result.getCode());
+            }
+        } catch (Exception e) {
+            logger.error("获取市列表异常: ",e);
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    public List<Map<String, String>> getCountyList(String cityId){
+        Map<String,String> params = new HashMap<>();
+        Result result = new Result("",0,"");
+        try {
+            params.put("cityId", cityId);
+            result = HttpServiceUtil.adService("campusGetCountyList",params);
+            if (result != null && result.getCode() == 0) {
+                return (List<Map<String,String>>) result.getValue();
+            } else {
+                logger.error("获取市列表异常: " + result.getCode());
+            }
+        } catch (Exception e) {
+            logger.error("获取市列表异常: ",e);
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * 获取组织结构左侧树 根据区域版新需求重写searchCampus
+     * 1. 如果用户为admin, 则直接获取从根节点开始的组织机构, pid==0
+     * 2. 如果用户为非admin, 则 先获取用户所对应的组织机构, 再获取 对应的 组织机构列表
+     * @param userId 登陆用户的id
+     * @return
+     */
+
+    public String campusSearchByUserId(String userId, String type)  {
+        Map<String,String> params = new HashMap<>();
+        Result result = new Result("",0,"");
+        try {
+            params.put("userId", userId);
+            result = HttpServiceUtil.adService("campusSearchByUserId",params);
+            if (result != null && result.getCode() == 0) {
+                Gson gson = new Gson();
+                String json = gson.toJson(result.getValue());
+                Set<Node> campusList = gson.fromJson(json, new TypeToken<Set<Node>>() {}.getType());
+                StringBuilder sb = new StringBuilder();
+                int count = 1;
+                for (Node node : campusList) {
+                        String stageId="";
+                        if(node.getStageId()==null || "".equals(node.getStageId())){
+                            stageId="";
+                        }else{
+                            stageId=node.getStageId();
+                        }
+                        sb.append("<ul id=\"left_nav_ul\">");
+                        sb.append("<li>");
+                        sb.append("<a href='javascript:void(0)' id='" + node.getId() + "' typeId='"+node.getTypeId()+"' stageId='"+stageId+"'><i count='" + count + "'></i><h6>" + node.getName() + "</h6><div class='menu-btns'>\n");
+                        if ("1".equals(type)) {
+                            if(!"4".equals(node.getTypeId()) && !"5".equals(node.getTypeId()))  {
+                                sb.append("<span class='a-btn a-btn-add btn-add-org' title='添加'></span>\n");
+                            }
+                            sb.append("<span class='a-btn a-btn-edit  btn-edit-org' title='编辑'></span>\n");
+                            sb.append("<span class='a-btn a-btn-delete  btn-delete-org' title='删除'></span>\n");
+                        }
+                        sb.append("</div></a>");
+                        recursive(node.getNodes(), sb, 1, type);
+                        sb.append("</li>");
+                        sb.append("</ul>");
+                }
+                return sb.toString();
+            } else {
+                logger.error("根据用户id获取组织机构列表异常: " + result.getCode());
+            }
+        } catch (Exception e) {
+            logger.error("根据用户id获取组织机构列表异常: ",e);
+        }
+        return "";
+    }
+
+    private void recursive(Set<Node> nodeList, StringBuilder sb, int count, String type) {
+        count++;
+        if (!nodeList.isEmpty()) {
+            sb.append("<ul>");
+        }
+        if (nodeList != null && !nodeList.isEmpty()) {
+            for (Node node : nodeList) {
+                sb.append("<li>");
+                sb.append("<a href='javascript:void(0)' id='" + node.getId() + "' stageId='"+node.getStageId()+"'><i count='" + count + "'></i><h6>" + node.getName() + "</h6><div class='menu-btns'>\n");
+                if ("1".equals(type)) {
+//                    sb.append("<span class='a-btn a-btn-add btn-add-org' title='添加'></span>\n");
+                    if(!"4".equals(node.getTypeId()) && !"5".equals(node.getTypeId()))  {
+                        sb.append("<span class='a-btn a-btn-add btn-add-org' title='添加'></span>\n");
+                    }
+                    sb.append("<span class='a-btn a-btn-edit  btn-edit-org' title='编辑'></span>\n");
+                    sb.append("<span class='a-btn a-btn-delete  btn-delete-org' title='删除'></span>\n");
+                }
+                sb.append("</div></a>");
+                if (node.getNodes().isEmpty()) {
+                    sb.append("</li>");
+                }
+                recursive(node.getNodes(), sb, count, type);
+            }
+            if (!nodeList.isEmpty()) {
+                sb.append("</ul>");
+            }
+        }
+    }
+
+    public List findChildCampusById(String id) {
+        Map<String,String> params = new HashMap<>();
+        Result result = new Result("",0,"");
+        try {
+            params.put("id", id);
+            result = HttpServiceUtil.adService("campusFindChildById",params);
+            if (result != null && result.getCode() == 0) {
+                JSONArray array = JSONArray.fromObject(result.getValue());
+                return JSONArray.toList(array, new Node(), new JsonConfig());
+            } else {
+                logger.error("获取子机构异常: " + result.getCode());
+            }
+        } catch (Exception e) {
+            logger.error("获取子机构异常: ",e);
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * 根据省/市/区类型及id查询省/市/区信息
+     * @param hatType    省/市/区类型
+     * @param hatId      省/市/区id
+     * @return
+     */
+    public String findHatNameById(String hatType, String hatId) {
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        params.put("hatType", hatType);
+        params.put("hatId", hatId);
+        Result result = new Result("", 0, "");//初始化result
+        String hatName="";
+        try {
+            result = HttpServiceUtil.adService("campusFindHat", params); //请求服务并将结果返回
+            if(result.getValue()!=null && result.getCode()==0){
+                Map<String,String> res=(Map<String,String>)result.getValue();
+                hatName=res.get("hatName")==null?"":res.get("hatName").toString();
+            }
+        } catch (Exception e) {
+            logger.error("根据省/市/区类型及id查询省/市/区信息失败：" + e);
+            hatName="";
+        }
+        return hatName;
+    }
+    /**
+     * 根据省/市/区类型及id查询所在组织机构信息
+     * @param hatType    省/市/区类型
+     * @param hatId      省/市/区id
+     * @return
+     */
+    public Map<String,String> findCampusByHatId(String hatType, String hatId) {
+        Map<String, String> params = new HashMap<>();//用于存储参数
+        params.put("hatType", hatType);
+        params.put("hatId", hatId);
+        Result result = new Result("", 0, "");//初始化result
+        try {
+            result = HttpServiceUtil.adService("campusFindByHatId", params); //请求服务并将结果返回
+            if(result.getValue()!=null && result.getCode()==0){
+                Map<String,String> res=(Map<String,String>)result.getValue();
+                return res;
+            }
+        } catch (Exception e) {
+            logger.error("根据省/市/区类型及id查询组织机构信息失败：" + e);
+        }
+        return null;
+    }
+}

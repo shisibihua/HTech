@@ -1,0 +1,27 @@
+.user-tab{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.user-tab li{
+    float:left;
+    padding:0 25px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    height:46px;
+
+}
+.user-tab li:hover{
+    border-bottom: 4px solid slateblue;
+    color: slateblue;
+}
+.user-tab .tab-this{
+    border-bottom: 4px solid slateblue;
+}
+/**左侧树checkbox**/
+#left_nav_ul input{
+    position: relative;
+    top:14px;
+    left:5px;
+    float: left;
+}

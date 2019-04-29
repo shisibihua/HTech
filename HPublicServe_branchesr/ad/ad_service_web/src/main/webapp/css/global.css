@@ -1,0 +1,456 @@
+.main {
+    width: 1202px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.main-left {
+    float: left;
+    width: 320px;
+    min-height: 680px;
+    border-left: 1px solid #d7dbe5;
+    border-right: 1px solid #d7dbe5;
+    margin-bottom: -10000px;
+    padding-bottom: 10000px;
+}
+
+.main-right {
+    float: left;
+    width: 871px;
+    min-height: 680px;
+    border-left: 1px solid #d7dbe5;
+    border-right: 1px solid #d7dbe5;
+    margin-left: 5px;
+    margin-bottom: -10000px;
+    padding-bottom: 10000px;
+}
+
+
+/*main-left*/
+
+.left-top {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-size: 14px;
+    border-bottom: 1px solid #d7dbe5;
+}
+
+.left-top h1 {
+    display: inline-block;
+    text-indent: 40px;
+}
+
+.left-top button {
+    float: right;
+    margin-right: 15px;
+    margin-top: 10px;
+}
+
+
+/*main-right*/
+
+.right-top {
+    width: 852px;
+    height: 50px;
+    line-height: 50px;
+    font-size: 14px;
+    border-bottom: 1px solid #d7dbe5;
+    padding-left: 20px;
+    color: #212121;
+
+}
+
+.right-top p {
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.right-search {
+    width: 832px;
+    margin: 20px 0 20px 20px;
+    min-height: 30px;
+    /*overflow: hidden;*/
+}
+
+.right-search .btn {
+    float: right;
+    margin-left: 10px;
+}
+
+.user-list {
+    margin-left: 20px;
+}
+
+.user-list ul {
+    display: block;
+}
+
+.user-list ul li {
+    width: 200px;
+    height: 130px;
+    float: left;
+    border: 1px solid #d7dbe5;
+    margin: 0 8px 8px 0;
+    list-style: none;
+    background: #f2f5f8;
+}
+
+.user-list li .status {
+    display: block;
+}
+
+.user-list ul li:hover {
+    box-shadow: 0 -1px 1px #e0e4e9, -1px 0 2px #e0e4e9, 1px 0 1px #e0e4e9, 0 1px 1px #e0e4e9;
+}
+
+.user-name {
+    overflow: hidden;
+}
+
+.user-name > span {
+    display: inline-block;
+    position: relative;
+    float: left;
+    width: 100px;
+    height: 80px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+
+/*user-list头像点击*/
+
+.user-list li.member-selected {
+    border: 1px solid #449d44;
+}
+
+.headimg {
+    cursor: pointer;
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+}
+
+.head-select {
+    position: absolute;
+    left: 57px;
+    top: 38px;
+    display: none;
+    width: 22px;
+    height: 22px;
+}
+
+.user-name .uname {
+    text-align: left;
+    margin-top: 20px;
+    line-height: 28px;
+    height: 74px;
+}
+
+.user-info {
+    float: right;
+    height: 20px;
+}
+
+.user-info .a-btn-delete {
+    margin-right: 23px;
+}
+
+
+/*角色权限*/
+
+.select-system {
+    margin: 20px;
+}
+
+.permissions-item {
+    margin: 20px;
+}
+
+.permissions-title {
+    height: 30px;
+    line-height: 30px;
+    padding: 0 20px;
+    background: #eaedf1;
+}
+
+.permissions-item > ul {
+    margin-left: 10px;
+    margin-top: 15px;
+}
+
+.permissions-item li label {
+    margin-left: 10px;
+}
+
+.permissions-item > ul > li {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+    line-height: 20px;
+}
+
+.permissions-item > ul > li ul {
+    display: block;
+    margin-left: 8px;
+    padding-left: 22px;
+    background: url(../images/dotted-line.png) left bottom repeat-y;
+}
+
+.permissions-item > ul > li ul li {
+    display: inline-block;
+    float: left;
+    margin-right: 20px;
+    margin-top: 11px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.single-line {
+    width: 100%;
+}
+
+.operations-btns {
+    margin: 20px 20px 50px;
+    text-align: right;
+}
+
+
+/*users*/
+
+.user-main {
+    width: 1200px;
+    margin: 0 auto;
+    border: 1px solid #d7dbe5;
+    border-bottom: none;
+    overflow: hidden;
+    background: #fff;
+}
+
+.main-top {
+    border-bottom: 1px solid #d7dbe5;
+    height: 60px;
+    /*margin: 20px;*/
+}
+
+.user-btns {
+    display: inline-block;
+    float: right;
+    height: 30px;
+}
+
+.user-btns > .btn + .btn-group,
+.user-btns > .btn-group + .btn-group,
+.user-btns > .btn-group + .btn {
+    margin-left: 15px;
+}
+.main-top-info{
+    float: left;
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+}
+.main-top-info > p{
+    float: left;
+    margin-left: 20px;
+}
+.main-top-info > span{
+    margin-left: 20px;
+    float: left;
+}
+.main-top-info > span > span{
+    color: #286090;
+    font-weight: 800;
+}
+.main-list {
+    width: 1160px;
+    margin: 0 auto;
+    color: #212121;
+}
+.main-list-info{
+    margin-top: 20px;
+    height: 30px;
+    margin-bottom: 20px;
+}
+.main-list-info-li{
+    float: left;
+}
+.u-title > div {
+    display: inline-block;
+    float: left;
+    padding: 0 10px;
+}
+.u-title {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    background: #eaedf1;
+}
+
+.u-check {
+    width: 30px;
+}
+
+.u-check .m-check {
+    margin: 13px 0 0 11px;
+}
+
+.u-check .m-check-all {
+    margin: 11px 0 0 11px;
+}
+
+.u-item {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #d7dbe5;
+}
+
+.u-item > div {
+    display: inline-block;
+    float: left;
+    height: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 0 10px;
+}
+
+.u-name {
+    width: 220px;
+}
+
+/*.u-name img {
+    width: 60px;
+    height: 60px;
+    display: inline-block;
+    float: left;
+    margin: 10px 0;
+}*/
+
+.u-name .user-con {
+    width: 60px;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+}
+.u-name .user-con::before{
+    background: url(../images/deive_imgicon.png) 0 0  no-repeat;
+    content: '';
+    float: left;
+    margin-top: 10px;
+    margin-right: 5px;
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+.u-number {
+    width: 160px;
+}
+
+
+.u-tel {
+    width: 180px;
+}
+
+.u-email {
+    width: 280px;
+}
+
+.u-identity {
+    width: 90px;
+}
+
+.u-status {
+    width: 90px;
+}
+
+.u-operation {
+    width: 100px;
+}
+
+.u-operation .a-btn {
+    margin-top: 13px;
+}
+.select-litit{
+    float: left;
+    width: 230px;
+    margin-right: 30px;
+}
+.top-dr,.top-xz{
+    float: right;
+    height: 30px;
+    line-height: 30px;
+    width: 70px;
+    margin-right: 15px;
+    margin-top: 10px;
+    text-align: center;
+    background: #286090;
+    color: #fff;
+    display: block;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.sprt-tab,.sprt-list{
+    float: right;
+    display: block;
+    height: 16px;
+    width: 16px;
+    cursor: pointer;
+    margin-right: 15px;
+    margin-top: 20px;
+}
+.sprt-tab{
+    background: url(../images/icon-tab.png) 0 0  no-repeat;
+}
+.sprt-list{
+    background: url(../images/icon-list.png) 0 0  no-repeat;
+}
+.devive-list-ls{
+    display: none;
+    float: left;
+    width: 100%;
+}
+.devive-list-title{
+    background: #eaedf1;
+}
+.devive-list-main{
+    border-bottom: 1px solid #eaedf1;
+}
+.devive-list-title,.devive-list-main{
+    height: 40px;
+    width: 96%;
+    margin-left: 2%;
+    float: left;
+}
+.devive-list-title > div,.devive-list-main > div{
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    margin-left: 10px;
+}
+.devive-name{
+    width: 180px;
+}
+.devive-lei{
+    width: 120px;
+}
+.devive-ip{
+    width: 180px;
+}
+.devive-dev{
+    width: 180px;
+}
+.devive-cz{
+    width: 80px;
+}
+.devie-delete{
+    margin-top: 13px;
+    margin-left: 5px;
+}

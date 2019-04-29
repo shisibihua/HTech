@@ -1,0 +1,118 @@
+@import '../theme.less';
+
+/*header部分*/
+.header {
+  background: @main-bg-color;
+  height: 80px;
+}
+.content {
+  width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+
+  .logo{
+      float: left;
+      height: 100%;
+      text-align: center;
+      margin-left: 20px;
+
+      span{
+          display: inline-block;
+          width: 0;
+          height: 100%;
+          vertical-align: middle;
+      }
+
+      img{
+          vertical-align: middle;
+          max-height: 50px;
+          max-width: 100px;
+      }
+  }
+  .name {
+    display: inline-block;
+    float: left;
+    height: 100%;
+    line-height: 24px;
+    margin-left: 15px;
+
+    h1 {
+      color: #fff;
+      font-size: 20px;
+      font-weight: 400;
+      margin-top: 20px;
+    }
+
+    span {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+
+  .menu {
+    float: left;
+    // height: 78px;
+    margin-left: 80px;
+
+    :global(.ant-menu) {
+      height: 75px;
+      line-height: 75px;
+    }
+    :global(.ant-menu .ant-menu-item.ant-menu-item-selected) {
+      background-color: @main-bg-color;
+    }
+    :global(.ant-menu-dark) {
+      background: @main-bg-color;
+    }
+    :global(.ant-menu-horizontal > .ant-menu-item) {
+      margin-top: 0;
+      border-bottom-width: 4px;
+      border-bottom-style: solid;
+      border-bottom-color: @main-bg-color;
+    }
+
+    :global(.ant-menu-horizontal > .ant-menu-item:hover) {
+      border-bottom: 4px solid @main-color;
+    }
+
+    :global(.ant-menu-horizontal > .ant-menu-item-selected) {
+      border-bottom: 4px solid @main-color;
+    }
+
+
+  }
+
+  .user{
+    float:right;
+    margin-right: 20px;
+    margin-top: 25px;
+    a{
+      float: left;
+      color:#fff;
+      line-height: 30px;
+      >span{
+        float: left;
+      }
+    }
+    i{
+      margin-left:5px;
+    }
+
+  }
+}
+.userImgBorder{
+  float: left;
+   width: 30px;
+   height: 30px;
+   border-radius: 100%;
+   overflow: hidden;
+}
+.userImg{
+  float: left;
+  // border-radius: 100%;
+  margin-right: 10px;
+}
+:global(.ant-dropdown-menu) {
+  text-align: center;
+}

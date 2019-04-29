@@ -1,0 +1,68 @@
+/*header*/
+
+.m-header {
+    background: #454c57;
+}
+
+.nav ul li a {
+    color: #fff;
+}
+
+.nav ul li a:hover,
+.nav ul li a.selected {background-repeat: no-repeat;}
+
+.user ul li,
+.user ul li a {
+    color: #fff;
+}
+
+.user ul li a:hover {
+    color: #ddd;
+}
+
+
+/*footer*/
+
+.m-footer {
+    color: #454c57;
+    text-align: center;
+    height: 60px;
+    line-height: 60px;
+}
+
+
+/*check*/
+
+.m-check {
+    background: #fff;
+    border-color: #ddd;
+}
+
+.m-check.m-checked,
+.m-check-all.m-checked {border-color: #28b779;background-repeat: no-repeat;}
+
+
+/*main*/
+
+.main-left,
+.main-right {
+    border-color: #d7dbe5;
+    background: #fff;
+}
+
+
+/*search*/
+
+.m-search {
+    border-color: #dbdbdb;
+}
+
+.m-search button {
+    background: #fff;
+    border-left-color: #dbdbdb;
+}
+.nav ul li a:hover,
+.nav ul li a.selected{background-position:0px 0px}.m-check.m-checked,
+.m-check-all.m-checked{background-position:3px -39px}.nav ul li a:hover,
+.nav ul li a.selected,.m-check.m-checked,
+.m-check-all.m-checked{background-image: url(../../../images/default_z.png)}

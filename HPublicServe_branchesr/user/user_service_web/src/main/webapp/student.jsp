@@ -1,0 +1,823 @@
+<%@ page import="com.honghe.web.user.util.HttpServiceUtil" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="en">
+<%@ page isELIgnored="false"%>
+<head>
+    <meta charset="UTF-8">
+    <title>学生管理</title>
+
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/header.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/components.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/pagination.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/selectlist.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/theme/default/default.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/global.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/jquery.cxcalendar.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/jquery.mCustomScrollbar.css"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/jquery.Jcrop.min.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/libs/layer/skin/layer.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/zTreeStyle/zTreeStyle.css"/>
+    <style>
+        /* 教师管理tab */
+        .user-main {
+            width: 100%;
+            border: none;
+        }
+        .main-top {
+            margin: 10px;
+        }
+        .main-list {
+            width: 100%;
+        }
+
+        .u-title {
+            width: 100%;
+        }
+
+        .u-title >div {
+            padding: 0 5px;
+        }
+
+        /* 学生管理tab */
+        .u-name {
+            width: 110px;
+        }
+        .u-number {
+            width: 90px;
+        }
+        .u-class,.u-tel,.u-operation {
+            width: 100px;
+        }
+        .u-sex {
+            width: 50px;
+        }
+        .u-email2 {
+            width: 120px;
+        }
+
+        .u-item >div {
+            padding: 0 5px;
+        }
+        .u-name img {
+            width: 50px;
+            height: 50px;
+            margin: 16px 0;
+        }
+        .u-item .u-name {
+            padding: 0;
+            width: 120px;
+        }
+        .u-item .u-name .u-head {
+            height: 100%;
+        }
+        .u-item .u-name .user-con {
+            width: 70px;
+            margin: 9px 0 5px 4px;
+        }
+        .campus-content {
+            padding: 6px 0 4px;
+            width: 250px;
+            height: 30px;
+            position: relative;
+            cursor: pointer;
+
+        }
+        .arrow {
+            position: absolute;
+            top: 20px;
+            right: 16px;
+            width: 0;
+            height:0;
+            border: 6px solid transparent;
+            border-top: 6px solid #333;
+        }
+        .campus-title {
+            width: 236px;
+            height: 30px;
+            padding-left: 10px;
+            line-height: 30px;
+            border: 1px solid #dbdbdb;
+            margin-top: 2px;
+            margin-left: 2px;
+        }
+        .campusTree {
+            display: none;
+            position: absolute;
+            top: 42px;
+            left: 2px;
+            width: 236px;
+            border: 1px solid #dbdbdb;
+            background: #fff;
+            z-index: 19;
+        }
+        .ztree li {
+            line-height: 30px;
+        }
+        .ztree li a {
+            height: 30px;
+            line-height: 30px;
+        }
+        .ztree li a.curSelectedNode {
+            background-color: #fff;
+            border: none;
+            height: 100%;
+        }
+        a:hover {
+            text-decoration: none!important;
+        }
+        .ztree * {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="user-main">
+    <div class="main-top">
+        <div class="m-search">
+            <input type="text" placeholder="请输入姓名进行搜索" maxlength="15">
+            <button class="btn-search"></button>
+        </div>
+
+        <div class="user-btns">
+            <div class="btn-group">
+                <button class="btn btn-blue btn-add-users" type="button">添加学生</button>
+                <button class="btn btn-blue" id="btn-batch-delete" type="button">批量删除</button>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-light-blue btn-leading-in" type="button">导入</button>
+                <button class="btn btn-light-blue btn-leading-out" type="button">导出</button>
+            </div>
+            <div class="btn-group">
+            </div>
+        </div>
+    </div>
+    <div class="main-list">
+        <div class="u-title">
+            <div class="u-check">
+                <i class="m-check-all"></i>
+            </div>
+            <div class="u-name">姓名</div>
+            <div class="u-number">学籍号</div>
+            <div class="u-class">所属年级班级</div>
+            <div class="u-sex">性别</div>
+            <div class="u-tel">手机号码</div>
+            <div class="u-email2">邮箱</div>
+            <div class="u-year">入学日期</div>
+            <div class="u-operation">操作</div>
+        </div>
+
+    </div>
+    <div class="m-users m-page">
+        <!-- 这里显示分页 -->
+    </div>
+</div>
+</div>
+
+<!--    添加学生-->
+<div class="add-users">
+    <table>
+        <tr style="display: none">
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;头像：</td>
+            <td>
+                <img  src="./images/userimg.png" style="height: 60px;width: 60px;">
+                <%--<span class="headimages"  id="userHeadImage" style="text-decoration: underline; color: #da4453;cursor: pointer">点击这里 </span>设置头像--%>
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject student_name"><span style="color: red">* &nbsp;</span>学生姓名：</td>
+            <td>
+                <input id="studentName" type="text">
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject"><span style="color: red">* &nbsp;</span>姓名拼音：</td>
+            <td>
+                <input id="pinyin" type="text" onKeyUp="this.value=this.value.replace(/[^\w\/]/ig,'')">
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject"><span style="color: red">* &nbsp;</span>学籍号：</td>
+            <td>
+                <input type="text" id="studentNum" >
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;&nbsp;性别：</td>
+            <td>
+                <div class="select-sf" id="sex">
+                    <span ><span value="1" id="ss"></span>男</span>
+                    <span ><span value="2"></span>女</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;出生年月：</td>
+            <td>
+                <input type="text" id="studentBirthday" placeholder="例：2017-01-01">
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;&nbsp;民族：</td>
+            <td>
+                <select id="select-people" name="select-nation">
+                    <option value="不详">不详</option>
+
+                    <option value="汉族">汉族</option>
+
+                    <option value="满族">满族</option>
+
+                    <option value="回族">回族</option>
+
+                    <option value="蒙古族">蒙古族</option>
+
+                    <option value="朝鲜族">朝鲜族</option>
+
+                    <option value="土家族">土家族</option>
+
+                    <option value="苗族">苗族</option>
+
+                    <option value="布依族">布依族</option>
+
+                    <option value="白族">白族</option>
+
+                    <option value="壮族">壮族</option>
+
+                    <option value="哈尼族">哈尼族</option>
+
+                    <option value="藏族">藏族</option>
+
+                    <option value="达斡尔族">达斡尔族</option>
+
+                    <option value="锡伯族">锡伯族</option>
+
+                    <option value="东乡族">东乡族</option>
+
+                    <option value="哈萨克族">哈萨克族</option>
+
+                    <option value="拉祜族">拉祜族</option>
+
+                    <option value="维吾尔族">维吾尔族</option>
+
+                    <option value="鄂温克族">鄂温克族</option>
+
+                    <option value="仫佬族">仫佬族</option>
+
+                    <option value="保安族">保安族</option>
+
+                    <option value="土族">土族</option>
+
+                    <option value="鄂伦春族">鄂伦春族</option>
+
+                    <option value="独龙族">独龙族</option>
+
+                    <option value="珞巴族">珞巴族</option>
+
+                    <option value="毛难族">毛难族</option>
+
+                    <option value="柯尔克孜族">柯尔克孜族</option>
+
+                    <option value="傣族">傣族</option>
+
+                    <option value="高山族">高山族</option>
+
+                    <option value="傈僳族">傈僳族</option>
+
+                    <option value="纳西族">纳西族</option>
+
+                    <option value="侗族">侗族</option>
+
+                    <option value="水族">水族</option>
+
+                    <option value="怒族">怒族</option>
+
+                    <option value="彝族">彝族</option>
+
+                    <option value="基诺族">基诺族</option>
+
+                    <option value="阿昌族">阿昌族</option>
+
+                    <option value="瑶族">瑶族</option>
+
+                    <option value="撒拉族">撒拉族</option>
+
+                    <option value="仡佬族">仡佬族</option>
+
+                    <option value="门巴族">门巴族</option>
+
+                    <option value="畲族">畲族</option>
+
+                    <option value="黎族">黎族</option>
+
+                    <option value="京族">京族</option>
+
+                    <option value="羌族">羌族</option>
+
+                    <option value="塔吉克族">塔吉克族</option>
+
+                    <option value="乌孜别克族">乌孜别克族</option>
+
+                    <option value="塔塔尔族">塔塔尔族</option>
+
+                    <option value="德昂族">德昂族</option>
+
+                    <option value="布朗族">布朗族</option>
+
+                    <option value="普米族">普米族</option>
+
+                    <option value="赫哲族">赫哲族</option>
+
+                    <option value="佤族">佤族</option>
+
+                    <option value="俄罗斯族">俄罗斯族</option>
+
+                    <option value="裕固族">裕固族</option>
+
+                    <option value="景颇族">景颇族</option>
+                </select>
+
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;入学年度：</td>
+            <td>
+                <input type="text" id="year" placeholder="例：2017-01-01" />
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;就读方式：</td>
+            <td>
+                <div class="select-type">
+                    <select id="studytype">
+                        <option value="1">走读</option>
+                        <option value="2">住宿</option>
+                        <option value="3">借宿</option>
+                        <option value="4">其他</option>
+                    </select>
+                </div>
+            </td>
+        </tr>
+        <%--<tr>--%>
+            <%--<td class="user-add-subject"><span style="color: red">* &nbsp;</span>分配机构：</td>--%>
+            <%--<td class="campus-content">--%>
+                <%--<div class="campus-title"></div>--%>
+                <%--<ul id="campusTree" class="ztree campusTree"></ul>--%>
+                <%--<span class="arrow"></span>--%>
+            <%--</td>--%>
+        <%--</tr>--%>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;手机号码：</td>
+            <td>
+                <input type="text" id="userMobile" onkeyup="(this.v=function(){this.value=this.value.replace(/[^0-9-]+/,'');}).call(this)" onblur="this.v();"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;邮箱：</td>
+            <td>
+                <input type="text" id="userEmail" />
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;在校状态：</td>
+            <td>
+                <div class="select-sf" id="status">
+                    <option value="1">在校</option>
+                    <option value="2">离校</option>
+                    <option value="3">已毕业</option>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;入学方式：</td>
+            <td>
+                <div class="select-entertype">
+                    <select id="entertype">
+                        <option value="1">普通入学</option>
+                        <option value="2">体育特招</option>
+                        <option value="3">外校转入</option>
+                        <option value="4">其他</option>
+                    </select>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;户口地区：</td>
+            <td>
+                <input id="userAddress" type="text">
+            </td>
+        </tr>
+
+    </table>
+</div>
+<!--    修改-->
+<div class="edit-users">
+    <table>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;头像：</td>
+            <td>
+                <img  src="./images/userimg.png" style="height: 60px;width: 60px;">
+                <%--<span class="headimage"  id="e_userHeadImage" style="text-decoration: underline; color: #da4453;cursor: pointer">点击这里 </span>设置头像--%>
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject"><span style="color: red">* &nbsp;</span>学生姓名：</td>
+            <td>
+                <input id="e_userRealName" type="text">
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject"><span style="color: red">* &nbsp;</span>姓名拼音：</td>
+            <td>
+                <input id="e_pinyin" type="text" onKeyUp="value=value.replace(/[^\w\.\/]/ig,'')">
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject"><span style="color: red">* &nbsp;</span>学籍号：</td>
+            <td>
+                <input type="text" id="e_userNum" >
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;&nbsp;性别：</td>
+            <td>
+                <div class="select-sf" id="e_sex">
+                    <span ><span value="1" id="11"></span>男</span>
+                    <span ><span value="2" id="22"></span>女</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;出生年月：</td>
+            <td>
+                <input type="text" id="e_studentBirthday" placeholder="例：2017-01-01">
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;&nbsp;民族：</td>
+            <td>
+                <select id="e_select-people" name="e_select-nation">
+                    <option value="不详">不详</option>
+
+                    <option value="汉族">汉族</option>
+
+                    <option value="满族">满族</option>
+
+                    <option value="回族">回族</option>
+
+                    <option value="蒙古族">蒙古族</option>
+
+                    <option value="朝鲜族">朝鲜族</option>
+
+                    <option value="土家族">土家族</option>
+
+                    <option value="苗族">苗族</option>
+
+                    <option value="布依族">布依族</option>
+
+                    <option value="白族">白族</option>
+
+                    <option value="壮族">壮族</option>
+
+                    <option value="哈尼族">哈尼族</option>
+
+                    <option value="藏族">藏族</option>
+
+                    <option value="达斡尔族">达斡尔族</option>
+
+                    <option value="锡伯族">锡伯族</option>
+
+                    <option value="东乡族">东乡族</option>
+
+                    <option value="哈萨克族">哈萨克族</option>
+
+                    <option value="拉祜族">拉祜族</option>
+
+                    <option value="维吾尔族">维吾尔族</option>
+
+                    <option value="鄂温克族">鄂温克族</option>
+
+                    <option value="仫佬族">仫佬族</option>
+
+                    <option value="保安族">保安族</option>
+
+                    <option value="土族">土族</option>
+
+                    <option value="鄂伦春族">鄂伦春族</option>
+
+                    <option value="独龙族">独龙族</option>
+
+                    <option value="珞巴族">珞巴族</option>
+
+                    <option value="毛难族">毛难族</option>
+
+                    <option value="柯尔克孜族">柯尔克孜族</option>
+
+                    <option value="傣族">傣族</option>
+
+                    <option value="高山族">高山族</option>
+
+                    <option value="傈僳族">傈僳族</option>
+
+                    <option value="纳西族">纳西族</option>
+
+                    <option value="侗族">侗族</option>
+
+                    <option value="水族">水族</option>
+
+                    <option value="怒族">怒族</option>
+
+                    <option value="彝族">彝族</option>
+
+                    <option value="基诺族">基诺族</option>
+
+                    <option value="阿昌族">阿昌族</option>
+
+                    <option value="瑶族">瑶族</option>
+
+                    <option value="撒拉族">撒拉族</option>
+
+                    <option value="仡佬族">仡佬族</option>
+
+                    <option value="门巴族">门巴族</option>
+
+                    <option value="畲族">畲族</option>
+
+                    <option value="黎族">黎族</option>
+
+                    <option value="京族">京族</option>
+
+                    <option value="羌族">羌族</option>
+
+                    <option value="塔吉克族">塔吉克族</option>
+
+                    <option value="乌孜别克族">乌孜别克族</option>
+
+                    <option value="塔塔尔族">塔塔尔族</option>
+
+                    <option value="德昂族">德昂族</option>
+
+                    <option value="布朗族">布朗族</option>
+
+                    <option value="普米族">普米族</option>
+
+                    <option value="赫哲族">赫哲族</option>
+
+                    <option value="佤族">佤族</option>
+
+                    <option value="俄罗斯族">俄罗斯族</option>
+
+                    <option value="裕固族">裕固族</option>
+
+                    <option value="景颇族">景颇族</option>
+                </select>
+
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;入学年度：</td>
+            <td>
+                <input  id="e_year"  placeholder="例：2017-01-01">
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;就读方式：</td>
+            <td>
+                <div class="select-type">
+                    <select id="e_studytype">
+                        <option value="1">走读</option>
+                        <option value="2">住宿</option>
+                        <option value="3">借宿</option>
+                        <option value="4">其他</option>
+                    </select>
+                </div>
+            </td>
+        </tr>
+        <%--<tr>--%>
+            <%--<td class="user-add-subject"><span style="color: red">* &nbsp;</span>分配机构：</td>--%>
+            <%--<td class="campus-content">--%>
+                <%--<div class="campus-title"></div>--%>
+                <%--<ul id="" class="ztree campusTree"></ul>--%>
+                <%--<span class="arrow"></span>--%>
+            <%--</td>--%>
+        <%--</tr>--%>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;手机号码：</td>
+            <td>
+                <input type="text" id="e_userMobile" onkeyup="(this.v=function(){this.value=this.value.replace(/[^0-9-]+/,'');}).call(this)" onblur="this.v();"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;邮箱：</td>
+            <td>
+                <input type="text" id="e_userEmail" />
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;在校状态：</td>
+            <td>
+                <div class="select-sf" id="e_status">
+                    <option value="1">在校</option>
+                    <option value="2">离校</option>
+                    <option value="3">已毕业</option>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;入学方式：</td>
+            <td>
+                <div class="select-entertype">
+                    <select id="e_entertype">
+                        <option value="1">普通入学</option>
+                        <option value="2">体育特招</option>
+                        <option value="3">外校转入</option>
+                        <option value="4">其他</option>
+                    </select>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="user-add-subject">&nbsp;&nbsp;&nbsp;户口地区：</td>
+            <td>
+                <input id="e_userAddress" type="text">
+            </td>
+        </tr>
+
+    </table>
+</div>
+
+<!--    批量删除/删除机构-->
+<div class="m-delete">
+    确定删除此学生吗？
+</div>
+
+<!--  学生详情-->
+<div class="m-details">
+    <div class="details-name">
+        <img src="${pageContext.request.contextPath}/images/userimg.png">
+
+        <div class="name-details-name">
+            <span id="details-userRealName" class="name-first" title=""></span>
+            <span id="details-userName" title=""></span>
+            <span id="details-userSex"></span>
+            <span id="details-userNum" class="number" title=""></span>
+        </div>
+    </div>
+    <div class="details-content">
+        <div class="details-content-title">系统角色</div>
+        <div class="system-role-content">
+            <div class="select-system">
+            </div>
+            <ul id="details-system-list" class="details-system-list">
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <div class="details-content">
+        <div class="details-content-title">详细信息</div>
+        <div class="details-left">
+            <div class="birthday">出生年月：<span id="details-userBrithday"></span></div>
+            <div class="gender">性别：<span id="details-userGender"></span></div>
+            <div class="studytype">就读方式：<span id="details-studytype"></span></div>
+            <div class="status">在校状态：<span id="details-userStatus"></span></div>
+            <div class="tel">手机号码：<span id="details-userMobile"></span></div>
+            <div class="email">邮箱：<span id="details-userEmail"></span></div>
+            <div class="entertype">入学方式：<span id="details-entertype"></span></div>
+            <div class="entertype">入学日期：<span id="details-enteryear"></span></div>
+            <div class="address">户口所在地：<span id="details-userAddr"></span></div>
+        </div>
+    </div>
+</div>
+<div class="user-leading">
+    <form id="uploadFile" enctype="multipart/form-data" method="post">
+        <input id="upload_fileName" type="text" readonly onkeydown="if(event.keyCode==8) return false;"/>
+        <a href="javascript:void(0)">
+            <input id="upload" name="myFile" type="file" value=""/>选择文件
+        </a>
+        <button id="download-template" class="btn btn-orange" type="button">下载模板</button>
+    </form>
+</div>
+<div class="download-failed">
+    <div>是否要下载导入失败的数据？</div>
+</div>
+
+<div class="user-heading">
+
+    <form id="uploadFiles" enctype="multipart/form-data" method="post" style="float: left;">
+
+    <input id="upload_fileNames" type="text" readonly onkeydown="if(event.keyCode==8) return false;"/>
+        <a href="javascript:void(0)">
+            <input id="uploads" name="myFile" type="file"   value=""  />选择图片
+        </a>
+
+    </form>
+    <div id="outer">
+        <div class="jcExample">
+            <div class="article">
+                <table>
+                    <tr>
+                        <td style="width:100px;height:100px;overflow:hidden; display: none"  id="aaa">
+                            <img  id="target" alt="Flowers" width="300" height="300" />
+                        </td>
+                        <td id="aaaa">
+                            <div style="width:100px;height:100px;overflow:hidden;display: none" id="aa">
+                                <img  id="preview" alt="Preview" class="jcrop-preview" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <input id="imageData" value="" type="hidden"/>
+</div>
+<script src="${pageContext.request.contextPath}/js/libs/mod.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/libs/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.pagination.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/pagination.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/popup.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/selectlist.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/select.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/student.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.cxcalendar.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.form.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/config.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/libs/layer/layer.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.mCustomScrollbar.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.Jcrop.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.ztree.core.min.js"></script>
+<script>
+
+    var student = require('student/student');
+    student.init("<%=HttpServiceUtil.getStorageIp()%>","<%=HttpServiceUtil.getStoragePort()%>");
+    var $ = require("jquery");
+    var SelectList = require('select-list/select');
+    var select = new SelectList('#studytype,#entertype,#e_studytype,#e_entertype,#status,#e_status', function (option) {
+    });
+    select.init();
+    var select2 = new SelectList('#e_select-people,#select-people', function (option) {
+    });
+    select2.init();
+    document.getElementById('select-people').style.zIndex = "60";
+
+    new cutImage().init();
+    function cutImage(){
+        var oop = this;
+        this.option = {
+            x:170,
+            y:110,
+            w:350,
+            h:200,
+            t:'target',
+            p:'preview',
+            o:'aa'
+        }
+        this.init = function(){
+            oop.target();
+        }
+        this.target = function(){
+            $('#'+oop.option['t']).Jcrop({
+                onChange: oop.updatePreview,
+                onSelect: oop.updatePreview,
+                aspectRatio: 1,
+                setSelect: [ oop.option['x'], oop.option['y'], oop.option['w'],oop.option['h'] ],
+                bgFade:     true,
+                bgOpacity: .5
+            });
+        }
+        this.updatePreview = function(obj){
+            if (parseInt(obj.w) > 0)
+            {
+
+                var rx = $('#'+oop.option['o']).width()/ obj.w;
+                var ry = $('#'+oop.option['o']).height()/ obj.h;
+                var width = Math.round(rx*$('#'+oop.option['t']).width());
+                var height = Math.round(ry*$('#'+oop.option['t']).height());
+                $('#'+oop.option['p']).css({
+                    width: Math.round(rx*$('#'+oop.option['t']).width()) + 'px',
+                    height: Math.round(ry*$('#'+oop.option['t']).height()) + 'px',
+                    marginLeft: '-' + Math.round(rx * obj.x) + 'px',
+                    marginTop: '-' + Math.round(ry * obj.y) + 'px'
+                });
+
+                var temp = obj.x + "," + obj.y + "," + obj.w + "," + obj.h + "," + width + "," + height;
+                $('#imageData').val(temp);
+            }
+        }
+    }
+    // 关闭弹窗
+    var layer = require('libs/layer/layer.js');
+    window.closeLayer = function () {
+        layer.closeAll();
+
+    }
+    window.initStudentList = function (campusId) {
+        student.initStudentListByCampusId(campusId);
+    }
+</script>
+</body>
+
+</html>

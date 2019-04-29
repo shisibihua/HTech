@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: honghe:hcommon_dao:1.1-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://G:/apache-maven-3.2.2-dss/repository/honghe/hcommon_dao/1.1-SNAPSHOT/hcommon_dao-1.1-20170802.102009-32.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://G:/apache-maven-3.2.2-dss/repository/honghe/hcommon_dao/1.1-SNAPSHOT/hcommon_dao-1.1-20170802.102009-32-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://G:/apache-maven-3.2.2-dss/repository/honghe/hcommon_dao/1.1-SNAPSHOT/hcommon_dao-1.1-20170802.102009-32-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

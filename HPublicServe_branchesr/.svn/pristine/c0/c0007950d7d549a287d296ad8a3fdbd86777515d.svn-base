@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceCommandCodeMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.DeviceCommandCode" >
+    <id column="code_id" property="codeId" jdbcType="INTEGER" />
+    <result column="code_name" property="codeName" jdbcType="VARCHAR" />
+    <result column="code_type" property="codeType" jdbcType="VARCHAR" />
+    <result column="code_result" property="codeResult" jdbcType="VARCHAR" />
+    <result column="code_remark" property="codeRemark" jdbcType="VARCHAR" />
+    <result column="code_instruction" property="codeInstruction" jdbcType="VARCHAR" />
+    <result column="dspec_id" property="dspecId" jdbcType="INTEGER" />
+    <result column="code_code" property="codeCode" jdbcType="VARCHAR" />
+    <result column="code_flag" property="codeFlag" jdbcType="VARCHAR" />
+    <result column="code_group" property="codeGroup" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    code_id, code_name, code_type, code_result, code_remark, code_instruction, dspec_id, 
+    code_code, code_flag, code_group
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from device_command_code
+    where code_id = #{codeId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from device_command_code
+    where code_id = #{codeId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.honghe.deviceNew.entity.DeviceCommandCode" >
+    insert into device_command_code (code_id, code_name, code_type, 
+      code_result, code_remark, code_instruction, 
+      dspec_id, code_code, code_flag, 
+      code_group)
+    values (#{codeId,jdbcType=INTEGER}, #{codeName,jdbcType=VARCHAR}, #{codeType,jdbcType=VARCHAR}, 
+      #{codeResult,jdbcType=VARCHAR}, #{codeRemark,jdbcType=VARCHAR}, #{codeInstruction,jdbcType=VARCHAR}, 
+      #{dspecId,jdbcType=INTEGER}, #{codeCode,jdbcType=VARCHAR}, #{codeFlag,jdbcType=VARCHAR}, 
+      #{codeGroup,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.honghe.deviceNew.entity.DeviceCommandCode" >
+    insert into device_command_code
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="codeId != null" >
+        code_id,
+      </if>
+      <if test="codeName != null" >
+        code_name,
+      </if>
+      <if test="codeType != null" >
+        code_type,
+      </if>
+      <if test="codeResult != null" >
+        code_result,
+      </if>
+      <if test="codeRemark != null" >
+        code_remark,
+      </if>
+      <if test="codeInstruction != null" >
+        code_instruction,
+      </if>
+      <if test="dspecId != null" >
+        dspec_id,
+      </if>
+      <if test="codeCode != null" >
+        code_code,
+      </if>
+      <if test="codeFlag != null" >
+        code_flag,
+      </if>
+      <if test="codeGroup != null" >
+        code_group,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="codeId != null" >
+        #{codeId,jdbcType=INTEGER},
+      </if>
+      <if test="codeName != null" >
+        #{codeName,jdbcType=VARCHAR},
+      </if>
+      <if test="codeType != null" >
+        #{codeType,jdbcType=VARCHAR},
+      </if>
+      <if test="codeResult != null" >
+        #{codeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="codeRemark != null" >
+        #{codeRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="codeInstruction != null" >
+        #{codeInstruction,jdbcType=VARCHAR},
+      </if>
+      <if test="dspecId != null" >
+        #{dspecId,jdbcType=INTEGER},
+      </if>
+      <if test="codeCode != null" >
+        #{codeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="codeFlag != null" >
+        #{codeFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="codeGroup != null" >
+        #{codeGroup,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="getSpecCmd" resultType="java.util.HashMap" parameterType="java.lang.Integer" >
+    select GROUP_CONCAT(cmd_name order by cmd_name asc) codetype,b.cmd_group,
+    GROUP_CONCAT(code_code order by cmd_name asc) code_cmd ,GROUP_CONCAT(code_name order by cmd_name asc) code_name
+    FROM device_command_code a,device_command b
+    where a.code_type = b.cmd_hex and  b.cmd_group is not NULL
+    and a.dspec_id = #{dspecId,jdbcType=INTEGER}
+    GROUP BY b.cmd_group order BY b.cmd_name
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.honghe.deviceNew.entity.DeviceCommandCode" >
+    update device_command_code
+    <set >
+      <if test="codeName != null" >
+        code_name = #{codeName,jdbcType=VARCHAR},
+      </if>
+      <if test="codeType != null" >
+        code_type = #{codeType,jdbcType=VARCHAR},
+      </if>
+      <if test="codeResult != null" >
+        code_result = #{codeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="codeRemark != null" >
+        code_remark = #{codeRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="codeInstruction != null" >
+        code_instruction = #{codeInstruction,jdbcType=VARCHAR},
+      </if>
+      <if test="dspecId != null" >
+        dspec_id = #{dspecId,jdbcType=INTEGER},
+      </if>
+      <if test="codeCode != null" >
+        code_code = #{codeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="codeFlag != null" >
+        code_flag = #{codeFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="codeGroup != null" >
+        code_group = #{codeGroup,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where code_id = #{codeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceCommandCode" >
+    update device_command_code
+    set code_name = #{codeName,jdbcType=VARCHAR},
+      code_type = #{codeType,jdbcType=VARCHAR},
+      code_result = #{codeResult,jdbcType=VARCHAR},
+      code_remark = #{codeRemark,jdbcType=VARCHAR},
+      code_instruction = #{codeInstruction,jdbcType=VARCHAR},
+      dspec_id = #{dspecId,jdbcType=INTEGER},
+      code_code = #{codeCode,jdbcType=VARCHAR},
+      code_flag = #{codeFlag,jdbcType=VARCHAR},
+      code_group = #{codeGroup,jdbcType=VARCHAR}
+    where code_id = #{codeId,jdbcType=INTEGER}
+  </update>
+</mapper>

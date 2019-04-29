@@ -1,0 +1,36 @@
+.m-menu{
+    width: 322px;
+    list-style: none;
+}
+.m-menu li{
+    height: 40px;
+    line-height: 40px;
+    padding-left:40px;
+}
+
+.m-menu .m-menu-btn{
+    width: 176px;
+    display: inline-block;
+    font-size:14px;
+    color: #212121;
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    padding-right: 30px;
+}
+.m-menu .menu-btns{
+    display: none;
+    margin-top: 13px;
+}
+.m-menu li.selected{
+    background:#eaedf1;
+}
+.m-menu li:hover{
+    background: #eaedf1;
+}
+.m-menu li:hover .menu-btns{
+    display: inline-block;
+}

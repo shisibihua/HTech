@@ -1,0 +1,20 @@
+{
+  "entry": "src/index.js",
+  "disableCSSModules": false,
+  "autoprefixer": null,
+  "extraBabelPlugins": [
+    "transform-runtime",
+    ["import", { "libraryName": "antd", "style": true }]
+  ],
+  "pre-commit": [
+    "lint"
+  ],
+  "env": {
+    "development": {
+      "extraBabelPlugins": [
+        "dva-hmr"
+      ]
+    }
+  },
+  "theme": "./src/theme.js"
+}

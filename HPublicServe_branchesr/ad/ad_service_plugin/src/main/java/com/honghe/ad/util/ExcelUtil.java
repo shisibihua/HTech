@@ -1,0 +1,143 @@
+package com.honghe.ad.util;
+
+import com.honghe.ad.campus.dao.CampusDao;
+import com.honghe.communication.util.WebRootUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.*;
+
+/**
+ * Created by qinzhihui on 2016/10/27 0027.
+ */
+public class ExcelUtil {
+    public final static String CAMPUS_ROOT_ID = "1";
+    /**
+     * 导入组织机构方法
+     * 先判断数据是否符合规范 然后判断ID是否重复 最后判断pid是否存在 若都没问题则直接存入数据库
+     * @param fileName
+     * @return success 导入成功  data_error 数据错误 program_error 程序出错
+     * TODO:需要增加同级时重名判断
+     */
+    public static String importExcel(String fileName){
+        InputStream stream = null;
+        try {
+            File file = new File(WebRootUtil.getWebRoot() + "upload_dir/"+fileName );
+            // 文件流指向excel文件
+            stream = new FileInputStream(file);
+            //HSSF只能打开2003，XSSF只能打开2007，WorkbookFactory.create兼容以上两个版本
+            Workbook workbook = WorkbookFactory.create(stream);
+            Sheet sheet = workbook.getSheetAt(0);// 得到工作表
+            Row row = null;// 对应excel的行
+            int totalRow = sheet.getLastRowNum();// 得到excel的总记录条数
+            List all = CampusDao.INSTANCE.findAll();
+            //将现有数据保存到set中用于做重复判断
+            Set set = new HashSet();
+            if (all!=null&&all.size()>0){
+                for (int i = 0;i<all.size();i++){
+                    Map campus = (Map)all.get(i);
+                    set.add(campus.get("campusId").toString());
+                }
+            }
+            //保存当前数据库中数据条数
+            int oldSetSize = set.size();
+            //保存所有新加机构的pid 由于pid可以重复 所以同样用set保存
+            Set<String> pSet = new HashSet();
+            //新建一个保存到数据库时需要用到的list
+            List addList = new ArrayList();
+            //逐行写入数据库
+            CampusDao campusDao=CampusDao.INSTANCE;
+            for (int i=2; i<=totalRow; i++) {
+                //获取单行数据
+                row = sheet.getRow(i);
+                int cellCount=row.getLastCellNum()-row.getFirstCellNum();
+                if (cellCount<=2){
+                    break;
+                }
+                //获取所有数据
+                Map<String,String> param = new HashMap();
+                //获取excel中的数据
+                param.put("id",row.getCell(0)==null?"":row.getCell(0).toString());
+                param.put("name",row.getCell(1)==null?"":row.getCell(1).toString());
+                param.put("pId",row.getCell(2)==null?"":row.getCell(2).toString());
+                param.put("number",row.getCell(3)==null?"":row.getCell(3).toString());
+                param.put("typeId",row.getCell(4)==null?"":row.getCell(4).toString());
+                param.put("stagesId",row.getCell(5)==null?"":row.getCell(5).toString());
+                param.put("schoolYear",row.getCell(6)==null?"":row.getCell(6).toString());
+                String ip = row.getCell(7)==null?"":row.getCell(7).toString();
+                String port = row.getCell(8)==null?"":row.getCell(8).toString();
+                String url = ip+":"+port;
+                param.put("url",url);
+                param.put("remark",row.getCell(9)==null?"":row.getCell(9).toString());
+              
+                //若所填数据为空则视为参数错误
+                if ("".equals(param.get("id"))||"".equals(param.get("name"))||"".equals(param.get("pId"))||"".equals(param.get("typeId"))){
+                    return "data_error";
+                }
+                //用正则判断ID是否符合规定 上级ID从A-Y 当前ID从A-Z 其他为7位数字
+                String regexPid = "[A-Y][0-9]{7}";
+                String regexId = "[A-Z][0-9]{7}";
+                //若该级目录为根节点时可以通过验证
+                //若当前id是 1 那么父级id必须是0
+                if (CAMPUS_ROOT_ID.equals(param.get("id").toString())){
+                    if (!"0".equals(param.get("pId").toString())){
+                        return "data_error";
+                    }
+                }
+                //如果父级id是0 那么当前id必须是1
+                if ("0".equals(param.get("pId").toString())){
+                    if (!CAMPUS_ROOT_ID.equals(param.get("id").toString())){
+                        return "data_error";
+                    }
+                }
+                //若当前ID和父级ID相同则视为错误
+                if (param.get("id").toString().equals(param.get("pId").toString())){
+                    return "data_error";
+                }
+                //当id不是1时 需要满足规定结构即可
+                if (!param.get("id").toString().matches(regexId)&&!CAMPUS_ROOT_ID.equals(param.get("id").toString())) {
+                    return "data_error";
+                }
+                //pid若不是标准结构 且不是1，0
+                if (!param.get("pId").toString().matches(regexPid)&&!CAMPUS_ROOT_ID.equals(param.get("pId").toString())&&!"0".equals(param.get("pId").toString())) {
+                    return "data_error";
+                }
+                //下面判断ID重复问题 采用将数据存入Set中 判断set的大小来判断当前值是否重复
+                set.add(param.get("id").toString());
+                //+i-2是因为i从2开始计算 不相等说明新的id和原有id值重复
+                if (!CAMPUS_ROOT_ID.equals(param.get("id"))&&oldSetSize+i-1!=set.size()){
+                    return "data_error";
+                }
+                //若id是 1 则不用保存pid 只用于修改 不用于添加判断
+                if (!CAMPUS_ROOT_ID.equals(param.get("id"))){
+                    pSet.add(param.get("pId").toString());
+                }
+                //将数据保存到存入数据库的list中 虽然可能会白存 但是可以减少后期继续遍历的问题
+                addList.add(param);
+            }
+            //判断完添加的id符合要求后判断父级id是否存在
+            int allIds = set.size();
+            for (String pid:pSet){
+                set.add(pid);
+                //若不相等说明pid中包含ID中没有的数据
+                if (allIds!=set.size()){
+                    return "data_error";
+                }
+            }
+            //若数据到此都没有问题的话 下面执行添加操作
+            boolean result = campusDao.addImport(addList);
+            if (result){
+                return "success";
+            }else {
+                return "program_error";
+            }
+        }catch (Exception e){
+            return "program_error";
+        }
+    }
+}

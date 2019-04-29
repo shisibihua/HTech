@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceLogTypeMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.DeviceLogType" >
+    <id column="logtype_id" property="logtypeId" jdbcType="INTEGER" />
+    <result column="logtype_key" property="logtypeKey" jdbcType="VARCHAR" />
+    <result column="logtype_name" property="logtypeName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    logtype_id, logtype_key, logtype_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from device_log_type
+    where logtype_id = #{logtypeId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from device_log_type
+    where logtype_id = #{logtypeId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.honghe.deviceNew.entity.DeviceLogType" >
+    insert into device_log_type (logtype_id, logtype_key, logtype_name
+      )
+    values (#{logtypeId,jdbcType=INTEGER}, #{logtypeKey,jdbcType=VARCHAR}, #{logtypeName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.honghe.deviceNew.entity.DeviceLogType" >
+    insert into device_log_type
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="logtypeId != null" >
+        logtype_id,
+      </if>
+      <if test="logtypeKey != null" >
+        logtype_key,
+      </if>
+      <if test="logtypeName != null" >
+        logtype_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="logtypeId != null" >
+        #{logtypeId,jdbcType=INTEGER},
+      </if>
+      <if test="logtypeKey != null" >
+        #{logtypeKey,jdbcType=VARCHAR},
+      </if>
+      <if test="logtypeName != null" >
+        #{logtypeName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.honghe.deviceNew.entity.DeviceLogType" >
+    update device_log_type
+    <set >
+      <if test="logtypeKey != null" >
+        logtype_key = #{logtypeKey,jdbcType=VARCHAR},
+      </if>
+      <if test="logtypeName != null" >
+        logtype_name = #{logtypeName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where logtype_id = #{logtypeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceLogType" >
+    update device_log_type
+    set logtype_key = #{logtypeKey,jdbcType=VARCHAR},
+      logtype_name = #{logtypeName,jdbcType=VARCHAR}
+    where logtype_id = #{logtypeId,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,9 @@
+.m-check,
+.m-check-all {
+    display: inline-block;
+    float: left;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+}

@@ -1,0 +1,2 @@
+serviceName = connection
+connectionUrl=http://localhost:9230

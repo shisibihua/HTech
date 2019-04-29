@@ -1,0 +1,6 @@
+ip=localhost
+port=8770
+upload_ip=localhost
+upload_port=8770
+storage_ip=localhost
+storage_port=8781

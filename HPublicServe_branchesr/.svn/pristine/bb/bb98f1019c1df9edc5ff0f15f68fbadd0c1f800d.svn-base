@@ -1,0 +1,140 @@
+  .content {
+    width: 1200px;
+    min-height: 400px;
+    margin: 0 auto;
+    background: #fff;
+    margin-top: 15px;
+
+    .right {
+      float: left;
+      width: 940px;
+      padding: 10px 20px;
+    }
+
+    .clear {
+      clear: both;
+      height: 0;
+      line-height: 0;
+    }
+    .sliderBer{
+      width: 300px;
+      float: left;
+      overflow: auto;
+      border-right: 1px solid #e9e9e9;
+      min-height: calc(~"100vh - 180px");
+    }
+    .slider{
+      float: left;
+      min-width: 298px;
+    }
+    .info{
+      float: right;
+      width: 895px;
+      margin-right:15px;
+      // line-height: calc(~"100vh - 170px");
+    }
+    .Search{
+      height: 50px;
+      float: left;
+      width: 100%;
+      padding: 15px 10px;
+      >span{
+        float: left;
+      }
+      >button{
+        float: right;
+        margin-right: 15px;
+      }
+    }
+    .top{
+      height: 50px;
+      text-indent: 1.5em;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 50px;
+      width: 98%;
+      margin-bottom: 5px;
+      border-bottom: 1px solid #e9e9e9;
+    }
+    .table{
+      float: left;
+      width: 100%;
+      padding-left: 12px;
+      clear: both;
+    }
+  }
+
+.PlaceModelmain{
+  >div{
+    >div{
+      float: left;
+      >label{
+        min-width: 100px;
+        float: left;
+        text-align: right;
+      }
+      >div{
+
+        >input,textarea{
+          min-width: 260px;
+        }
+        >div{
+          min-width: 80px;
+          clear: both;
+
+        }
+      }
+    }
+  }
+}
+
+.Modelmain{
+  >div{
+    >div{
+      float: left;
+      >label{
+        min-width: 80px;
+        float: left;
+        text-align: right;
+      }
+      >div{
+
+        >input,textarea{
+          min-width: 260px;
+        }
+        >div{
+          min-width: 80px;
+          clear: both;
+
+        }
+      }
+    }
+  }
+
+  input{
+    float: left;
+    max-width: 260px;
+  }
+}
+// 弹窗居中显示
+.verticalCenterModal {
+  text-align: center;
+  white-space: nowrap;
+
+  :global(.ant-modal) {
+    display: inline-block;
+    vertical-align: middle;
+    top: 0;
+    text-align: left;
+  }
+}
+:global(.ant-menu-submenu-inline > .ant-menu-submenu-title:after){
+  right:13px;
+}
+.verticalCenterModal:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  width: 0;
+}

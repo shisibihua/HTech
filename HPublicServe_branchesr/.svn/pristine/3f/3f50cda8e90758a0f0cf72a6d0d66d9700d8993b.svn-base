@@ -1,0 +1,659 @@
+package com.honghe.deviceNew.service.impl;
+
+import com.honghe.dao.PageData;
+import com.honghe.deviceNew.dao.*;
+import com.honghe.deviceNew.entity.Device;
+import com.honghe.deviceNew.entity.DeviceConfig;
+import com.honghe.deviceNew.entity.DeviceHost;
+import com.honghe.deviceNew.service.DeviceHostService;
+import com.honghe.deviceNew.util.CommandNewUtil;
+import com.honghe.deviceNew.util.DeviceConnectUtil;
+import com.honghe.deviceNew.enumentity.DeviceTypeNameEnum;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * 设备管理service实现层
+ */
+@Service
+public class DeviceHostServiceImpl implements DeviceHostService {
+
+    Logger logger = Logger.getLogger("device");
+    public static DeviceHostServiceImpl INSTANCE = new DeviceHostServiceImpl();
+    private final static int  EXSIST_ERROR = -1;
+    private static final int LICENSECODECOUNT = 5;
+    private final static int SETNAME_ERROR = 0;//修改名称失败
+    private final static int SETNAME_SUCCESS = 1;//修改名称成功
+    private static final int DEVICEID_TOP = -2;//超过授权数量返回-2
+    private static final int DEVICEID_HOST_ERROR = -3;//获取已添加设备数量失败
+    private static final int DEVICEID_LICENSE_ERROR = -4;//获取授权数量失败
+    private static final int DEVICESTREAM_ERROR = -6;//虚拟设备流地址不能为空
+    private static final int ADD_DEVICETOKEN_ERROR = -7;//虚拟设备流地址不能为空
+    private static final ReentrantLock reentrantLock = new ReentrantLock();
+
+    @Resource
+    DeviceHostMapper deviceHostMapper;
+
+    @Resource
+    DeviceCommandCodeMapper deviceCommandCodeMapper;
+
+    @Resource
+    DeviceSpecificationMapper deviceSpecificationMapper;
+
+    @Resource
+    DeviceMapper deviceMapper;
+
+    @Resource
+    DeviceConfigMapper deviceConfigMapper;
+
+    @Override
+    public long insert(DeviceHost deviceHost) {
+        return deviceHostMapper.insert(deviceHost);
+    }
+
+    @Override
+    public Map<String, Object> addDevice(String deviceType, String hostIp, String typeInt, String className, String factory, String userName, String password, String hostPort, String hostChannel, String isTour, String metString, String cameraString,String mcuCode) {
+        Map<String, Object> resultMap = new HashMap<>();
+        //1.判断如果是虚拟设备，则虚拟设备的流信息不能为空
+        if (DeviceTypeNameEnum.DEVICE_CLASSROOMMONITOR.equals(typeInt)&&"".equals(cameraString)){
+            resultMap.put("hostId",DEVICESTREAM_ERROR);
+            logger.error("虚拟设备的流地址不能为空");
+            return resultMap;
+       }
+        if (isTour == null || "".equals(isTour)) { isTour = "0"; }
+        /*-------------------------------------------------------------判断授权数量-----------------------------------------------------------------*/
+        //2.查询数据库中已添加的设备数量
+        int count = 0;
+        try {
+            List list = deviceHostMapper.getDeviceHostList();
+            if (list!=null&&list.size()>0){
+                count = list.size();
+            }
+        } catch (Exception e) {
+            resultMap.put("hostId",DEVICEID_HOST_ERROR);
+            logger.error("获取数据库设备数量异常");
+            return resultMap;
+        }
+
+        //3.查询授权的设备数量
+        Map paramMap = new HashMap();
+        String sysNum = CommandNewUtil.getSysNum(deviceType);
+        paramMap.put("sysFlag",sysNum);
+        logger.info("Http方式发送命令，参数为：：" + JSONObject.fromObject(paramMap));
+        /*
+        //互动暂时屏蔽授权
+        Result licenseResult = null;
+        try {
+            paramMap.put("cmd","authority");
+            paramMap.put("cmd_op","authorityGetInfo");
+            licenseResult= ServiceProxyFactory.newInstance(ServiceProxyFactory.Type.HTTP).send(paramMap);
+            if (licenseResult.getValue()!=null){
+                JSONObject json = JSONObject.fromObject(licenseResult.getValue());
+                JSONObject dataJson = (JSONObject) json.get("dataMap");
+                String number ="0";
+                if(dataJson!=null && dataJson.contains("hhtrec_device_num")){
+                    number = dataJson.getString("hhtrec_device_num");
+                }
+                //若果获取的授权数量为null，并且已添加设备数量大于默认值，则返回添加失败
+                if ((number==null || "".equals(number))&&count>=LICENSECODECOUNT){
+                    resultMap.put("hostId",DEVICEID_TOP);
+                    logger.error("获取授权数量时异常，限制数量默认为5台------设备数量超出限制");
+                    return resultMap;
+                }
+                int licenseNum = Integer.valueOf(number);
+                //若获取的授权数量为0或是未进行授权，则默认授权数量为5台
+                if (licenseNum==0){
+                    licenseNum = LICENSECODECOUNT;
+                }
+                //若已添加的设备数量大于已授权的设备数量，则返回添加失败
+                if (count>=licenseNum){
+                    resultMap.put("hostId",DEVICEID_TOP);
+                    logger.error("授权数量为"+licenseNum+"，已添加设备数量为："+count+"设备数量超出授权数量");
+                    return resultMap;
+                }
+
+            }
+        } catch (Exception e) {
+            resultMap.put("hostId",DEVICEID_LICENSE_ERROR);
+            logger.error("获取授权信息异常",e);
+            return resultMap;
+        }*/
+        /*-------------------------------------------------------------判断授权数量end-----------------------------------------------------------------*/
+        //4.如果没有超过授权数量，则可继续添加设备
+        try{
+            if (reentrantLock.tryLock()) {
+                Map<String,Object> params = new HashMap<>();
+                //判重，mcu根据code码判重，其他设备根据ip判重
+                if (isExistDevice(hostIp,mcuCode,deviceType)) {
+                    if (deviceType.equals(DeviceTypeNameEnum.HHTMCU)){
+                        resultMap.put("hostId", EXSIST_ERROR);
+                        logger.error("数据库中已存在mcuCode为:" + mcuCode + "的设备");
+                    }else {
+                        resultMap.put("hostId", EXSIST_ERROR);
+                        logger.error("数据库中已存在ip为:" + hostIp + "的设备");
+                    }
+                    return resultMap;
+                }
+                Long hostid = 0L;
+                DeviceHost deviceHost = new DeviceHost();
+                //4.1数据添加入库
+                List<Map<String,Object>> dspectionList = deviceSpecificationMapper.getAllInfo();
+               int dspecId = DeviceTypeNameEnum.getDespecIdByType(deviceType.toLowerCase());
+                deviceHost.setDspecId(dspecId);
+                deviceHost.setHostChannel(hostChannel);
+                deviceHost.setHostFactory(factory);
+                deviceHost.setHostName(className);
+                deviceHost.setHostPassword(password);
+                deviceHost.setHostPort(hostPort);
+                deviceHost.setHostUsername(userName);
+                deviceHost.setHostIpaddr(hostIp);
+                deviceHost.setIstour(Integer.valueOf(isTour));
+                deviceHost.setMcuCode(mcuCode);
+                Long result = deviceHostMapper.insertSelective(deviceHost);
+                //4.2如果设备入库，通知连接服务
+                if (result > 0) {
+                    logger.debug("添加设备id为："+deviceHost.getHostId());
+                    hostid = Long.valueOf(deviceHost.getHostId());
+                    params.put("hostChannel",hostChannel);
+                    params.put("hostFactory",factory);
+                    params.put("hostName",className);
+                    params.put("hostPort",hostPort);
+                    params.put("hostIp",hostIp);
+                    params.put("hostId",String.valueOf(deviceHost.getHostId()));
+                    List list = new ArrayList();
+                    list.add(params);
+                    JSONObject jsonObject = DeviceConnectUtil.sendRequestCommand(DeviceConnectUtil.getServiceConnect(DeviceConnectUtil.serviceFlag)+"/device/updateAndAdd", list);
+                    String connect_params = "";
+                    //4.3解析连接服务返回值，通过设备对应的设备型号与设备子类型id的对应关系，将设备子类型id更新至device_host表中
+                    if(jsonObject!=null){
+                        JSONArray array = jsonObject.getJSONArray("value");
+                        connect_params = ((JSONObject)array.get(0)).getString("commandParam");
+                        for (Map<String,Object> map:dspectionList){
+                            if (map.containsValue(connect_params)){
+                                dspecId = (Integer) map.get("dspec_id");
+                                break;
+                            }
+                        }
+                        deviceHost.setDspecId(dspecId);
+                        deviceHostMapper.updateByPrimaryKeySelective(deviceHost);
+                    }
+                    //5.录播设备添加镜头信息
+                    if (DeviceTypeNameEnum.HHREC.toString().equals(deviceType)) {
+                        boolean isSuccess = deviceToToken(connect_params,typeInt,hostIp,deviceHost,metString,cameraString);
+                        if (!isSuccess){
+                            deviceHostMapper.deleteByPrimaryKey(deviceHost.getHostId());
+                            hostid = (long)ADD_DEVICETOKEN_ERROR;
+                        }
+                    }
+                }
+                resultMap.put("hostId", hostid);
+            }
+        }catch (Exception e){
+            logger.error("添加设备出现异常",e);
+            resultMap.put("hostId",SETNAME_ERROR);//SETNAME_ERROR 这里表示添加设备异常
+        }finally {
+            reentrantLock.unlock();
+        }
+        return resultMap;
+    }
+
+    @Override
+    public Map<String,Object> deleteDevices(String hostIdStr,String hostIpStr,String hostTypeStr) {
+        boolean res = false;
+        int count = 0;
+        StringBuilder hosts = new StringBuilder();
+        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, String> params = new HashMap<String, String>();
+        String[] hostIds = hostIdStr.split(",");
+        String[] hostIps = hostIpStr.split(",");
+        for (int i = 0; i < hostIds.length; i++) {
+            int id = Integer.valueOf(hostIds[i]);
+            int isDelete = deviceHostMapper.deleteByPrimaryKey(id);//删除数据库中该设备信息
+            //如果设备删除成功，并且设备和地点存在关系，则删除设备和地点的对应关系
+            if (isDelete > 0 ) {
+                Map areaDevice = deviceHostMapper.getAreaDevice(id);//获取设备与地点的关系
+                if (areaDevice!=null&&areaDevice.size() > 0){
+                    deviceHostMapper.deleteAreaDevice(id);
+                    logger.debug("删除该设备与地点的关联关系，设备id为：" + id);
+                }
+                logger.debug("删除设备:" + hostIds[i] + "，结果为：" + isDelete);
+            }
+            //如果设备删除成功，则将删除的设备id拼串
+            if (isDelete > 0) {
+                if (i==hostIds.length-1){
+                    hosts.append(hostIps[i]);
+                }else{
+                    hosts.append(hostIps[i]);
+                    hosts.append(",");
+                }
+                count++;
+            }
+        }
+        logger.debug("删除设备数量为：" + count);
+        //如果设备删除个数不为0，则将删除的设备ip串通知给连接服务
+        if (count>0){
+            res = true;
+            params.put("hostIps",hosts.toString());
+            DeviceConnectUtil.sendRequestCommand(DeviceConnectUtil.getServiceConnect(DeviceConnectUtil.serviceFlag)+"/device/delete",params);
+        }
+        map.put("isSuccess", res);
+        map.put("count", count);
+        return map;
+    }
+
+    @Override
+    public Boolean deleteHostById(String hostId) {
+        boolean res = false;
+        Integer id = Integer.parseInt(hostId);
+        int result = deviceHostMapper.deleteByPrimaryKey(id);
+        logger.debug("删除设备，设备id为：" + hostId);
+        if (result > 0) {
+            res = true;
+        }
+        return res;
+    }
+    @Override
+    public List<Map<String, Object>> getDeviceInfo(String deviceType) {
+        List<Map<String, Object>> deviceList = new ArrayList<>();
+        if (!"".equals(deviceType)) {
+            deviceType = deviceType.toUpperCase();
+        }
+        try {
+            deviceList = deviceHostMapper.getDeviceInfo(deviceType);
+            logger.info("获取到设备列表信息为：" + deviceList);
+        } catch (Exception e) {
+            logger.error("获取设备列表信息异常", e);
+        }
+        return deviceList;
+    }
+
+    @Override
+    public DeviceHost getDeviceByHostIp(String hostIp) {
+        DeviceHost deviceHost = new DeviceHost();
+        try {
+            deviceHost = deviceHostMapper.getDeviceByHostIp(hostIp);
+            logger.debug("通过设备ip:" + hostIp + "获取设备信息为：" + deviceHost);
+        } catch (Exception e) {
+            logger.error("通过设备ip获取设备信息异常", e);
+        }
+        return deviceHost;
+    }
+
+    @Override
+    public boolean updateHostNameById(String hostId, String hostName) {
+        boolean re_value = false;
+        if (hostId==null || "".equals(hostId)|| hostName==null || "".equals(hostName)){return false;}
+        int id = Integer.valueOf(hostId);
+//        Map<String,String> params = new HashMap<>();
+        DeviceHost device = deviceHostMapper.selectByPrimaryKey(id);
+        if (device != null) {
+            String name = device.getHostName();
+//            String hostIp = device.getHostIpaddr();
+            if (!name.equals(hostName)) {
+                /*List list = new ArrayList();
+                params.put("hostName",hostName);
+                params.put("hostIps",hostIp);
+                list.add(params);
+                //更新设备名称时，先通知连接服务，如果通知失败，则数据库中也不做更新；如果成功，则更新数据库信息
+                JSONObject  jsonObject= DeviceConnectUtil.sendRequestCommand(DeviceConnectUtil.getServiceConnect(DeviceConnectUtil.serviceFlag)+"/device/updateAndAdd", list);
+                if (jsonObject!=null){
+                    String code = (jsonObject.getString("code"));
+                    if ("0".equals(code)) {
+
+                        device.setHostName(hostName);
+                        int update = deviceHostMapper.updateByPrimaryKeySelective(device);
+                        logger.info("修改设备名称为：" + hostName);
+                        if (update > 0){
+                            re_value = true;
+                        }
+                    } else {
+                        logger.error("发送修改设备名称命令给设备连接服务失败");
+                    }
+                }*/
+                device.setHostName(hostName);
+                int update = deviceHostMapper.updateByPrimaryKeySelective(device);
+                logger.info("修改设备名称为：" + hostName);
+                if (update > 0){
+                    re_value = true;
+                }
+            }
+        }
+        return re_value;
+    }
+
+    @Override
+    public List<DeviceHost> getDeviceHostList() {
+        List<DeviceHost> deviceHostList;
+        try {
+            deviceHostList = deviceHostMapper.getDeviceHostList();
+            logger.debug("获取所有设备信息为：" + String.valueOf(deviceHostList));
+        } catch (Exception e) {
+            logger.error("获取所有设备信息异常", e);
+            deviceHostList = Collections.EMPTY_LIST;
+        }
+        return deviceHostList;
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllHostInfo() {
+        List<Map<String, Object>> hostList = null;
+        try {
+            hostList = deviceHostMapper.getHostInfo();
+        } catch (Exception e) {
+            logger.error("获取所有设备信息异常", e);
+            hostList = Collections.EMPTY_LIST;
+        }
+        return hostList;
+    }
+
+    @Override
+    public  Map<String, Object> getHostInfoByPage(String hostIdStr, String deviceType, String currentPage, String pageSize) {
+        Map<String, Object> res = new HashMap<>();
+        String[] hostIdArray = null;
+        if (!hostIdStr.trim().isEmpty()) {
+            hostIdArray = hostIdStr.split(",");
+        }
+        int currentPages = Integer.parseInt(currentPage);
+        int pageSizes = Integer.parseInt(pageSize);
+        try {
+            PageData pageData = getHostInfoByPage(hostIdArray, deviceType, currentPages, pageSizes);
+            res.put("hostInfo", pageData.getItems());
+            res.put("pageCount", pageData.getTotalPages());
+            res.put("itemsCount", pageData.getTotalItems());
+            logger.debug("获取分页设备信息，hostInfo为：" + pageData.getItems() + "，pageCount为：" + pageData.getTotalPages() + "，totalCount为：" + pageData.getTotalItems());
+            return res;
+        } catch (Exception e) {
+            logger.error("获取设备列表并分页异常！", e);
+        }
+
+        return res;
+    }
+    @Override
+    public Map<String, Object> getDeviceInfoByIp(String hostIp) {
+        Map<String, Object> deviceMap = new HashMap<>();
+        try {
+            deviceMap = deviceHostMapper.getDeviceInfoByIp(hostIp);
+            logger.debug("获取设备信息为：" + deviceMap);
+        } catch (Exception e) {
+            logger.error("获取设备信息异常", e);
+        }
+        return deviceMap;
+    }
+
+    @Override
+    public int getHostCount(String deviceType) {
+        return deviceHostMapper.getHostCountByType(deviceType.toUpperCase());
+    }
+
+    @Override
+    public List<Map<String, Object>> getExistingTypeList() {
+        return deviceHostMapper.getExistingTypeList();
+    }
+
+    @Override
+    public Map<String, Object> getConditionsHostListByPage(String areaId, String conditions, String deviceType, String currentPage, String pageSize) {
+        deviceType =deviceType==null?"": deviceType.toUpperCase();
+        int currentPages = Integer.parseInt(currentPage);
+        int pageSizes = Integer.parseInt(pageSize);
+        Map<String, Object> res = new HashMap<>();
+        List<Map<String, String>> countList = deviceHostMapper.getConditionsHostListByPage(areaId,conditions,deviceType,-1,-1);
+        int start = PageData.calcFirstItemIndexOfPage(currentPages,pageSizes,countList.size());
+        List<Map<String,Object>> hostList = new ArrayList<>();
+        if (countList.size()>0){
+            List<Map<String,String>> result =  deviceHostMapper.getConditionsHostListByPage(areaId,conditions,deviceType,start,pageSizes);
+            for (Map<String, String> obj : result) {
+                Map<String, Object> host = new LinkedHashMap<String, Object>();
+                host.put("id", obj.get("host_id"));
+                host.put("ip", obj.get("host_ipaddr"));
+                host.put("name", obj.get("host_name"));
+                host.put("type", obj.get("dtype_name"));
+                host.put("typeName", obj.get("dtype_name_cn"));
+                host.put("arecName", obj.get("name"));
+                host.put("deviceCode", obj.get("mcu_code") == null ? "" : obj.get("mcu_code"));
+                hostList.add(host);
+            }
+        }
+        PageData pageData =  new PageData(currentPages, countList.size(), pageSizes, hostList);
+        res.put("hostInfo", pageData.getItems());
+        res.put("pageCount", pageData.getTotalPages());
+        res.put("itemsCount", pageData.getTotalItems());
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> getHostListWithAreaByPage(String hostIdStr, String deviceType, String currentPage, String pageSize) {
+        String type = deviceType==null?"":deviceType.toUpperCase();
+        String[] hostIds=("".equals(hostIdStr)?null:hostIdStr.split(","));
+        Map<String, Object> res = new HashMap<>();
+        List<Map<String, Object>> hostList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> countList = deviceHostMapper.getHostInfoByPage(hostIds,type,-1,-1);
+        int count = countList.size();
+        int start = PageData.calcFirstItemIndexOfPage(Integer.valueOf(currentPage),Integer.valueOf(pageSize),count);
+        if (countList.size()>0){
+            List<Map<String, Object>> result = deviceHostMapper.getHostInfoByPage(hostIds,type,start,Integer.valueOf(pageSize));
+            for (Map<String, Object> obj : result) {
+                Map<String, Object> host = new LinkedHashMap<String, Object>();
+                host.put("id", obj.get("host_id"));
+                host.put("ip", obj.get("host_ipaddr"));
+                host.put("name", obj.get("host_name"));
+                host.put("type", obj.get("dtype_name"));
+                host.put("typeName", obj.get("dtype_name_cn"));
+                host.put("arecName", obj.get("name"));
+                host.put("deviceCode", obj.get("mcu_code") == null ? "" : obj.get("mcu_code"));
+                hostList.add(host);
+            }
+        }
+        PageData pageData = new PageData(Integer.valueOf(currentPage), countList.size(), Integer.valueOf(pageSize), hostList);
+        res.put("hostInfo", pageData.getItems());
+        res.put("pageCount", pageData.getTotalPages());
+        res.put("itemsCount", pageData.getTotalItems());
+        return res;
+    }
+
+    @Override
+    public boolean updateBatchHostNames(String params) {
+        if (params==null||params.isEmpty()){
+            logger.error("修改名称传参为空");
+            return false;
+        }
+        JSONArray jsonArray = JSONArray.fromObject(params);
+        int count = 0;
+        try{
+            count = deviceHostMapper.updateBatchHostNames(jsonArray);
+        }catch (Exception e){
+            logger.error("更新设备名称异常",e);
+        }
+        if (count>0){
+            logger.debug("更新设备信息成功，成功更新"+count+"台设备名称");
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<Map<String, Object>> getMcuInfo() {
+        List<Map<String, Object>> hostList = null;
+        try {
+            hostList = deviceHostMapper.getMcuHostInfo();
+        } catch (Exception e) {
+            logger.error("获取mcu设备信息异常", e);
+            hostList = Collections.EMPTY_LIST;
+        }
+        return hostList;
+    }
+    /**
+     * 分页获取设备信息
+     * @param hostIdStr
+     * @param deviceType
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
+    private PageData getHostInfoByPage(String[] hostIdStr, String deviceType, int currentPage, int pageSize) {
+        String type = deviceType==null?"":deviceType.toUpperCase();
+        List<Map<String, Object>> hostList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> countList = deviceHostMapper.getHostInfoByPage(hostIdStr,type,-1,-1);
+        int count = countList.size();
+        int start = PageData.calcFirstItemIndexOfPage(currentPage,pageSize,count);
+        if (countList.size()>0){
+            List<Map<String, Object>> result = deviceHostMapper.getHostInfoByPage(hostIdStr,type,start,pageSize);
+            for (Map<String, Object> obj : result) {
+                Map<String, Object> host = new LinkedHashMap<String, Object>();
+                String dspecId = obj.get("dspec_id").toString();
+                host.put("id", obj.get("host_id").toString());
+                host.put("name", obj.get("host_name")==null?"":obj.get("host_name").toString());
+                host.put("token", obj.get("host_ipaddr")==null?"":obj.get("host_ipaddr").toString());
+                host.put("type", obj.get("dtype_id").toString());
+                host.put("host_cmd", deviceCommandCodeMapper.getSpecCmd(Integer.valueOf(dspecId)));
+
+                host.put("host_desc", obj.get("host_desc")==null?"":obj.get("host_desc").toString());
+                host.put("dspec", dspecId);
+                host.put("host_ip", obj.get("host_ipaddr")==null?"":obj.get("host_ipaddr").toString());
+                host.put("dspecid", obj.get("dspec_id"));
+
+                host.put("host_serialno", obj.get("host_serialno")==null?"":obj.get("host_serialno").toString());
+                host.put("dtype_name", obj.get("dtype_name")==null?"":obj.get("dtype_name").toString());
+                host.put("host_username", obj.get("host_username")==null?"":obj.get("host_username").toString());
+                host.put("host_password", obj.get("host_password")==null?"":obj.get("host_password").toString());
+                host.put("host_port", obj.get("host_port")==null?"":obj.get("host_port").toString());
+
+                host.put("host_channel", obj.get("host_channel")==null?"":obj.get("host_channel").toString());
+                hostList.add(host);
+            }
+        }
+        PageData pageData = new PageData(currentPage, countList.size(), pageSize, hostList);
+        return pageData;
+    }
+
+    /**
+     * 添加虚拟设备镜头
+     * @param deviceHost 设备信息，实体
+     * @param metString 镜头名称
+     * @param cameraString 镜头流地址
+     * @return
+     */
+    private int addVirtualDeviceToken(DeviceHost deviceHost,String metString,String cameraString){
+        Device device = new Device();
+        List<Device> deviceList = new ArrayList<>();
+        String[] name = metString.split(",");
+        String[] cameraStreams = cameraString.split(",");
+        for (int i = 0;i<cameraStreams.length;i++){
+            device.setDeviceName(name[i]);
+            device.setDeviceMainstream(cameraStreams[i]);
+            device.setDeviceSubstream(cameraStreams[i]);
+            device.setHostId(deviceHost.getHostId());
+            deviceList.add(device);
+        }
+        return  deviceMapper.insertDevices(deviceList);
+    }
+
+    /**
+     * 保存数据的镜头信息
+     * @param deviceHost 设备信息
+     * @param jsonObject 镜头流信息
+     * @param configList 配置信息（镜头token，名称，型号的对应关系）
+     * @param conect_params 设备型号
+     * @return
+     */
+    private int addDeviceToken(DeviceHost deviceHost, JSONObject jsonObject,List<DeviceConfig> configList,String conect_params){
+        List<Device> deviceList = new ArrayList<>();
+        for (DeviceConfig obj : configList) {
+            if (!"".equals(conect_params)&&obj.getConnect_param().trim().equals(conect_params)) {
+                String mainStream = String.valueOf(jsonObject.get( obj.getMain())) ;
+                String subStream = String.valueOf(jsonObject.get( obj.getSub()));
+                if (subStream.equals("")) {
+                    subStream = mainStream;
+                }
+                Device device = new Device();
+                device.setHostId(deviceHost.getHostId());
+                device.setDeviceName(obj.getName());
+                device.setDeviceMaintoken(obj.getMain());
+                device.setDeviceSubtoken( obj.getSub());
+                device.setDeviceMainstream(mainStream);
+                device.setDeviceSubstream(subStream);
+                deviceList.add(device);
+            }
+        }
+        return  deviceMapper.insertDevices(deviceList);
+    }
+
+    /**
+     * 判断数据库中是否存在该条件下设备
+     * @param hostIp 设备ip
+     * @param mcuCode mcuCode，mcu设备唯一标识
+     * @param deviceType 设备类型
+     * @return
+     */
+    private boolean isExistDevice(String hostIp,String mcuCode,String deviceType){
+        boolean re_value = false;
+        Map<String,Object> device = null;
+        if (deviceType.equals(DeviceTypeNameEnum.HHTMCU)){
+            device = deviceHostMapper.getHostInfoByMcuCode(mcuCode);
+        }else {
+            device = deviceHostMapper.getDeviceInfoByIp(hostIp);
+        }
+        if (device != null&&!device.isEmpty()) {
+            re_value = true;
+        }
+        return re_value;
+    }
+
+    /**
+     * 添加录播设备的镜头信息
+     * @param connect_params 设备型号
+     * @param typeInt 设备编号
+     * @param hostIp 设备ip
+     * @param deviceHost 设备对应的实体
+     * @param metString 镜头名称
+     * @param cameraString 镜头流信息
+     * @return
+     */
+    private boolean deviceToToken(String connect_params,String typeInt,String hostIp,DeviceHost deviceHost,String metString,String cameraString){
+        boolean isSuccess = false;
+            if (DeviceTypeNameEnum.DEVICE_CLASSROOMMONITOR.equals(typeInt)) {//如果是虚拟录播设备则直接添加入库
+                int num = addVirtualDeviceToken(deviceHost,metString,cameraString);
+                if (num>0){
+                    isSuccess = true;
+                    logger.debug("插入镜头信息："+num);
+                }
+            }else{//向连接服务请求设备的镜头信息，并添加入库
+                int addNum = 0;
+                Map params = new HashMap();
+                params.put("ip",hostIp);
+                params.put("cmd_op","getAllTokenUrl");
+                List<DeviceConfig> deviceConfigList = deviceConfigMapper.getDeviceConfigList();//获取所有镜头配置信息
+                //向连接服务请求流信息
+                JSONObject tokenJson = DeviceConnectUtil.sendRequestCommand(DeviceConnectUtil.getServiceConnect(DeviceConnectUtil.serviceFlag)+"/command/sendSycn",params);
+                if (tokenJson!=null&&!tokenJson.get("value").equals("null")){
+                    addNum = addDeviceToken(deviceHost,tokenJson,deviceConfigList,connect_params);
+                    if (addNum>0){
+                        isSuccess = true;
+                    }
+                    logger.debug("插入镜头信息："+addNum);
+                }else{
+                    logger.error("请求连接服务获取流信息失败");
+                }
+            }
+        return isSuccess;
+    }
+
+    /**
+     * 根据设备id查询设备信息
+     * @param hostId
+     * @return
+     */
+    @Override
+    public Map<String, Object> getHostInfoById(String hostId) {
+        Map<String,Object> host=new HashMap<>();
+        if(hostId!=null && !"".equals(hostId)){
+            host=deviceHostMapper.getDeviceInfoById(hostId);
+        }
+        return host;
+    }
+}

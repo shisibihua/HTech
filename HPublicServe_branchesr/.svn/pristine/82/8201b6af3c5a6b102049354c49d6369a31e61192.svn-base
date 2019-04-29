@@ -1,0 +1,635 @@
+package com.honghe.ad.campus.controller;
+
+import com.honghe.ad.Directory;
+import com.honghe.ad.campus.dao.Campus2UserDao;
+import com.honghe.ad.campus.dao.CampusDao;
+import com.honghe.ad.excetion.ParamException;
+import com.honghe.ad.excetion.RepeatingDateException;
+import com.honghe.ad.util.ExcelUtil;
+import com.honghe.ad.util.Node;
+import com.honghe.area.dao.areaDao.AreaDao;
+import com.honghe.dao.PageData;
+
+import java.util.*;
+
+/**
+ * 组织机构的控制
+ *
+ * @author lyx
+ * @create 2016-11-28 18:21
+ **/
+
+public class CampusController {
+    private CampusDao campusDao = CampusDao.INSTANCE;
+    private Campus2UserDao campus2UserDao = Campus2UserDao.INSTANCE;
+    private static final String campusType_teachGroup = "1,5";
+    private static final String campusType_gradeClasses = "1,2,3,4";
+    private static final String areaType_buildingRoom = "2,4,5,6";
+    private final String RES_TRUE = "1"; //删除成功
+    private final String RES_FALSE = "0"; //删除失败
+    private final String RES_DELETEAREA_FALSE = "3"; //不能删除地点，则删除组织机构失败
+    private final String RES_CONTAIN = "2"; //机构下包含成员
+    private final String USERTYPE_PARENT = "19"; //家长身份
+    private static final String ADMIN = "1";
+
+    /**
+     * 增加校园组织机构
+     *
+     * @param name，pId不能为空
+     * @return
+     * @throws ParamException
+     * @throws RepeatingDateException
+     */
+    public String campusAdd(String provinceId, String cityId, String areaId, String name, String pId, String number, String typeId, String stagesId, String schoolYear, String remark,String url) throws Exception {
+        String re_value = "";
+        if (name == null || "".equals(name) ||typeId ==null ||"".equals(typeId)|| pId == null || "".equals(pId)) {
+            throw new ParamException();
+        }
+        url = url==null?"":url;
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", name);
+        map.put("pId", pId);
+        map.put("url",url);
+        if (!campusDao.check(map)) {
+            throw new RepeatingDateException();
+        }
+        map.put("provinceId", provinceId);
+        map.put("cityId", cityId);
+        map.put("areaId", areaId);
+        map.put("number", number);
+        map.put("typeId", typeId);
+        map.put("stagesId", stagesId);
+        map.put("schoolYear", schoolYear);
+        if (remark == null) {
+            map.put("remark", "");
+        } else {
+            map.put("remark", remark);
+        }
+        re_value = campusDao.add(map);
+        return re_value;
+    }
+
+    /**
+     * 删除校园组织机构
+     *
+     * @param id 机构ID，多个用,分隔
+     * @return boolean 是否删除成功
+     * @throws ParamException
+     */
+    public String campusDelete(String id) throws ParamException {
+        String re_value = RES_FALSE;
+        boolean isDelete = false;
+        if (id == null) {
+            throw new ParamException();
+        }
+        //获取该机构下的用户
+        List list = campusDao.getUserCountByCampus(id);
+        //如果该机构下分配了用户，则不能删除该机构
+        if (list.size()>0){
+            return RES_CONTAIN;
+        }
+        AreaDao areaDao=new AreaDao();
+        String deleteAreaResult=areaDao.syntreedelete(id);
+
+        // 先判断该组织机构下是否有地点存在
+        if (deleteAreaResult != null && "1".equals(deleteAreaResult)) {  //地点删除成功，再删除组织机构
+            isDelete = campusDao.delete(id.split(","));
+            if (isDelete){
+                re_value = RES_TRUE;
+            }
+        }else{
+            re_value = RES_DELETEAREA_FALSE;
+        }
+        return re_value;
+    }
+
+    /**
+     * 要修改的结构名称
+     *
+     * @param id,name,pId 不能为空
+     * @return
+     * @throws ParamException
+     * @throws RepeatingDateException
+     */
+    public boolean campusUpdate(String id, String name, String pId, String number, String typeId, String stagesId, String schoolYear, String remark,String url) throws ParamException, RepeatingDateException {
+        boolean re_value = false;
+        if (id == null || "".equals(id)) {
+            throw new ParamException();
+        }
+        if (pId == null || "".equals(pId)) {
+            throw new ParamException();
+        }
+        url = url==null?"":url;
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("pId", pId);
+        map.put("url",url);
+        if (name != null) {
+            map.put("name", name);
+        }
+        if (!campusDao.check(map)) {
+            throw new RepeatingDateException();
+        }
+        map.put("number", number);
+        map.put("typeId", typeId);
+        map.put("stagesId", stagesId);
+        map.put("schoolYear", schoolYear);
+        if (remark != null) {
+            map.put("remark", remark);
+        }
+        re_value = campusDao.update(map);
+        return re_value;
+    }
+
+    /**
+     * 向组织机构增加用户
+     *
+     * @param campusId 结构id
+     * @param userId   用户id,多个用,分隔
+     * @return
+     * @throws ParamException
+     */
+    public boolean campus2UserAdd(String campusId, String userId) throws ParamException {
+        boolean re_value = false;
+        if (campusId == null || userId == null || "".equals(campusId)|| "".equals(userId)) {
+            throw new ParamException();
+        }
+        re_value = campus2UserDao.add(campusId, userId.split(","));
+        return re_value;
+    }
+
+    /**
+     * 删除校园组织机构下的用户
+     * 1.如果id不为空，根据id删除
+     * 2.否则根据机构ID和用户ID 删除
+     *
+     * @param id       校园组织结构和用户关系表id，  多个用,分隔
+     * @param campusId 校园组织id
+     * @param userId   用户id,多个用,分隔
+     * @return boolean 是否删除成功
+     * @throws ParamException
+     */
+    public boolean campus2UserDelete(String id, String campusId, String userId) throws ParamException {
+        boolean re_value = false;
+        if (id != null) {
+            re_value = campus2UserDao.delete(id.split(","));
+        } else {
+            if (campusId == null || userId == null) {
+                throw new ParamException();
+            }
+            re_value = campus2UserDao.delete(campusId, userId.split(","));
+        }
+        return re_value;
+    }
+
+    /**
+     * 查找校园组织下用户信息
+     *
+     * @param campusId   组织机构 id
+     * @param userType   默认-1 查询所有人，其它值参见用户服务文档
+     * @param searchWord 用户真实姓名
+     * @return List 机构信息列表
+     * @throws ParamException
+     */
+    public List campus2UserSearch(String campusId, Integer userType, String searchWord) throws ParamException {
+        List re_value = new ArrayList();
+        if (campusId == null) {
+            throw new ParamException();
+        }
+        if (userType == null) {
+            userType = -1;
+        }
+        re_value = campus2UserDao.findUser(campusId, userType, searchWord);
+        return re_value;
+    }
+
+    /**
+     * 查找校园组织下学生信息
+     *
+     * @param campusIds   多个组织机构 id ，用逗号分隔
+     * @param searchWord 用户真实姓名
+     * @return List 机构信息列表
+     * @throws ParamException
+     */
+    public Map<String, List<Map<String, String>>> campusIds2StuSearch(String campusIds, String searchWord) throws ParamException {
+        Map<String, List<Map<String, String>>> re_value = new HashMap<String, List<Map<String, String>>>();
+        if (campusIds == null) {
+            throw new ParamException();
+        }
+        re_value = campus2UserDao.findStuByCampusIds(campusIds,searchWord);
+        return re_value;
+    }
+
+    /**
+     * 分页查找校园组织下用户信息
+     *
+     * @param page      当前页数，第一个页为1
+     * @param pageSize  每页显示记录数
+     * @param campusId  用户真实姓名
+     * @param userType  不是必须）默认-1 查询所有人，其它值参见用户服务文档
+     * @param loginName 结构id
+     * @return
+     * @throws ParamException
+     */
+    public PageData campus2UserSearchByPage(Integer page, Integer pageSize, String campusId, Integer userType, String loginName) throws ParamException {
+        PageData pageData = new PageData();
+        if (page == null || pageSize == null || campusId == null) {
+            throw new ParamException();
+        }
+        if (userType == null) {
+            userType = -1;
+        }
+        pageData = campus2UserDao.findUser(page, pageSize, campusId, userType, loginName);
+        return pageData;
+    }
+
+    /**
+     * 获取校园组织机构下的用户的数量
+     *
+     * @param campusId 结构id
+     * @param userType 用户类型
+     * @return
+     * @throws ParamException
+     */
+    public long campus2UserSearchCount(String campusId, Integer userType) throws ParamException {
+        long re_value = 0;
+        if (campusId == null) {
+            throw new ParamException();
+        }
+        re_value = campus2UserDao.findUserCount(campusId, userType);
+        return re_value;
+    }
+
+    /**
+     * 获取校园组织机构下的用户的数量
+     *
+     * @param campusId 结构id,多个用“，”分割
+     * @return
+     * @throws ParamException
+     */
+    public List<Map<String, String>> campusCountUserById(String campusId) throws ParamException {
+        if (campusId == null || "".equals(campusId)) {
+            throw new ParamException();
+        }
+        return campus2UserDao.findUserCountByCampusId(campusId);
+    }
+
+
+    /**
+     * 获取校园组织机构下除传入的用户编号之外的用户
+     *
+     * @param campusId 机构id
+     * @param userNums 用户编号，多个用逗号分割
+     * @return
+     * @throws ParamException
+     */
+    public List<Map<String, String>> campusNotInUsersSearch(String campusId, String userNums) throws ParamException {
+        if (campusId == null || "".equals(campusId)) {
+            throw new ParamException();
+        }
+        return campus2UserDao.findOtherUserByCampus(campusId, userNums);
+    }
+
+    /**
+     * 查找组织机构
+     *
+     * @param userId   用户id
+     * @param campusId 组织机构id
+     * @return
+     */
+    public Object campusSearch(Integer userId, String campusId) {
+        Object map;
+        if (userId != null && !"".equals(userId)) {
+            return campusDao.find(userId);
+        } else if (campusId != null) {
+            return campusDao.findByCampusId(campusId);
+        } else {
+            return campusDao.find();
+        }
+    }
+
+    public Object campusPartSearch(String campusIds){
+        Object value = new Object();
+        if (campusIds!=null&&!"".equals(campusIds)){
+            value = campusDao.findPartCampus(campusIds);
+        }
+        return value;
+    }
+    /**
+     * 根据组织机构类型查询
+     *
+     * @param campusType 机构类型
+     * @return 组织机构属性结构，每个组织机构包括它下面的用户
+     */
+    public Object campusSearchByType(String campusType) throws Exception {
+        if (campusType == null || "".equals(campusType)) {
+            throw new ParamException();
+        }
+        Directory d = campusDao.findByCampusType(campusType);
+        return d;
+    }
+
+    /**
+     * 用excel文件导入组织机构
+     *
+     * @param fileName 上传到临时存储目录后，返回的文件名
+     * @return String 导入操作结果
+     */
+    public String campusImport(String fileName) throws ParamException {
+        String re_value = "";
+        if (fileName != null) {
+            //下面解析excel并写入数据库
+            re_value = ExcelUtil.importExcel(fileName);
+        } else {
+            throw new ParamException();
+        }
+        return re_value;
+    }
+
+    public Map<String, String> campusSearchByUser(String userId, String campusType) throws ParamException {
+        Map re_value;
+        if (userId == null) {
+            throw new ParamException();
+        } else {
+            if (campusType == null) {
+                campusType = "";
+            }
+            re_value = campus2UserDao.find(userId, campusType);
+            return re_value;
+        }
+    }
+
+    /**
+     * 教师树(学校->教研组>教师)
+     *
+     * @param campusId (目前不是必传项)
+     * @return
+     * @throws ParamException
+     */
+    public Object campus2teacher(String campusId) throws Exception {
+        Directory directory = Campus2UserDao.INSTANCE.findCampusByType(campusType_teachGroup, campusId, true, false);
+        return directory;
+    }
+
+
+    /**
+     * 班级树(学校->年级>班级)
+     *
+     * @param campusId (目前不是必传项)
+     * @return
+     * @throws ParamException
+     */
+    public Object campus2Classes(String campusId) throws Exception {
+        Directory directory = Campus2UserDao.INSTANCE.findCampusByType(campusType_gradeClasses, campusId, false, false);
+        return directory;
+    }
+
+    /**
+     * 教室树(学校->楼栋>房间)
+     *
+     * @param campusId (目前不是必传项)
+     * @return
+     * @throws ParamException
+     */
+    public Object campus2room(String campusId) throws Exception {
+        Directory directory = Campus2UserDao.INSTANCE.findRoomTree(areaType_buildingRoom, campusId, false);
+        return directory;
+    }
+
+    /**
+     * 根据教室名称或编号获取教室信息
+     *
+     * @param roomId(两者可都传，也可单传)
+     * @param roomName
+     * @return
+     * @throws ParamException
+     */
+    public Object campus2roomSearch(String roomId, String roomName) throws Exception {
+        if (null == roomId && null == roomName) {
+            throw new ParamException();
+        }
+        List<Map<String, String>> result = Campus2UserDao.INSTANCE.campus2roomSearch(roomId, roomName);
+        return result;
+    }
+
+    /**
+     * 根据班级名称获取班级信息
+     *
+     * @param classesName
+     * @return
+     * @throws ParamException
+     */
+    public Object campus2classSearch(String classesName) throws Exception {
+        if (null == classesName) {
+            throw new ParamException();
+        }
+        List<Map<String, String>> result = Campus2UserDao.INSTANCE.campus2classSearch(classesName);
+        return result;
+    }
+
+
+    /**
+     * 根据机构id查找机构下所有的子机构
+     *
+     * @param campusId (必传项)
+     * @return
+     * @throws ParamException
+     */
+    public Object campusChildSearch(String campusId) throws Exception {
+        if (campusId == null || "".equals(campusId)) {
+            throw new ParamException();
+        }
+        Directory directory = Campus2UserDao.INSTANCE.campusChildSearch(campusId);
+        return directory;
+    }
+
+    /**
+     * 获取登录用户相关的班级圈列表
+     *
+     * @param userId 用户id
+     * @return
+     * @throws ParamException
+     */
+    public Object campusListByUserId(String userId) throws ParamException {
+        if (userId == null || "".equals(userId)) {
+            throw new ParamException();
+        }
+        Map<String,String> userInfoMap= campus2UserDao.findUserType(userId);
+        String userType = userInfoMap.get("user_type") == null ? "": userInfoMap.get("user_type");
+        if(userType.equals(USERTYPE_PARENT)){ //家长身份
+            userId = campus2UserDao.findStuIdByParentId(userId); //学生id
+        }
+        return campus2UserDao.findCampusByUserId(userId,userType);
+    }
+
+    /**
+     * 通过机构id获取下一级所有节点的列表
+     * (资源平台机构用以前的campus 并加入url字段)
+     * @param campusId 机构id
+     * @return
+     * @throws ParamException
+     */
+    public Object campusListByCampusId(String campusId) throws ParamException {
+        if (campusId == null || "".equals(campusId)) {
+            throw new ParamException();
+        }
+        return campusDao.getChildListByCampusId(campusId);
+    }
+    /**
+     * 获取学校机构信息
+     * @return
+     * @throws Exception
+     */
+    public Object campusGetSchoolList() throws Exception{
+        List<Map<String, String>> result = campusDao.getSchoolList();
+        return result;
+    }
+
+
+    // TODO: 2018/3/2 新增区域化用户服务 add mz ************************************start******************************************
+
+    /**
+     * 获取省/市/区列表信息
+     * 如果用户为admin, 则只获取省列表
+     * 如果用户已经分配角色, 则获取对应的省/市/区列表
+     * @return
+     * @throws Exception
+     */
+    public Object campusGetAreaList(String userId) throws Exception{
+        List<Map<String, String>> resultList = new ArrayList<>();
+        // 如果用户为 admin, 则返回 省列表
+        resultList = campusDao.getProvinceList();
+/*
+
+        if ("1".equals(userId)) {
+            resultList = campusDao.getProvinceList();
+        }
+*/
+
+//        List<Map<String, String>> result = campusDao.getSchoolList();
+        return resultList;
+    }
+
+
+    /**
+     * 获取省/市/区列表信息
+     * 如果用户为admin, 则只获取省列表
+     * 如果用户已经分配角色, 则获取对应的省/市/区列表
+     * @return
+     * @throws Exception
+     */
+    public Object campusGetAreas(String userId, String campusId) throws Exception{
+        List<Map<String, String>> resultList = new ArrayList<>();
+        // 如果用户为 admin, 并且不存在组织机构, 则返回 省列表
+        if ("1".equals(userId) && "".equals(campusId)) {
+            resultList = campusDao.getProvinceList();
+            // 如果用户为 admin, 并且存在组织机构, 则返回 对应城市列表
+        } else if ("1".equals(userId) && !"".equals(campusId)) {
+            resultList.add(campusDao.getAreaList(campusId));
+            // 获取用户对应的组织机构对应的城市列表
+        } else if (!"1".equals(userId) && !"".equals(campusId)) {
+            resultList.add(campusDao.getAreaList(campusId));
+        }
+        return resultList;
+    }
+
+
+    /**
+     * 根据省id获取 省对应的市列表
+     * @param provinceId
+     * @return
+     * @throws Exception
+     */
+    public Object campusGetCityList(String provinceId) throws Exception{
+        return campusDao.getCityList(provinceId);
+    }
+
+    /**
+     * 根据市id获取 市对应的县/市列表
+     * @param cityId
+     * @return
+     * @throws Exception
+     */
+    public Object campusGetCountyList(String cityId) {
+        return campusDao.getCountyList(cityId);
+    }
+
+//    /**
+//     * 获取从根节点(pid==0)开始的组织机构树
+//     * @return
+//     */
+//    public Set<Node> campusAllSearch() {
+//        Set<Node> nodes = campusDao.findCampus();
+//        return nodes;
+//    }
+
+
+
+    /**
+     * 获取组织结构左侧树 根据区域版新需求重写searchCampus
+     * 1. 如果用户为admin, 则直接获取从根节点开始的组织机构, pid==0
+     * 2. 如果用户为非admin, 则 先获取用户所对应的组织机构, 再获取 对应的 组织机构列表
+     * 2. 如果用户为非admin, 则 先获取用户所对应的组织机构, 再获取 对应的 组织机构列表
+     * @param userId 登陆用户的id
+     * @return
+     */
+    public Set campusSearchByUserId(String userId)  {
+        Set<Node> resSet = new LinkedHashSet<>();
+
+        if (userId == null || "".equals(userId)){
+            return Collections.EMPTY_SET;
+        } else if (ADMIN.equals(userId)) {
+            try {
+                resSet = campusDao.findCampus();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return Collections.EMPTY_SET;
+            }
+        } else {
+            Map<String, String> campus = campusDao.findCampusByUserId(userId);
+            if (campus != null && !campus.isEmpty()) {
+                if (campus.containsKey("id")) {
+                    Node node = new Node();
+                    node.setId(campus.get("id"));
+                    node.setName(campus.get("name"));
+                    node.setParentId(campus.get("p_id"));
+                    node.setTypeId(campus.get("type_id"));
+                    node.setStageId(campus.get("stages_id"));
+                    Set<Node> ChildCampus = campusDao.findChildCampus(campus.get("id"));
+                    for (Node node1 : ChildCampus) {
+                        node.addChild(node1);
+                    }
+                    resSet.add(node);
+                } else {
+                    return Collections.EMPTY_SET;
+                }
+            } else {
+                return Collections.EMPTY_SET;
+            }
+        }
+        return resSet;
+    }
+    public Set campusFindChildById(String id)  {
+        return campusDao.findChildCampus(id);
+    }
+
+
+    /**
+     * 查询根目录组织机构所在的行政区域信息
+     * @return  list
+     * @author caoqian
+     */
+    public Map<String,String> campusFindCampusRoot(){
+        return campusDao.findCampusRoot();
+    }
+
+    /**
+     * 查找省/市/区信息
+     * @param hatType       省/市/区类型,省:province;市：city;区：area
+     * @param hatId         省/市/区id
+     * @return
+     */
+    public Map<String,String> campusFindHat(String hatType,String hatId){
+        return campusDao.findHat(hatType,hatId);
+    }
+}

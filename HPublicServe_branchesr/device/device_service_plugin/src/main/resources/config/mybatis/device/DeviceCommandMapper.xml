@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceCommandMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.DeviceCommand" >
+    <id column="cmd_id" property="cmdId" jdbcType="INTEGER" />
+    <result column="cmd_name" property="cmdName" jdbcType="VARCHAR" />
+    <result column="cmd_group" property="cmdGroup" jdbcType="VARCHAR" />
+    <result column="cmd_image" property="cmdImage" jdbcType="VARCHAR" />
+    <result column="cmd_default" property="cmdDefault" jdbcType="BIT" />
+    <result column="cmd_flag" property="cmdFlag" jdbcType="VARCHAR" />
+    <result column="cmd_hex" property="cmdHex" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cmd_id, cmd_name, cmd_group, cmd_image, cmd_default, cmd_flag, cmd_hex
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from device_command
+    where cmd_id = #{cmdId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from device_command
+    where cmd_id = #{cmdId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.honghe.deviceNew.entity.DeviceCommand" >
+    insert into device_command (cmd_id, cmd_name, cmd_group, 
+      cmd_image, cmd_default, cmd_flag, 
+      cmd_hex)
+    values (#{cmdId,jdbcType=INTEGER}, #{cmdName,jdbcType=VARCHAR}, #{cmdGroup,jdbcType=VARCHAR}, 
+      #{cmdImage,jdbcType=VARCHAR}, #{cmdDefault,jdbcType=BIT}, #{cmdFlag,jdbcType=VARCHAR}, 
+      #{cmdHex,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.honghe.deviceNew.entity.DeviceCommand" >
+    insert into device_command
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cmdId != null" >
+        cmd_id,
+      </if>
+      <if test="cmdName != null" >
+        cmd_name,
+      </if>
+      <if test="cmdGroup != null" >
+        cmd_group,
+      </if>
+      <if test="cmdImage != null" >
+        cmd_image,
+      </if>
+      <if test="cmdDefault != null" >
+        cmd_default,
+      </if>
+      <if test="cmdFlag != null" >
+        cmd_flag,
+      </if>
+      <if test="cmdHex != null" >
+        cmd_hex,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cmdId != null" >
+        #{cmdId,jdbcType=INTEGER},
+      </if>
+      <if test="cmdName != null" >
+        #{cmdName,jdbcType=VARCHAR},
+      </if>
+      <if test="cmdGroup != null" >
+        #{cmdGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="cmdImage != null" >
+        #{cmdImage,jdbcType=VARCHAR},
+      </if>
+      <if test="cmdDefault != null" >
+        #{cmdDefault,jdbcType=BIT},
+      </if>
+      <if test="cmdFlag != null" >
+        #{cmdFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="cmdHex != null" >
+        #{cmdHex,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.honghe.deviceNew.entity.DeviceCommand" >
+    update device_command
+    <set >
+      <if test="cmdName != null" >
+        cmd_name = #{cmdName,jdbcType=VARCHAR},
+      </if>
+      <if test="cmdGroup != null" >
+        cmd_group = #{cmdGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="cmdImage != null" >
+        cmd_image = #{cmdImage,jdbcType=VARCHAR},
+      </if>
+      <if test="cmdDefault != null" >
+        cmd_default = #{cmdDefault,jdbcType=BIT},
+      </if>
+      <if test="cmdFlag != null" >
+        cmd_flag = #{cmdFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="cmdHex != null" >
+        cmd_hex = #{cmdHex,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where cmd_id = #{cmdId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceCommand" >
+    update device_command
+    set cmd_name = #{cmdName,jdbcType=VARCHAR},
+      cmd_group = #{cmdGroup,jdbcType=VARCHAR},
+      cmd_image = #{cmdImage,jdbcType=VARCHAR},
+      cmd_default = #{cmdDefault,jdbcType=BIT},
+      cmd_flag = #{cmdFlag,jdbcType=VARCHAR},
+      cmd_hex = #{cmdHex,jdbcType=VARCHAR}
+    where cmd_id = #{cmdId,jdbcType=INTEGER}
+  </update>
+</mapper>

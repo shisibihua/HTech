@@ -1,0 +1,16 @@
+/** *****************
+  footer组件
+  @author 范丽臣
+********************/
+import React from 'react';
+import styles from './Footer.css';
+
+function Footer() {
+  return (
+    <div className={styles.footer}>
+      Copyright © 2018 HiteVision All Rights Reserved.V1.0.2
+    </div>
+  );
+}
+
+export default Footer;

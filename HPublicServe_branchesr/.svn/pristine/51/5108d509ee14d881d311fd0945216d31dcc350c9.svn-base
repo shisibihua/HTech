@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.honghe.deviceNew.dao.DeviceParamMapper" >
+  <resultMap id="BaseResultMap" type="com.honghe.deviceNew.entity.DeviceParam" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="AMOUNT1" property="amount1" jdbcType="INTEGER" />
+    <result column="AMOUNT2" property="amount2" jdbcType="INTEGER" />
+    <result column="AMOUNT3" property="amount3" jdbcType="INTEGER" />
+    <result column="AMOUNT4" property="amount4" jdbcType="INTEGER" />
+    <result column="COMMPASSWORD" property="commpassword" jdbcType="VARCHAR" />
+    <result column="DAYLIMIT" property="daylimit" jdbcType="INTEGER" />
+    <result column="DEVICELOCATION" property="devicelocation" jdbcType="INTEGER" />
+    <result column="DEVICENO" property="deviceno" jdbcType="VARCHAR" />
+    <result column="DEVICEPASSWORD" property="devicepassword" jdbcType="VARCHAR" />
+    <result column="DEVICEPORT" property="deviceport" jdbcType="INTEGER" />
+    <result column="DOORNO" property="doorno" jdbcType="INTEGER" />
+    <result column="FIXBYTE" property="fixbyte" jdbcType="INTEGER" />
+    <result column="GROUPCHECKBOX" property="groupcheckbox" jdbcType="VARCHAR" />
+    <result column="IDICMODE" property="idicmode" jdbcType="VARCHAR" />
+    <result column="IOTYPE" property="iotype" jdbcType="VARCHAR" />
+    <result column="ISMAIN" property="ismain" jdbcType="INTEGER" />
+    <result column="ISPASSWAY" property="ispassway" jdbcType="INTEGER" />
+    <result column="ISREGISTER" property="isregister" jdbcType="INTEGER" />
+    <result column="LIMITTYPE" property="limittype" jdbcType="INTEGER" />
+    <result column="MACHINENO" property="machineno" jdbcType="VARCHAR" />
+    <result column="MAXCARDVALUE" property="maxcardvalue" jdbcType="INTEGER" />
+    <result column="NUM0" property="num0" jdbcType="INTEGER" />
+    <result column="NUM1" property="num1" jdbcType="INTEGER" />
+    <result column="NUM2" property="num2" jdbcType="INTEGER" />
+    <result column="NUM3" property="num3" jdbcType="INTEGER" />
+    <result column="NUM4" property="num4" jdbcType="INTEGER" />
+    <result column="NUM5" property="num5" jdbcType="INTEGER" />
+    <result column="NUM6" property="num6" jdbcType="INTEGER" />
+    <result column="NUM7" property="num7" jdbcType="INTEGER" />
+    <result column="NUM8" property="num8" jdbcType="INTEGER" />
+    <result column="NUM9" property="num9" jdbcType="INTEGER" />
+    <result column="OCCURTIME" property="occurtime" jdbcType="TIMESTAMP" />
+    <result column="OPERATOR" property="operator" jdbcType="VARCHAR" />
+    <result column="PERIOD1" property="period1" jdbcType="VARCHAR" />
+    <result column="PERIOD2" property="period2" jdbcType="VARCHAR" />
+    <result column="PERIOD3" property="period3" jdbcType="VARCHAR" />
+    <result column="PERIOD4" property="period4" jdbcType="VARCHAR" />
+    <result column="PTIMESLIMIT" property="ptimeslimit" jdbcType="INTEGER" />
+    <result column="RELATEDEVICENO" property="relatedeviceno" jdbcType="VARCHAR" />
+    <result column="SERVERPORT" property="serverport" jdbcType="INTEGER" />
+    <result column="SYSCARDNO" property="syscardno" jdbcType="VARCHAR" />
+    <result column="TIMESLIMIT" property="timeslimit" jdbcType="INTEGER" />
+    <result column="UPDATETIME" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="WALLETID" property="walletid" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.honghe.deviceNew.entity.DeviceParam" extends="BaseResultMap" >
+    <result column="CONSUMEGROUP" property="consumegroup" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, AMOUNT1, AMOUNT2, AMOUNT3, AMOUNT4, COMMPASSWORD, DAYLIMIT, DEVICELOCATION, DEVICENO, 
+    DEVICEPASSWORD, DEVICEPORT, DOORNO, FIXBYTE, GROUPCHECKBOX, IDICMODE, IOTYPE, ISMAIN, 
+    ISPASSWAY, ISREGISTER, LIMITTYPE, MACHINENO, MAXCARDVALUE, NUM0, NUM1, NUM2, NUM3, 
+    NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, OCCURTIME, OPERATOR, PERIOD1, PERIOD2, PERIOD3, 
+    PERIOD4, PTIMESLIMIT, RELATEDEVICENO, SERVERPORT, SYSCARDNO, TIMESLIMIT, UPDATETIME, 
+    WALLETID
+  </sql>
+  <sql id="Blob_Column_List" >
+    CONSUMEGROUP
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from device_param
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from device_param
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.honghe.deviceNew.entity.DeviceParam" >
+    insert into device_param (ID, AMOUNT1, AMOUNT2, 
+      AMOUNT3, AMOUNT4, COMMPASSWORD, 
+      DAYLIMIT, DEVICELOCATION, DEVICENO, 
+      DEVICEPASSWORD, DEVICEPORT, DOORNO, 
+      FIXBYTE, GROUPCHECKBOX, IDICMODE, 
+      IOTYPE, ISMAIN, ISPASSWAY, 
+      ISREGISTER, LIMITTYPE, MACHINENO, 
+      MAXCARDVALUE, NUM0, NUM1, 
+      NUM2, NUM3, NUM4, NUM5, 
+      NUM6, NUM7, NUM8, NUM9, 
+      OCCURTIME, OPERATOR, PERIOD1, 
+      PERIOD2, PERIOD3, PERIOD4, 
+      PTIMESLIMIT, RELATEDEVICENO, SERVERPORT, 
+      SYSCARDNO, TIMESLIMIT, UPDATETIME, 
+      WALLETID, CONSUMEGROUP)
+    values (#{id,jdbcType=INTEGER}, #{amount1,jdbcType=INTEGER}, #{amount2,jdbcType=INTEGER}, 
+      #{amount3,jdbcType=INTEGER}, #{amount4,jdbcType=INTEGER}, #{commpassword,jdbcType=VARCHAR}, 
+      #{daylimit,jdbcType=INTEGER}, #{devicelocation,jdbcType=INTEGER}, #{deviceno,jdbcType=VARCHAR}, 
+      #{devicepassword,jdbcType=VARCHAR}, #{deviceport,jdbcType=INTEGER}, #{doorno,jdbcType=INTEGER}, 
+      #{fixbyte,jdbcType=INTEGER}, #{groupcheckbox,jdbcType=VARCHAR}, #{idicmode,jdbcType=VARCHAR}, 
+      #{iotype,jdbcType=VARCHAR}, #{ismain,jdbcType=INTEGER}, #{ispassway,jdbcType=INTEGER}, 
+      #{isregister,jdbcType=INTEGER}, #{limittype,jdbcType=INTEGER}, #{machineno,jdbcType=VARCHAR}, 
+      #{maxcardvalue,jdbcType=INTEGER}, #{num0,jdbcType=INTEGER}, #{num1,jdbcType=INTEGER}, 
+      #{num2,jdbcType=INTEGER}, #{num3,jdbcType=INTEGER}, #{num4,jdbcType=INTEGER}, #{num5,jdbcType=INTEGER}, 
+      #{num6,jdbcType=INTEGER}, #{num7,jdbcType=INTEGER}, #{num8,jdbcType=INTEGER}, #{num9,jdbcType=INTEGER}, 
+      #{occurtime,jdbcType=TIMESTAMP}, #{operator,jdbcType=VARCHAR}, #{period1,jdbcType=VARCHAR}, 
+      #{period2,jdbcType=VARCHAR}, #{period3,jdbcType=VARCHAR}, #{period4,jdbcType=VARCHAR}, 
+      #{ptimeslimit,jdbcType=INTEGER}, #{relatedeviceno,jdbcType=VARCHAR}, #{serverport,jdbcType=INTEGER}, 
+      #{syscardno,jdbcType=VARCHAR}, #{timeslimit,jdbcType=INTEGER}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{walletid,jdbcType=INTEGER}, #{consumegroup,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.honghe.deviceNew.entity.DeviceParam" >
+    insert into device_param
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="amount1 != null" >
+        AMOUNT1,
+      </if>
+      <if test="amount2 != null" >
+        AMOUNT2,
+      </if>
+      <if test="amount3 != null" >
+        AMOUNT3,
+      </if>
+      <if test="amount4 != null" >
+        AMOUNT4,
+      </if>
+      <if test="commpassword != null" >
+        COMMPASSWORD,
+      </if>
+      <if test="daylimit != null" >
+        DAYLIMIT,
+      </if>
+      <if test="devicelocation != null" >
+        DEVICELOCATION,
+      </if>
+      <if test="deviceno != null" >
+        DEVICENO,
+      </if>
+      <if test="devicepassword != null" >
+        DEVICEPASSWORD,
+      </if>
+      <if test="deviceport != null" >
+        DEVICEPORT,
+      </if>
+      <if test="doorno != null" >
+        DOORNO,
+      </if>
+      <if test="fixbyte != null" >
+        FIXBYTE,
+      </if>
+      <if test="groupcheckbox != null" >
+        GROUPCHECKBOX,
+      </if>
+      <if test="idicmode != null" >
+        IDICMODE,
+      </if>
+      <if test="iotype != null" >
+        IOTYPE,
+      </if>
+      <if test="ismain != null" >
+        ISMAIN,
+      </if>
+      <if test="ispassway != null" >
+        ISPASSWAY,
+      </if>
+      <if test="isregister != null" >
+        ISREGISTER,
+      </if>
+      <if test="limittype != null" >
+        LIMITTYPE,
+      </if>
+      <if test="machineno != null" >
+        MACHINENO,
+      </if>
+      <if test="maxcardvalue != null" >
+        MAXCARDVALUE,
+      </if>
+      <if test="num0 != null" >
+        NUM0,
+      </if>
+      <if test="num1 != null" >
+        NUM1,
+      </if>
+      <if test="num2 != null" >
+        NUM2,
+      </if>
+      <if test="num3 != null" >
+        NUM3,
+      </if>
+      <if test="num4 != null" >
+        NUM4,
+      </if>
+      <if test="num5 != null" >
+        NUM5,
+      </if>
+      <if test="num6 != null" >
+        NUM6,
+      </if>
+      <if test="num7 != null" >
+        NUM7,
+      </if>
+      <if test="num8 != null" >
+        NUM8,
+      </if>
+      <if test="num9 != null" >
+        NUM9,
+      </if>
+      <if test="occurtime != null" >
+        OCCURTIME,
+      </if>
+      <if test="operator != null" >
+        OPERATOR,
+      </if>
+      <if test="period1 != null" >
+        PERIOD1,
+      </if>
+      <if test="period2 != null" >
+        PERIOD2,
+      </if>
+      <if test="period3 != null" >
+        PERIOD3,
+      </if>
+      <if test="period4 != null" >
+        PERIOD4,
+      </if>
+      <if test="ptimeslimit != null" >
+        PTIMESLIMIT,
+      </if>
+      <if test="relatedeviceno != null" >
+        RELATEDEVICENO,
+      </if>
+      <if test="serverport != null" >
+        SERVERPORT,
+      </if>
+      <if test="syscardno != null" >
+        SYSCARDNO,
+      </if>
+      <if test="timeslimit != null" >
+        TIMESLIMIT,
+      </if>
+      <if test="updatetime != null" >
+        UPDATETIME,
+      </if>
+      <if test="walletid != null" >
+        WALLETID,
+      </if>
+      <if test="consumegroup != null" >
+        CONSUMEGROUP,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="amount1 != null" >
+        #{amount1,jdbcType=INTEGER},
+      </if>
+      <if test="amount2 != null" >
+        #{amount2,jdbcType=INTEGER},
+      </if>
+      <if test="amount3 != null" >
+        #{amount3,jdbcType=INTEGER},
+      </if>
+      <if test="amount4 != null" >
+        #{amount4,jdbcType=INTEGER},
+      </if>
+      <if test="commpassword != null" >
+        #{commpassword,jdbcType=VARCHAR},
+      </if>
+      <if test="daylimit != null" >
+        #{daylimit,jdbcType=INTEGER},
+      </if>
+      <if test="devicelocation != null" >
+        #{devicelocation,jdbcType=INTEGER},
+      </if>
+      <if test="deviceno != null" >
+        #{deviceno,jdbcType=VARCHAR},
+      </if>
+      <if test="devicepassword != null" >
+        #{devicepassword,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceport != null" >
+        #{deviceport,jdbcType=INTEGER},
+      </if>
+      <if test="doorno != null" >
+        #{doorno,jdbcType=INTEGER},
+      </if>
+      <if test="fixbyte != null" >
+        #{fixbyte,jdbcType=INTEGER},
+      </if>
+      <if test="groupcheckbox != null" >
+        #{groupcheckbox,jdbcType=VARCHAR},
+      </if>
+      <if test="idicmode != null" >
+        #{idicmode,jdbcType=VARCHAR},
+      </if>
+      <if test="iotype != null" >
+        #{iotype,jdbcType=VARCHAR},
+      </if>
+      <if test="ismain != null" >
+        #{ismain,jdbcType=INTEGER},
+      </if>
+      <if test="ispassway != null" >
+        #{ispassway,jdbcType=INTEGER},
+      </if>
+      <if test="isregister != null" >
+        #{isregister,jdbcType=INTEGER},
+      </if>
+      <if test="limittype != null" >
+        #{limittype,jdbcType=INTEGER},
+      </if>
+      <if test="machineno != null" >
+        #{machineno,jdbcType=VARCHAR},
+      </if>
+      <if test="maxcardvalue != null" >
+        #{maxcardvalue,jdbcType=INTEGER},
+      </if>
+      <if test="num0 != null" >
+        #{num0,jdbcType=INTEGER},
+      </if>
+      <if test="num1 != null" >
+        #{num1,jdbcType=INTEGER},
+      </if>
+      <if test="num2 != null" >
+        #{num2,jdbcType=INTEGER},
+      </if>
+      <if test="num3 != null" >
+        #{num3,jdbcType=INTEGER},
+      </if>
+      <if test="num4 != null" >
+        #{num4,jdbcType=INTEGER},
+      </if>
+      <if test="num5 != null" >
+        #{num5,jdbcType=INTEGER},
+      </if>
+      <if test="num6 != null" >
+        #{num6,jdbcType=INTEGER},
+      </if>
+      <if test="num7 != null" >
+        #{num7,jdbcType=INTEGER},
+      </if>
+      <if test="num8 != null" >
+        #{num8,jdbcType=INTEGER},
+      </if>
+      <if test="num9 != null" >
+        #{num9,jdbcType=INTEGER},
+      </if>
+      <if test="occurtime != null" >
+        #{occurtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="period1 != null" >
+        #{period1,jdbcType=VARCHAR},
+      </if>
+      <if test="period2 != null" >
+        #{period2,jdbcType=VARCHAR},
+      </if>
+      <if test="period3 != null" >
+        #{period3,jdbcType=VARCHAR},
+      </if>
+      <if test="period4 != null" >
+        #{period4,jdbcType=VARCHAR},
+      </if>
+      <if test="ptimeslimit != null" >
+        #{ptimeslimit,jdbcType=INTEGER},
+      </if>
+      <if test="relatedeviceno != null" >
+        #{relatedeviceno,jdbcType=VARCHAR},
+      </if>
+      <if test="serverport != null" >
+        #{serverport,jdbcType=INTEGER},
+      </if>
+      <if test="syscardno != null" >
+        #{syscardno,jdbcType=VARCHAR},
+      </if>
+      <if test="timeslimit != null" >
+        #{timeslimit,jdbcType=INTEGER},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="walletid != null" >
+        #{walletid,jdbcType=INTEGER},
+      </if>
+      <if test="consumegroup != null" >
+        #{consumegroup,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.honghe.deviceNew.entity.DeviceParam" >
+    update device_param
+    <set >
+      <if test="amount1 != null" >
+        AMOUNT1 = #{amount1,jdbcType=INTEGER},
+      </if>
+      <if test="amount2 != null" >
+        AMOUNT2 = #{amount2,jdbcType=INTEGER},
+      </if>
+      <if test="amount3 != null" >
+        AMOUNT3 = #{amount3,jdbcType=INTEGER},
+      </if>
+      <if test="amount4 != null" >
+        AMOUNT4 = #{amount4,jdbcType=INTEGER},
+      </if>
+      <if test="commpassword != null" >
+        COMMPASSWORD = #{commpassword,jdbcType=VARCHAR},
+      </if>
+      <if test="daylimit != null" >
+        DAYLIMIT = #{daylimit,jdbcType=INTEGER},
+      </if>
+      <if test="devicelocation != null" >
+        DEVICELOCATION = #{devicelocation,jdbcType=INTEGER},
+      </if>
+      <if test="deviceno != null" >
+        DEVICENO = #{deviceno,jdbcType=VARCHAR},
+      </if>
+      <if test="devicepassword != null" >
+        DEVICEPASSWORD = #{devicepassword,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceport != null" >
+        DEVICEPORT = #{deviceport,jdbcType=INTEGER},
+      </if>
+      <if test="doorno != null" >
+        DOORNO = #{doorno,jdbcType=INTEGER},
+      </if>
+      <if test="fixbyte != null" >
+        FIXBYTE = #{fixbyte,jdbcType=INTEGER},
+      </if>
+      <if test="groupcheckbox != null" >
+        GROUPCHECKBOX = #{groupcheckbox,jdbcType=VARCHAR},
+      </if>
+      <if test="idicmode != null" >
+        IDICMODE = #{idicmode,jdbcType=VARCHAR},
+      </if>
+      <if test="iotype != null" >
+        IOTYPE = #{iotype,jdbcType=VARCHAR},
+      </if>
+      <if test="ismain != null" >
+        ISMAIN = #{ismain,jdbcType=INTEGER},
+      </if>
+      <if test="ispassway != null" >
+        ISPASSWAY = #{ispassway,jdbcType=INTEGER},
+      </if>
+      <if test="isregister != null" >
+        ISREGISTER = #{isregister,jdbcType=INTEGER},
+      </if>
+      <if test="limittype != null" >
+        LIMITTYPE = #{limittype,jdbcType=INTEGER},
+      </if>
+      <if test="machineno != null" >
+        MACHINENO = #{machineno,jdbcType=VARCHAR},
+      </if>
+      <if test="maxcardvalue != null" >
+        MAXCARDVALUE = #{maxcardvalue,jdbcType=INTEGER},
+      </if>
+      <if test="num0 != null" >
+        NUM0 = #{num0,jdbcType=INTEGER},
+      </if>
+      <if test="num1 != null" >
+        NUM1 = #{num1,jdbcType=INTEGER},
+      </if>
+      <if test="num2 != null" >
+        NUM2 = #{num2,jdbcType=INTEGER},
+      </if>
+      <if test="num3 != null" >
+        NUM3 = #{num3,jdbcType=INTEGER},
+      </if>
+      <if test="num4 != null" >
+        NUM4 = #{num4,jdbcType=INTEGER},
+      </if>
+      <if test="num5 != null" >
+        NUM5 = #{num5,jdbcType=INTEGER},
+      </if>
+      <if test="num6 != null" >
+        NUM6 = #{num6,jdbcType=INTEGER},
+      </if>
+      <if test="num7 != null" >
+        NUM7 = #{num7,jdbcType=INTEGER},
+      </if>
+      <if test="num8 != null" >
+        NUM8 = #{num8,jdbcType=INTEGER},
+      </if>
+      <if test="num9 != null" >
+        NUM9 = #{num9,jdbcType=INTEGER},
+      </if>
+      <if test="occurtime != null" >
+        OCCURTIME = #{occurtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null" >
+        OPERATOR = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="period1 != null" >
+        PERIOD1 = #{period1,jdbcType=VARCHAR},
+      </if>
+      <if test="period2 != null" >
+        PERIOD2 = #{period2,jdbcType=VARCHAR},
+      </if>
+      <if test="period3 != null" >
+        PERIOD3 = #{period3,jdbcType=VARCHAR},
+      </if>
+      <if test="period4 != null" >
+        PERIOD4 = #{period4,jdbcType=VARCHAR},
+      </if>
+      <if test="ptimeslimit != null" >
+        PTIMESLIMIT = #{ptimeslimit,jdbcType=INTEGER},
+      </if>
+      <if test="relatedeviceno != null" >
+        RELATEDEVICENO = #{relatedeviceno,jdbcType=VARCHAR},
+      </if>
+      <if test="serverport != null" >
+        SERVERPORT = #{serverport,jdbcType=INTEGER},
+      </if>
+      <if test="syscardno != null" >
+        SYSCARDNO = #{syscardno,jdbcType=VARCHAR},
+      </if>
+      <if test="timeslimit != null" >
+        TIMESLIMIT = #{timeslimit,jdbcType=INTEGER},
+      </if>
+      <if test="updatetime != null" >
+        UPDATETIME = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="walletid != null" >
+        WALLETID = #{walletid,jdbcType=INTEGER},
+      </if>
+      <if test="consumegroup != null" >
+        CONSUMEGROUP = #{consumegroup,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.honghe.deviceNew.entity.DeviceParam" >
+    update device_param
+    set AMOUNT1 = #{amount1,jdbcType=INTEGER},
+      AMOUNT2 = #{amount2,jdbcType=INTEGER},
+      AMOUNT3 = #{amount3,jdbcType=INTEGER},
+      AMOUNT4 = #{amount4,jdbcType=INTEGER},
+      COMMPASSWORD = #{commpassword,jdbcType=VARCHAR},
+      DAYLIMIT = #{daylimit,jdbcType=INTEGER},
+      DEVICELOCATION = #{devicelocation,jdbcType=INTEGER},
+      DEVICENO = #{deviceno,jdbcType=VARCHAR},
+      DEVICEPASSWORD = #{devicepassword,jdbcType=VARCHAR},
+      DEVICEPORT = #{deviceport,jdbcType=INTEGER},
+      DOORNO = #{doorno,jdbcType=INTEGER},
+      FIXBYTE = #{fixbyte,jdbcType=INTEGER},
+      GROUPCHECKBOX = #{groupcheckbox,jdbcType=VARCHAR},
+      IDICMODE = #{idicmode,jdbcType=VARCHAR},
+      IOTYPE = #{iotype,jdbcType=VARCHAR},
+      ISMAIN = #{ismain,jdbcType=INTEGER},
+      ISPASSWAY = #{ispassway,jdbcType=INTEGER},
+      ISREGISTER = #{isregister,jdbcType=INTEGER},
+      LIMITTYPE = #{limittype,jdbcType=INTEGER},
+      MACHINENO = #{machineno,jdbcType=VARCHAR},
+      MAXCARDVALUE = #{maxcardvalue,jdbcType=INTEGER},
+      NUM0 = #{num0,jdbcType=INTEGER},
+      NUM1 = #{num1,jdbcType=INTEGER},
+      NUM2 = #{num2,jdbcType=INTEGER},
+      NUM3 = #{num3,jdbcType=INTEGER},
+      NUM4 = #{num4,jdbcType=INTEGER},
+      NUM5 = #{num5,jdbcType=INTEGER},
+      NUM6 = #{num6,jdbcType=INTEGER},
+      NUM7 = #{num7,jdbcType=INTEGER},
+      NUM8 = #{num8,jdbcType=INTEGER},
+      NUM9 = #{num9,jdbcType=INTEGER},
+      OCCURTIME = #{occurtime,jdbcType=TIMESTAMP},
+      OPERATOR = #{operator,jdbcType=VARCHAR},
+      PERIOD1 = #{period1,jdbcType=VARCHAR},
+      PERIOD2 = #{period2,jdbcType=VARCHAR},
+      PERIOD3 = #{period3,jdbcType=VARCHAR},
+      PERIOD4 = #{period4,jdbcType=VARCHAR},
+      PTIMESLIMIT = #{ptimeslimit,jdbcType=INTEGER},
+      RELATEDEVICENO = #{relatedeviceno,jdbcType=VARCHAR},
+      SERVERPORT = #{serverport,jdbcType=INTEGER},
+      SYSCARDNO = #{syscardno,jdbcType=VARCHAR},
+      TIMESLIMIT = #{timeslimit,jdbcType=INTEGER},
+      UPDATETIME = #{updatetime,jdbcType=TIMESTAMP},
+      WALLETID = #{walletid,jdbcType=INTEGER},
+      CONSUMEGROUP = #{consumegroup,jdbcType=LONGVARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.honghe.deviceNew.entity.DeviceParam" >
+    update device_param
+    set AMOUNT1 = #{amount1,jdbcType=INTEGER},
+      AMOUNT2 = #{amount2,jdbcType=INTEGER},
+      AMOUNT3 = #{amount3,jdbcType=INTEGER},
+      AMOUNT4 = #{amount4,jdbcType=INTEGER},
+      COMMPASSWORD = #{commpassword,jdbcType=VARCHAR},
+      DAYLIMIT = #{daylimit,jdbcType=INTEGER},
+      DEVICELOCATION = #{devicelocation,jdbcType=INTEGER},
+      DEVICENO = #{deviceno,jdbcType=VARCHAR},
+      DEVICEPASSWORD = #{devicepassword,jdbcType=VARCHAR},
+      DEVICEPORT = #{deviceport,jdbcType=INTEGER},
+      DOORNO = #{doorno,jdbcType=INTEGER},
+      FIXBYTE = #{fixbyte,jdbcType=INTEGER},
+      GROUPCHECKBOX = #{groupcheckbox,jdbcType=VARCHAR},
+      IDICMODE = #{idicmode,jdbcType=VARCHAR},
+      IOTYPE = #{iotype,jdbcType=VARCHAR},
+      ISMAIN = #{ismain,jdbcType=INTEGER},
+      ISPASSWAY = #{ispassway,jdbcType=INTEGER},
+      ISREGISTER = #{isregister,jdbcType=INTEGER},
+      LIMITTYPE = #{limittype,jdbcType=INTEGER},
+      MACHINENO = #{machineno,jdbcType=VARCHAR},
+      MAXCARDVALUE = #{maxcardvalue,jdbcType=INTEGER},
+      NUM0 = #{num0,jdbcType=INTEGER},
+      NUM1 = #{num1,jdbcType=INTEGER},
+      NUM2 = #{num2,jdbcType=INTEGER},
+      NUM3 = #{num3,jdbcType=INTEGER},
+      NUM4 = #{num4,jdbcType=INTEGER},
+      NUM5 = #{num5,jdbcType=INTEGER},
+      NUM6 = #{num6,jdbcType=INTEGER},
+      NUM7 = #{num7,jdbcType=INTEGER},
+      NUM8 = #{num8,jdbcType=INTEGER},
+      NUM9 = #{num9,jdbcType=INTEGER},
+      OCCURTIME = #{occurtime,jdbcType=TIMESTAMP},
+      OPERATOR = #{operator,jdbcType=VARCHAR},
+      PERIOD1 = #{period1,jdbcType=VARCHAR},
+      PERIOD2 = #{period2,jdbcType=VARCHAR},
+      PERIOD3 = #{period3,jdbcType=VARCHAR},
+      PERIOD4 = #{period4,jdbcType=VARCHAR},
+      PTIMESLIMIT = #{ptimeslimit,jdbcType=INTEGER},
+      RELATEDEVICENO = #{relatedeviceno,jdbcType=VARCHAR},
+      SERVERPORT = #{serverport,jdbcType=INTEGER},
+      SYSCARDNO = #{syscardno,jdbcType=VARCHAR},
+      TIMESLIMIT = #{timeslimit,jdbcType=INTEGER},
+      UPDATETIME = #{updatetime,jdbcType=TIMESTAMP},
+      WALLETID = #{walletid,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
