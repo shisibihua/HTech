@@ -57,7 +57,7 @@ public final class SMS implements Notification {
         return false;
     }
     public static void main(String[] args) {
-        String[] www = {"13582068616"};
+        String[] www = {"15076268240"};
         for (String w : www) {
             SMS sms = new SMS(w, "你好刘备【HHT Meetings Management Platform】");
             System.out.println(sms.send());
